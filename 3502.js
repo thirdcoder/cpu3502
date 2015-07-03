@@ -75,6 +75,8 @@ function execute_alu_instruction(operation, addressing_mode) {
       console.log('load, accum=',accum);
       break;
   }
+
+  update_flags_from_accum();
 }
 
 // get a flag trit value given FLAGS.foo
@@ -89,6 +91,21 @@ function set_flag(flag, value) {
   let flag_index = flag + 4; // -4..4 to 0..8
 
   flags = set_trit(flags, flag_index, value);
+}
+
+function update_flags_from_accum() {
+  set_flag(FLAGS.L, get_trit(accum, 0)); // L = least significant trit of A
+
+  // set to most significant nonzero trit, or zero (TODO: optimize? since packed can really just check <0, >0,==0)
+  var sign = 0;
+  for (var i = TRITS_PER_TRYTE; i; --i) {
+    sign = get_trit(accum, i);
+    if (sign !== 0) break;
+  }
+  set_flag(FLAGS.S, sign);
+
+  console.log('flags:','FHROS_CPL');
+  console.log('flags:',n2bts(flags));
 }
 
 function execute_branch_instruction(flag, compare, direction) {

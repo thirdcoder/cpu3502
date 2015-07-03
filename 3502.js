@@ -3,7 +3,9 @@
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {get_trit, slice_trits} = require('trit-getset');
 
-const { TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE } = require('./arch');
+const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
+
+const OP = require('./opcodes');
 
 let memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
 
@@ -12,49 +14,6 @@ let accum = 0;
 let index = 0;
 let flags = 0;
 let halt = false; // TODO: move to flags, halt
-
-const OP_uuu = bts2n('iii');
-const OP_uu9 = bts2n('ii0');
-
-// shifts
-const OP_SHL = bts2n('iii'); // shift left (like ASL arithmetic shift left)
-const OP_ROL = bts2n('ii0'); // rotate left
-const OP_ROR = bts2n('ii1'); // rotate right
-const OP_LSR = bts2n('i0i'); // shift right (logical)
-
-// indexing
-const OP_STX = bts2n('i00'); // store X
-const OP_LDX = bts2n('i01'); // load X
-
-// ternary dyadic functions
-const OP_BUT = bts2n('i1i'); // pref-0i1, BUT                                f i0i,000,i01
-const OP_ORA = bts2n('i10'); // pref-10i, TOR,  maximum, ↑ U+2191, ∨ U+2228, f i01,001,111
-const OP_AND = bts2n('i11'); // pref-i01, TAND, minimum, ↓ U+2193, ∧ U+2227, f iii,i00,i01
-const OP_EOR = bts2n('0ii'); // exclusive max ⇑ U+2d1                        f i01,0i1,11i
-
-const OP_CPX = bts2n('0i0'); // copy x
-const OP_TRI = bts2n('0i1'); // tritmask, like 6502 BIT
-
-// increment/no-op/decrement
-const OP_DEC = bts2n('00i'); // decrement
-const OP_NOP = bts2n('000'); // no operation
-const OP_INC = bts2n('001'); // increment
-
-const OP_JMP = bts2n('01i'); // jump
-
-// arithmetic
-const OP_ADC = bts2n('010'); // add with carry
-const OP_STA = bts2n('011'); // store accumulator
-const OP_LDA = bts2n('1ii'); // load accumulator
-const OP_CMP = bts2n('1i0'); // compare
-const OP_SBC = bts2n('1i1'); // subtract borrow carry
-
-const OP_uu3 = bts2n('10i');
-const OP_uu4 = bts2n('100');
-const OP_uu5 = bts2n('101');
-const OP_uu6 = bts2n('11i');
-const OP_uu7 = bts2n('110');
-const OP_uu8 = bts2n('111');
 
 const ADDR_MODE_ABSOLUTE = -1;
 const ADDR_MODE_ACCUMULATOR = 0;
@@ -105,7 +64,7 @@ function execute_alu_instruction(operation, addressing_mode) {
 
   }
 
-  if (operation === OP_NOP) {
+  if (operation === OP.NOP) {
     console.log('nop');
   }
 }

@@ -13,7 +13,6 @@ let pc = 0;
 let accum = 0;
 let index = 0;
 let flags = 0;
-let halt = undefined; // TODO: move to flags, halt
 
 function execute_alu_instruction(operation, addressing_mode) {
   console.log('alu',n2bts(operation), addressing_mode);
@@ -116,14 +115,18 @@ function execute_misc_instruction(operation) {
   console.log('misc', operation);
 
   switch(operation) {
+    // halts - set H to halt code, set R to 0 to stop running
     case XOP.HALT_N:
-      halt = -1;
+      set_flag(FLAGS.H, -1);
+      set_flag(FLAGS.R, 0);
       break;
     case XOP.HALT_Z:
-      halt = 0;
+      set_flag(FLAGS.H, 0);
+      set_flag(FLAGS.R, 0);
       break;
     case XOP.HALT_P:
-      halt = 1;
+      set_flag(FLAGS.H, 1);
+      set_flag(FLAGS.R, 0);
       break;
   }
 
@@ -196,5 +199,5 @@ do {
   }
 
   ++pc;
-} while(halt === undefined);
-console.log('Halted with status',halt);
+} while(get_flag(FLAGS.R) !== 0);
+console.log('Halted with status',get_flag(FLAGS.H));

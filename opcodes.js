@@ -59,7 +59,7 @@ const FLAGS = {
   S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)
   O:  1, // +1 01 O overflow/underflow
   R:  2, // +2 1i R running, 1 when executing forward
-  H:  3, // +3 10 H halt
+  H:  3, // +3 10 H halt code
   F:  4, // +4 11 F fixed to -1
 };
 

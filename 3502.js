@@ -5,7 +5,7 @@ const {get_trit, slice_trits} = require('trit-getset');
 
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 
-const {OP, ADDR_MODE, XOP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 
 let memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
 
@@ -68,17 +68,6 @@ function execute_alu_instruction(operation, addressing_mode) {
 function execute_branch_instruction(flag, compare, direction) {
   console.log('compare',flag,compare,direction);
 
-  // flag (aa) 9 trits
-  // -4 ii N negative
-  // -3 i0 - always i
-  // -2 i1 + always 1
-  // -1 0i U underflow
-  //  0 00 Z zero
-  // +1 01 O overflow
-  // +2 1i D debug
-  // +3 10 H halt
-  // +4 11 V overflow
-  
   // compare (b) trit to compare flag with
   // direction (c)
   // i less than (flag < trit)
@@ -111,6 +100,8 @@ memory[x++] = bts2n('iiiii'); // #
 memory[x++] = bts2n('000i0'); // nop 29524
 memory[x++] = bts2n('11111'); // xx
 memory[x++] = bts2n('11111'); // xx
+
+memory[x++] = bts2n('00001'); // beq (branch if z=0)
 
 memory[x++] = bts2n('iiiii'); // iiiii abort
 

@@ -50,6 +50,19 @@ const ADDR_MODE = {
   IMMEDIATE: 1
 };
 
+const FLAGS = {
+  // flag (aa) 9 trits
+  N: -4, // -4 ii N negative
+  _: -3, // -3 i0 _
+  C: -2, // -2 i1 C carry
+  U: -1, // -1 0i U underflow
+  Z:  0, //  0 00 Z zero
+  O:  1, // +1 01 O overflow
+  D:  2, // +2 1i D debug
+  H:  3, // +3 10 H halt
+  V:  4, // +4 11 V overflow
+};
+
 const XOP = {
   HALT: -40,  // iiii halt
 };
@@ -57,5 +70,6 @@ const XOP = {
 module.exports = {
   OP,
   ADDR_MODE,
+  FLAGS,
   XOP
 };

@@ -105,7 +105,7 @@ function execute_branch_instruction(flag, compare, direction) {
   if (branch_taken) {
     console.log('taking branch from',pc,'to',pc+rel_address);
     pc += rel_address;
-    --pc; // undo ++pc increment in post-executing all instructions
+    pc -= get_flag(FLAGS.R); // undo pc increment in post-executing all instructions
   } else {
     console.log('not taking branch from',pc,'to',pc+rel_address);
   }
@@ -154,8 +154,8 @@ memory[x++] = bts2n('iiiii'); // iiiii halt i
 memory[x++] = bts2n('iii0i'); // iiiii halt 0
 memory[x++] = bts2n('iii1i'); // iiiii halt 1
 
-set_flag(FLAGS.F, -1);
-set_flag(FLAGS.R, 1);
+set_flag(FLAGS.F, -1); // fixed value
+set_flag(FLAGS.R, 1); // running: 1, program counter increments by; -1 runs backwards, 0 halts
 
 console.log('initial flags=',n2bts(flags));
 
@@ -198,6 +198,6 @@ do {
     execute_misc_instruction(operation);
   }
 
-  ++pc;
+  pc += get_flag(FLAGS.R);
 } while(get_flag(FLAGS.R) !== 0);
 console.log('Halted with status',get_flag(FLAGS.H));

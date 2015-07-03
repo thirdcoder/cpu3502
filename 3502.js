@@ -5,7 +5,7 @@ const {get_trit, slice_trits} = require('trit-getset');
 
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 
-const {OP, ADDR_MODE} = require('./opcodes');
+const {OP, ADDR_MODE, XOP} = require('./opcodes');
 
 let memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
 
@@ -88,13 +88,11 @@ function execute_branch_instruction(flag, compare, direction) {
   // if matches, relative branch (+/- 121)
 }
 
-const OP_HALT = bts2n('iiii');
-
 function execute_misc_instruction(operation) {
   console.log('misc', operation);
 
   switch(operation) {
-    case OP_HALT:
+    case XOP.HALT:
       console.log('HALT');
       halt = true;
       break;

@@ -50,7 +50,12 @@ const ADDR_MODE = {
   IMMEDIATE: 1
 };
 
+const XOP = {
+  HALT: -40,  // iiii halt
+};
+
 module.exports = {
   OP,
-  ADDR_MODE
+  ADDR_MODE,
+  XOP
 };

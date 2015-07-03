@@ -1,7 +1,7 @@
 'use strict';
 
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
-const {get_trit, slice_trits} = require('trit-getset');
+const {get_trit, set_trit, slice_trits} = require('trit-getset');
 
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 
@@ -65,13 +65,25 @@ function execute_alu_instruction(operation, addressing_mode) {
   }
 }
 
+// get a flag trit value given FLAGS.foo
+function get_flag(flag) {
+  let flag_index = flag + 4; // -4..4 to 0..8
+  let flag_value = get_trit(flags, flag_index);
+
+  return flag_value;
+}
+
+function set_flag(flag, value) {
+  let flag_index = flag + 4; // -4..4 to 0..8
+
+  set_trit(flags, flag_index, value);
+}
+
 function execute_branch_instruction(flag, compare, direction) {
   console.log('compare',flag,compare,direction);
 
   // compare (b) trit to compare flag with
-
-  let flag_index = flag + 4; // -4..4 to 0..8
-  let flag_value = get_trit(flags, flag_index);
+  let flag_value = get_flag(flag);
 
   // direction (c)
   // i less than (flag < trit)
@@ -89,7 +101,7 @@ function execute_branch_instruction(flag, compare, direction) {
   // if matches, relative branch (+/- 121)
   let rel_address = memory[++pc];
 
-  console.log('flag',flag_index,flag_value,branch_taken,rel_address);
+  console.log('flag',flag_value,branch_taken,rel_address);
 
   if (branch_taken) {
     console.log('taking branch from',pc,'to',pc+rel_address);

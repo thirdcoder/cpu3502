@@ -81,7 +81,7 @@ function decode_next_instruction(cpu) {
 
     const rel_address = cpu.advance_memory();
 
-    cpu.pc = cpu.execute_branch_instruction(flag, compare, direction, rel_address, cpu.pc);
+    cpu.execute_branch_instruction(flag, compare, direction, rel_address);
   } else if (family === -1) {
     const operation = slice_trits(opcode, 1, 5);
 

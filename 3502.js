@@ -107,7 +107,7 @@ class CPU {
     this.update_flags_from_accum();
   }
 
-  execute_branch_instruction(flag, compare, direction, rel_address, pc) {
+  execute_branch_instruction(flag, compare, direction, rel_address) {
     console.log('compare',flag,compare,direction);
 
     // compare (b) trit to compare flag with
@@ -130,13 +130,11 @@ class CPU {
 
     // if matches, relative branch (+/- 121)
     if (branch_taken) {
-      console.log('taking branch from',pc,'to',pc+rel_address);
-      pc += rel_address;
+      console.log('taking branch from',cpu.pc,'to',cpu.pc+rel_address);
+      cpu.pc += rel_address;
     } else {
-      console.log('not taking branch from',pc,'to',pc+rel_address);
+      console.log('not taking branch from',cpu.pc,'to',cpu.pc+rel_address);
     }
-
-    return pc;
   }
 
   execute_misc_instruction(operation) {

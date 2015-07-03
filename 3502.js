@@ -8,6 +8,7 @@ const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, M
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 
 const decode_next_instruction = require('./instr_decode');
+const ALU = require('./alu');
 
 class CPU {
   constructor() {
@@ -50,6 +51,8 @@ class CPU {
     this.set_flag(FLAGS.F, -1); // fixed value
     this.set_flag(FLAGS.R, 1); // running: 1, program counter increments by; -1 runs backwards, 0 halts
 
+    this.alu = new ALU(this);
+
     console.log('initial flags=',n2bts(this.flags));
   }
 
@@ -67,44 +70,8 @@ class CPU {
     this.flags = set_trit(this.flags, flag_index, value);
   }
 
-  update_flags_from_accum() {
-    this.set_flag(FLAGS.L, get_trit(this.accum, 0)); // L = least significant trit of A
-
-    // set to most significant nonzero trit, or zero (TODO: optimize? since packed can really just check <0, >0,==0)
-    var sign = 0;
-    for (var i = TRITS_PER_TRYTE; i; --i) {
-      sign = get_trit(this.accum, i);
-      if (sign !== 0) break;
-    }
-    this.set_flag(FLAGS.S, sign);
-
-    console.log('flags:','FHROS_CPL');
-    console.log('flags:',n2bts(this.flags));
-  }
-
   execute_alu_instruction(operation, read_arg, write_arg) {
-    console.log('alu',n2bts(operation));
-    // operation (aaa)
-    // addressing mode
-
-    switch(operation) {
-      case OP.NOP:
-        console.log('nop');
-        break;
-
-      case OP.STA:
-        write_arg(this.accum);
-        console.log('stored accum',this.accum);
-        console.log('memory[0]=',this.memory[0]);
-        break;
-
-      case OP.LDA:
-        this.accum = read_arg();
-        console.log('load, accum=',this.accum);
-        break;
-    }
-
-    this.update_flags_from_accum();
+    this.alu.execute_alu_instruction(operation, read_arg, write_arg);
   }
 
   execute_branch_instruction(flag, compare, direction, rel_address) {

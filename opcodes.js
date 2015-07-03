@@ -64,7 +64,9 @@ const FLAGS = {
 };
 
 const XOP = {
-  HALT: -40,  // iiii halt
+  HALT_P: -37,  // iii1 halt positive
+  HALT_Z: -38,  // iii0 halt zero
+  HALT_N: -40,  // iiii halt negative
 };
 
 module.exports = {

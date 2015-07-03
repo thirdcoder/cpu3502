@@ -13,7 +13,7 @@ let pc = 0;
 let accum = 0;
 let index = 0;
 let flags = 0;
-let halt = false; // TODO: move to flags, halt
+let halt = undefined; // TODO: move to flags, halt
 
 function execute_alu_instruction(operation, addressing_mode) {
   console.log('alu',n2bts(operation), addressing_mode);
@@ -104,9 +104,14 @@ function execute_misc_instruction(operation) {
   console.log('misc', operation);
 
   switch(operation) {
-    case XOP.HALT:
-      console.log('HALT');
-      halt = true;
+    case XOP.HALT_N:
+      halt = -1;
+      break;
+    case XOP.HALT_Z:
+      halt = 0;
+      break;
+    case XOP.HALT_P:
+      halt = 1;
       break;
   }
 
@@ -130,9 +135,9 @@ memory[x++] = bts2n('0000i'); //  relative branch destination, -1
 memory[x++] = bts2n('00001'); // beq (br s=0,branch if sign trit flag is zero, accumulator is zero)
 memory[x++] = bts2n('0001i'); //  relative branch destination, +2
 
-memory[x++] = bts2n('iiiii'); // iiiii abort
-memory[x++] = bts2n('iiiii'); // iiiii abort
-memory[x++] = bts2n('iiiii'); // iiiii abort
+memory[x++] = bts2n('iiiii'); // iiiii halt i
+memory[x++] = bts2n('iii0i'); // iiiii halt 0
+memory[x++] = bts2n('iii1i'); // iiiii halt 1
 
 console.log(bts2n('iiiii'));
 
@@ -176,4 +181,5 @@ do {
   }
 
   ++pc;
-} while(!halt);
+} while(halt === undefined);
+console.log('Halted with status',halt);

@@ -34,10 +34,12 @@ module.exports = {
   CMP: 6, // 1i0 compare
   SBC: 7, // 1i1 subtract borrow carry
 
-  uu3: 8, // 10i
-  uu4: 9, // 100
-  uu5:10, // 101
-  uu6:11, // 11i
-  uu7:12, // 110
-  uu8:13  // 111
+  // unary ternary functions (a.3.5) https://www.scribd.com/doc/78370674/Ternary-Computing-Testbed-3-Trit-Computer-Architecture
+  NTI: 8, // 10i negative ternary inverter (tritwise i01 -> 1ii)
+  STI: 9, // 100 simple ternary inverter   (tritwise i01 -> 10i)
+  PTI:10, // 101 positive ternary inverter (tritwise i01 -> 11i)
+  FD: 11, // 11i forward diode             (tritwise i01 -> 001)
+  RD: 12, // 110 reverse diode             (tritwise i01 -> i00)
+
+  uuu:13  // 111
 };

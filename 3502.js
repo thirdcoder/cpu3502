@@ -94,15 +94,6 @@ function execute_branch_instruction(flag, compare, direction) {
 
 const OP_HALT = bts2n('iiii');
 
-// unary ternary functions (a.3.5) https://www.scribd.com/doc/78370674/Ternary-Computing-Testbed-3-Trit-Computer-Architecture
-// tritwise operating on accumulator
-const OP_NTI  = bts2n('000i'); // A: negative ternary inverter (tritwise i01 -> 1ii)
-const OP_STI  = bts2n('0000'); // A: simple ternary inverter   (tritwise i01 -> 10i)
-const OP_PTI  = bts2n('0001'); // A: positive ternary inverter (tritwise i01 -> 11i)
-const OP_FD   = bts2n('001i'); // A: forward diode             (tritwise i01 -> 001)
-const OP_RD   = bts2n('0010'); // A: reverse diode             (tritwise i01 -> i00)
-
-
 function execute_misc_instruction(operation) {
   console.log('misc', operation);
 

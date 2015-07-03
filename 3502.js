@@ -24,8 +24,8 @@ function execute_alu_instruction(operation, addressing_mode) {
   switch(addressing_mode) {
     // absolute, 2-tryte address
     case ADDR_MODE.ABSOLUTE:
-      let absolute = memory[++pc];
-      absolute += 3**TRITS_PER_TRYTE * memory[++pc];
+      let absolute = memory[pc += get_flag(FLAGS.R)];
+      absolute += 3**TRITS_PER_TRYTE * memory[pc += get_flag(FLAGS.R)];
 
       console.log('absolute',absolute);
 
@@ -47,7 +47,7 @@ function execute_alu_instruction(operation, addressing_mode) {
 
     // immediate, 1-tryte literal
     case ADDR_MODE.IMMEDIATE:
-      let immediate = memory[++pc];
+      let immediate = memory[pc += get_flag(FLAGS.R)];
 
       console.log('immediate',immediate);
 
@@ -98,7 +98,7 @@ function execute_branch_instruction(flag, compare, direction) {
   }
 
   // if matches, relative branch (+/- 121)
-  let rel_address = memory[++pc];
+  let rel_address = memory[pc += get_flag(FLAGS.R)];
 
   console.log('flag',flag_value,branch_taken,rel_address);
 

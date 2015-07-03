@@ -1,14 +1,7 @@
 'use strict';
 
-var bts2n = require('balanced-ternary').bts2n;
-var n2bts = require('balanced-ternary').n2bts;
-var N_TO_BT_DIGIT = require('balanced-ternary').N_TO_BT_DIGIT;
-var BT_DIGIT_TO_N = require('balanced-ternary').BT_DIGIT_TO_N;
-var get_trit = require('trit-getset').get_trit;
-var slice_trits = require('trit-getset').slice_trits;
-
-// npm install -g babel
-// babel-node --experimental 3502.js
+const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
+const {get_trit, slice_trits} = require('trit-getset');
 
 const TRITS_PER_TRYTE = 5;
 const TRYTES_PER_WORD = 2;

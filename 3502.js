@@ -105,7 +105,6 @@ function execute_branch_instruction(flag, compare, direction) {
   if (branch_taken) {
     console.log('taking branch from',pc,'to',pc+rel_address);
     pc += rel_address;
-    pc -= get_flag(FLAGS.R); // undo pc increment in post-executing all instructions
   } else {
     console.log('not taking branch from',pc,'to',pc+rel_address);
   }
@@ -150,9 +149,9 @@ memory[x++] = bts2n('0000i'); //  relative branch destination, -1
 memory[x++] = bts2n('00001'); // beq (br s=0,branch if sign trit flag is zero, accumulator is zero)
 memory[x++] = bts2n('0001i'); //  relative branch destination, +2
 
-memory[x++] = bts2n('iiiii'); // iiiii halt i
+memory[x++] = bts2n('iiiii'); // iiiii halt i, skipped by above branch
+memory[x++] = bts2n('iii1i'); // iiiii halt 1, also skipped by same branch
 memory[x++] = bts2n('iii0i'); // iiiii halt 0
-memory[x++] = bts2n('iii1i'); // iiiii halt 1
 
 set_flag(FLAGS.F, -1); // fixed value
 set_flag(FLAGS.R, 1); // running: 1, program counter increments by; -1 runs backwards, 0 halts

@@ -55,12 +55,10 @@ function read_alu_operand(addressing_mode) {
   return {read_arg, write_arg};
 }
 
-function execute_alu_instruction(operation, addressing_mode) {
-  console.log('alu',n2bts(operation), addressing_mode);
+function execute_alu_instruction(operation, read_arg, write_arg) {
+  console.log('alu',n2bts(operation));
   // operation (aaa)
   // addressing mode
-
-  const {read_arg, write_arg} = read_alu_operand(addressing_mode);
 
   switch(operation) {
     case OP.NOP:
@@ -222,10 +220,11 @@ do {
   // aaaai other instructions
 
   if (family === 0) {
-    let operation = slice_trits(opcode, 2, 5);
-    let addressing_mode = get_trit(opcode, 1);
+    const operation = slice_trits(opcode, 2, 5);
+    const addressing_mode = get_trit(opcode, 1);
+    const {read_arg, write_arg} = read_alu_operand(addressing_mode);
 
-    execute_alu_instruction(operation, addressing_mode);
+    execute_alu_instruction(operation, read_arg, write_arg);
   } else if (family === 1) {
     let flag = slice_trits(opcode, 3, 5);
     let compare = get_trit(opcode, 1);

@@ -159,9 +159,13 @@ class CPU {
     }
   }
 
+  advance_memory() {
+    return this.memory[this.pc += this.get_flag(FLAGS.R)];
+  }
+
   run() {
     do {
-      this.pc = decode_next_instruction(this.memory, this.pc, this.get_flag(FLAGS.R), cpu);
+      decode_next_instruction(cpu);
 
       this.pc += this.get_flag(FLAGS.R);
     } while(this.get_flag(FLAGS.R) !== 0);

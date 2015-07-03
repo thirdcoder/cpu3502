@@ -4,27 +4,27 @@ const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE} = require('./arch');
 const {ADDR_MODE} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
 
-function read_alu_operand(memory, pc, step, addressing_mode) {
+function read_alu_operand(cpu, addressing_mode) {
   let read_arg, write_arg;
 
   switch(addressing_mode) {
     // absolute, 2-tryte address
     case ADDR_MODE.ABSOLUTE:
-      let absolute = memory[pc += step];
-      absolute += 3**TRITS_PER_TRYTE * memory[pc += step];
+      let absolute = cpu.advance_memory();
+      absolute += 3**TRITS_PER_TRYTE * cpu.advance_memory(); // TODO: endian?
 
       console.log('absolute',absolute);
 
-      read_arg = function() { return memory[absolute]; };
-      write_arg = function(x) { memory[absolute] = x; };
+      read_arg = function() { return cpu.memory[absolute]; };
+      write_arg = function(x) { cpu.memory[absolute] = x; };
 
       break;
 
     // accumulator, register, no arguments
     case ADDR_MODE.ACCUMULATOR:
 
-      read_arg = function() { return accum; };
-      write_arg = function(x) { accum = x; };
+      read_arg = function() { return cpu.accum; };
+      write_arg = function(x) { cpu.accum = x; };
 
       console.log('accum');
 
@@ -32,7 +32,7 @@ function read_alu_operand(memory, pc, step, addressing_mode) {
 
     // immediate, 1-tryte literal
     case ADDR_MODE.IMMEDIATE:
-      let immediate = memory[pc += step];
+      let immediate = cpu.advance_memory();
 
       console.log('immediate',immediate);
 
@@ -42,20 +42,20 @@ function read_alu_operand(memory, pc, step, addressing_mode) {
       break;
   }
 
-  return [read_arg, write_arg, pc];
+  return [read_arg, write_arg];
 }
 
-function decode_next_instruction(memory, pc, step, handlers) {
-  const opcode = memory[pc];
-  console.log('\npc=',pc,' opcode=',opcode);
+function decode_next_instruction(cpu) {
+  const opcode = cpu.memory[cpu.pc];
+  console.log('\npc=',cpu.pc,' opcode=',opcode);
 
   if (opcode === undefined) {
     // increase MEMORY_SIZE if running out too often
-    throw new Error('program counter '+pc+' out of range into undefined memory');
+    throw new Error('program counter '+cpu.pc+' out of range into undefined memory');
   }
   if (opcode > MAX_TRYTE || opcode < MIN_TRYTE) {
     // indicates internal error in simulator, backing store shouldn't be written out of this range
-    throw new Error('memory at pc='+pc+' value='+opcode+' out of 5-trit range');
+    throw new Error('memory at pc='+cpu.pc+' value='+opcode+' out of 5-trit range');
   }
 
   const family = get_trit(opcode, 0);
@@ -71,23 +71,22 @@ function decode_next_instruction(memory, pc, step, handlers) {
     const operation = slice_trits(opcode, 2, 5);
     const addressing_mode = get_trit(opcode, 1);
     let read_arg, write_arg;
-    [read_arg, write_arg, pc] = read_alu_operand(memory, pc, step, addressing_mode);
+    [read_arg, write_arg] = read_alu_operand(cpu, addressing_mode);
 
-    handlers.execute_alu_instruction(operation, read_arg, write_arg);
+    cpu.execute_alu_instruction(operation, read_arg, write_arg);
   } else if (family === 1) {
     const flag = slice_trits(opcode, 3, 5);
     const compare = get_trit(opcode, 1);
     const direction = get_trit(opcode, 2);
 
-    const rel_address = memory[pc += step];
+    const rel_address = cpu.advance_memory();
 
-    pc = handlers.execute_branch_instruction(flag, compare, direction, rel_address, pc);
+    cpu.pc = cpu.execute_branch_instruction(flag, compare, direction, rel_address, cpu.pc);
   } else if (family === -1) {
     const operation = slice_trits(opcode, 1, 5);
 
-    handlers.execute_misc_instruction(operation);
+    cpu.execute_misc_instruction(operation);
   }
-  return pc;
 };
 
 module.exports = decode_next_instruction;

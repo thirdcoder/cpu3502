@@ -94,6 +94,7 @@ function execute_branch_instruction(flag, compare, direction) {
   if (branch_taken) {
     console.log('taking branch from',pc,'to',pc+rel_address);
     pc += rel_address;
+    --pc; // undo ++pc increment in post-executing all instructions
   } else {
     console.log('not taking branch from',pc,'to',pc+rel_address);
   }

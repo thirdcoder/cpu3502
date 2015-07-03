@@ -52,13 +52,13 @@ const ADDR_MODE = {
 
 const FLAGS = {
   // flag (aa) 9 trits
-  N: -4, // -4 ii N negative
-  _: -3, // -3 i0 _
+  L: -4, // -4 ii L least significant trit of A (if 0, divisible by 3)
+  P: -3, // -3 i0 P parity, sum of all trits in A
   C: -2, // -2 i1 C carry
   U: -1, // -1 0i U underflow
-  Z:  0, //  0 00 Z zero
+  S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)
   O:  1, // +1 01 O overflow
-  D:  2, // +2 1i D debug
+  y:  2, // +2 1i
   H:  3, // +3 10 H halt
   V:  4, // +4 11 V overflow
 };

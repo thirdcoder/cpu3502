@@ -69,12 +69,34 @@ function execute_branch_instruction(flag, compare, direction) {
   console.log('compare',flag,compare,direction);
 
   // compare (b) trit to compare flag with
+
+  let flag_index = flag + 4; // -4..4 to 0..8
+  let flag_value = get_trit(flags, flag_index);
+
   // direction (c)
   // i less than (flag < trit)
   // 0 equal (flag = trit)
   // 1 greater than (flag > trit)
-  //
+  var branch_taken = false;
+  if (direction < 0) {
+    branch_taken = flag_value < compare;
+  } else if (direction === 0) {
+    branch_taken = flag_value === compare;
+  } else if (direction > 0) {
+    branch_taken = flag_value > compare;
+  }
+
   // if matches, relative branch (+/- 121)
+  let rel_address = memory[++pc];
+
+  console.log('flag',flag_index,flag_value,branch_taken,rel_address);
+
+  if (branch_taken) {
+    console.log('taking branch from',pc,'to',pc+rel_address);
+    pc += rel_address;
+  } else {
+    console.log('not taking branch from',pc,'to',pc+rel_address);
+  }
 }
 
 function execute_misc_instruction(operation) {
@@ -101,8 +123,14 @@ memory[x++] = bts2n('000i0'); // nop 29524
 memory[x++] = bts2n('11111'); // xx
 memory[x++] = bts2n('11111'); // xx
 
-memory[x++] = bts2n('00001'); // beq (branch if z=0)
+memory[x++] = bts2n('00011'); // bne, not taken
+memory[x++] = bts2n('0000i'); //  relative branch destination, -1
 
+memory[x++] = bts2n('00001'); // beq (br s=0,branch if sign trit flag is zero, accumulator is zero)
+memory[x++] = bts2n('0001i'); //  relative branch destination, +2
+
+memory[x++] = bts2n('iiiii'); // iiiii abort
+memory[x++] = bts2n('iiiii'); // iiiii abort
 memory[x++] = bts2n('iiiii'); // iiiii abort
 
 console.log(bts2n('iiiii'));
@@ -136,8 +164,8 @@ do {
     execute_alu_instruction(operation, addressing_mode);
   } else if (family === 1) {
     let flag = slice_trits(opcode, 3, 5);
-    let compare = get_trit(opcode, 2);
-    let direction = get_trit(opcode, 3);
+    let compare = get_trit(opcode, 1);
+    let direction = get_trit(opcode, 2);
 
     execute_branch_instruction(flag, compare, direction);
   } else if (family === -1) {

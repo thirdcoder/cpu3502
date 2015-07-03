@@ -7,53 +7,14 @@ const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, M
 
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 
+const decode_next_instruction = require('./instr_decode');
+
 let memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
 
 let pc = 0;
 let accum = 0;
 let index = 0;
 let flags = 0;
-
-function read_alu_operand(addressing_mode) {
-  let read_arg, write_arg;
-
-  switch(addressing_mode) {
-    // absolute, 2-tryte address
-    case ADDR_MODE.ABSOLUTE:
-      let absolute = memory[pc += get_flag(FLAGS.R)];
-      absolute += 3**TRITS_PER_TRYTE * memory[pc += get_flag(FLAGS.R)];
-
-      console.log('absolute',absolute);
-
-      read_arg = function() { return memory[absolute]; };
-      write_arg = function(x) { memory[absolute] = x; };
-
-      break;
-
-    // accumulator, register, no arguments
-    case ADDR_MODE.ACCUMULATOR:
-
-      read_arg = function() { return accum; };
-      write_arg = function(x) { accum = x; };
-
-      console.log('accum');
-
-      break;
-
-    // immediate, 1-tryte literal
-    case ADDR_MODE.IMMEDIATE:
-      let immediate = memory[pc += get_flag(FLAGS.R)];
-
-      console.log('immediate',immediate);
-
-      read_arg = function() { return immediate; };
-      write_arg = function() { throw new Error('cannot write to immediate: '+immediate); };
-
-      break;
-  }
-
-  return {read_arg, write_arg};
-}
 
 function execute_alu_instruction(operation, read_arg, write_arg) {
   console.log('alu',n2bts(operation));
@@ -109,7 +70,7 @@ function update_flags_from_accum() {
   console.log('flags:',n2bts(flags));
 }
 
-function execute_branch_instruction(flag, compare, direction, rel_address) {
+function execute_branch_instruction(flag, compare, direction, rel_address, pc) {
   console.log('compare',flag,compare,direction);
 
   // compare (b) trit to compare flag with
@@ -137,6 +98,8 @@ function execute_branch_instruction(flag, compare, direction, rel_address) {
   } else {
     console.log('not taking branch from',pc,'to',pc+rel_address);
   }
+
+  return pc;
 }
 
 function execute_misc_instruction(operation) {
@@ -195,47 +158,14 @@ set_flag(FLAGS.R, 1); // running: 1, program counter increments by; -1 runs back
 
 console.log('initial flags=',n2bts(flags));
 
+const handlers = {
+  execute_alu_instruction,
+  execute_branch_instruction,
+  execute_misc_instruction
+};
+
 do {
-  let opcode = memory[pc];
-  console.log('\npc=',pc,' opcode=',opcode);
-
-  if (opcode === undefined) {
-    // increase MEMORY_SIZE if running out too often
-    throw new Error('program counter '+pc+' out of range into undefined memory');
-  }
-  if (opcode > MAX_TRYTE || opcode < MIN_TRYTE) {
-    // indicates internal error in simulator, backing store shouldn't be written out of this range
-    throw new Error('memory at pc='+pc+' value='+opcode+' out of 5-trit range');
-  }
-
-  let family = get_trit(opcode, 0);
-  //console.log('family',family,n2bts(opcode));
-
-  // 5-trit trytes
-  // 43210
-  // aaab0 aa=operation, b=addressing mode
-  // aabc1 aa=flag, b=compare with trit branch if c(i<, 0=, 1>)
-  // aaaai other instructions
-
-  if (family === 0) {
-    const operation = slice_trits(opcode, 2, 5);
-    const addressing_mode = get_trit(opcode, 1);
-    const {read_arg, write_arg} = read_alu_operand(addressing_mode);
-
-    execute_alu_instruction(operation, read_arg, write_arg);
-  } else if (family === 1) {
-    const flag = slice_trits(opcode, 3, 5);
-    const compare = get_trit(opcode, 1);
-    const direction = get_trit(opcode, 2);
-
-    const rel_address = memory[pc += get_flag(FLAGS.R)];
-
-    execute_branch_instruction(flag, compare, direction, rel_address);
-  } else if (family === -1) {
-    const operation = slice_trits(opcode, 1, 5);
-
-    execute_misc_instruction(operation);
-  }
+  pc = decode_next_instruction(memory, pc, get_flag(FLAGS.R), handlers);
 
   pc += get_flag(FLAGS.R);
 } while(get_flag(FLAGS.R) !== 0);

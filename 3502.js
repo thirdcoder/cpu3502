@@ -14,11 +14,7 @@ let accum = 0;
 let index = 0;
 let flags = 0;
 
-function execute_alu_instruction(operation, addressing_mode) {
-  console.log('alu',n2bts(operation), addressing_mode);
-  // operation (aaa)
-  // addressing mode
-  
+function read_alu_operand(addressing_mode) {
   let read_arg, write_arg;
 
   switch(addressing_mode) {
@@ -33,7 +29,6 @@ function execute_alu_instruction(operation, addressing_mode) {
       write_arg = function(x) { memory[absolute] = x; };
 
       break;
-
 
     // accumulator, register, no arguments
     case ADDR_MODE.ACCUMULATOR:
@@ -55,9 +50,17 @@ function execute_alu_instruction(operation, addressing_mode) {
       write_arg = function() { throw new Error('cannot write to immediate: '+immediate); };
 
       break;
-
-
   }
+
+  return {read_arg, write_arg};
+}
+
+function execute_alu_instruction(operation, addressing_mode) {
+  console.log('alu',n2bts(operation), addressing_mode);
+  // operation (aaa)
+  // addressing mode
+
+  const {read_arg, write_arg} = read_alu_operand(addressing_mode);
 
   switch(operation) {
     case OP.NOP:

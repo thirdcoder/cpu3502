@@ -59,8 +59,21 @@ function execute_alu_instruction(operation, addressing_mode) {
 
   }
 
-  if (operation === OP.NOP) {
-    console.log('nop');
+  switch(operation) {
+    case OP.NOP:
+      console.log('nop');
+      break;
+
+    case OP.STA:
+      write_arg(accum);
+      console.log('stored accum',accum);
+      console.log('memory[0]=',memory[0]);
+      break;
+
+    case OP.LDA:
+      accum = read_arg();
+      console.log('load, accum=',accum);
+      break;
   }
 }
 
@@ -151,6 +164,14 @@ memory[x++] = bts2n('0001i'); //  relative branch destination, +2
 
 memory[x++] = bts2n('iiiii'); // iiiii halt i, skipped by above branch
 memory[x++] = bts2n('iii1i'); // iiiii halt 1, also skipped by same branch
+
+memory[x++] = bts2n('1ii10'); // lda #
+memory[x++] = bts2n('1iii0'); // #42
+
+memory[x++] = bts2n('011i0'); // sta 0
+memory[x++] = bts2n('00000'); // xx
+memory[x++] = bts2n('00000'); // xx
+
 memory[x++] = bts2n('iii0i'); // iiiii halt 0
 
 set_flag(FLAGS.F, -1); // fixed value

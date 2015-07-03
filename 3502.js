@@ -76,7 +76,7 @@ function get_flag(flag) {
 function set_flag(flag, value) {
   let flag_index = flag + 4; // -4..4 to 0..8
 
-  set_trit(flags, flag_index, value);
+  flags = set_trit(flags, flag_index, value);
 }
 
 function execute_branch_instruction(flag, compare, direction) {
@@ -151,7 +151,10 @@ memory[x++] = bts2n('iiiii'); // iiiii halt i
 memory[x++] = bts2n('iii0i'); // iiiii halt 0
 memory[x++] = bts2n('iii1i'); // iiiii halt 1
 
-console.log(bts2n('iiiii'));
+set_flag(FLAGS.F, -1);
+set_flag(FLAGS.R, 1);
+
+console.log('initial flags=',n2bts(flags));
 
 do {
   let opcode = memory[pc];

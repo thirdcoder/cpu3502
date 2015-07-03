@@ -55,12 +55,12 @@ const FLAGS = {
   L: -4, // -4 ii L least significant trit of A (if 0, divisible by 3)
   P: -3, // -3 i0 P parity, sum of all trits in A
   C: -2, // -2 i1 C carry
-  U: -1, // -1 0i U underflow
+  _: -1, // -1 0i _
   S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)
-  O:  1, // +1 01 O overflow
-  y:  2, // +2 1i
+  O:  1, // +1 01 O overflow/underflow
+  R:  2, // +2 1i R running, 1 when executing forward
   H:  3, // +3 10 H halt
-  V:  4, // +4 11 V overflow
+  F:  4, // +4 11 F fixed to -1
 };
 
 const XOP = {

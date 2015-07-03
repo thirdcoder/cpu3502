@@ -109,17 +109,17 @@ function update_flags_from_accum() {
   console.log('flags:',n2bts(flags));
 }
 
-function execute_branch_instruction(flag, compare, direction) {
+function execute_branch_instruction(flag, compare, direction, rel_address) {
   console.log('compare',flag,compare,direction);
 
   // compare (b) trit to compare flag with
-  let flag_value = get_flag(flag);
+  const flag_value = get_flag(flag);
 
   // direction (c)
   // i less than (flag < trit)
   // 0 equal (flag = trit)
   // 1 greater than (flag > trit)
-  var branch_taken = false;
+  let branch_taken = false;
   if (direction < 0) {
     branch_taken = flag_value < compare;
   } else if (direction === 0) {
@@ -128,11 +128,9 @@ function execute_branch_instruction(flag, compare, direction) {
     branch_taken = flag_value > compare;
   }
 
-  // if matches, relative branch (+/- 121)
-  let rel_address = memory[pc += get_flag(FLAGS.R)];
-
   console.log('flag',flag_value,branch_taken,rel_address);
 
+  // if matches, relative branch (+/- 121)
   if (branch_taken) {
     console.log('taking branch from',pc,'to',pc+rel_address);
     pc += rel_address;
@@ -226,13 +224,15 @@ do {
 
     execute_alu_instruction(operation, read_arg, write_arg);
   } else if (family === 1) {
-    let flag = slice_trits(opcode, 3, 5);
-    let compare = get_trit(opcode, 1);
-    let direction = get_trit(opcode, 2);
+    const flag = slice_trits(opcode, 3, 5);
+    const compare = get_trit(opcode, 1);
+    const direction = get_trit(opcode, 2);
 
-    execute_branch_instruction(flag, compare, direction);
+    const rel_address = memory[pc += get_flag(FLAGS.R)];
+
+    execute_branch_instruction(flag, compare, direction, rel_address);
   } else if (family === -1) {
-    let operation = slice_trits(opcode, 1, 5);
+    const operation = slice_trits(opcode, 1, 5);
 
     execute_misc_instruction(operation);
   }

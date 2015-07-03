@@ -5,7 +5,7 @@ const {get_trit, slice_trits} = require('trit-getset');
 
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 
-const OP = require('./opcodes');
+const {OP, ADDR_MODE} = require('./opcodes');
 
 let memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
 
@@ -14,10 +14,6 @@ let accum = 0;
 let index = 0;
 let flags = 0;
 let halt = false; // TODO: move to flags, halt
-
-const ADDR_MODE_ABSOLUTE = -1;
-const ADDR_MODE_ACCUMULATOR = 0;
-const ADDR_MODE_IMMEDIATE = 1;
 
 function execute_alu_instruction(operation, addressing_mode) {
   console.log('alu',n2bts(operation), addressing_mode);
@@ -28,7 +24,7 @@ function execute_alu_instruction(operation, addressing_mode) {
 
   switch(addressing_mode) {
     // absolute, 2-tryte address
-    case ADDR_MODE_ABSOLUTE:
+    case ADDR_MODE.ABSOLUTE:
       let absolute = memory[++pc];
       absolute += 3**TRITS_PER_TRYTE * memory[++pc];
 
@@ -41,7 +37,7 @@ function execute_alu_instruction(operation, addressing_mode) {
 
 
     // accumulator, register, no arguments
-    case ADDR_MODE_ACCUMULATOR:
+    case ADDR_MODE.ACCUMULATOR:
 
       read_arg = function() { return accum; };
       write_arg = function(x) { accum = x; };
@@ -51,7 +47,7 @@ function execute_alu_instruction(operation, addressing_mode) {
       break;
 
     // immediate, 1-tryte literal
-    case ADDR_MODE_IMMEDIATE:
+    case ADDR_MODE.IMMEDIATE:
       let immediate = memory[++pc];
 
       console.log('immediate',immediate);

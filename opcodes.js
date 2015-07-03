@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = {
+const OP = {
   // shifts
   SHL: -13, // iii shift left (like ASL arithmetic shift left) = multiplication by power of three
   ROL: -12, // ii0 rotate left
@@ -42,4 +42,15 @@ module.exports = {
   RD: 12, // 110 reverse diode             (tritwise i01 -> i00)
 
   uuu:13  // 111
+};
+
+const ADDR_MODE = {
+  ABSOLUTE: -1,
+  ACCUMULATOR: 0,
+  IMMEDIATE: 1
+};
+
+module.exports = {
+  OP,
+  ADDR_MODE
 };

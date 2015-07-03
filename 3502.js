@@ -61,6 +61,10 @@ const OP_uu6 = bts2n('11i');
 const OP_uu7 = bts2n('110');
 const OP_uu8 = bts2n('111');
 
+const ADDR_MODE_ABSOLUTE = -1;
+const ADDR_MODE_ACCUMULATOR = 0;
+const ADDR_MODE_IMMEDIATE = 1;
+
 function execute_alu_instruction(operation, addressing_mode) {
   console.log('alu',n2bts(operation), addressing_mode);
   // operation (aaa)
@@ -70,7 +74,7 @@ function execute_alu_instruction(operation, addressing_mode) {
 
   switch(addressing_mode) {
     // absolute, 2-tryte address
-    case -1:
+    case ADDR_MODE_ABSOLUTE:
       let absolute = memory[++pc];
       absolute += 3**TRITS_PER_TRYTE * memory[++pc];
 
@@ -83,7 +87,7 @@ function execute_alu_instruction(operation, addressing_mode) {
 
 
     // accumulator, register, no arguments
-    case 0:
+    case ADDR_MODE_ACCUMULATOR:
 
       read_arg = function() { return accum; };
       write_arg = function(x) { accum = x; };
@@ -93,7 +97,7 @@ function execute_alu_instruction(operation, addressing_mode) {
       break;
 
     // immediate, 1-tryte literal
-    case 1:
+    case ADDR_MODE_IMMEDIATE:
       let immediate = memory[++pc];
 
       console.log('immediate',immediate);

@@ -10,13 +10,13 @@ const MAX_TRYTE = +(3**TRITS_PER_TRYTE-1)/2;
 const MIN_TRYTE = -(3**TRITS_PER_TRYTE-1)/2;
 
 const MEMORY_SIZE = 3**(TRITS_PER_WORD);
-var memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
+let memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
 
-var pc = 0;
-var accum = 0;
-var index = 0;
-var flags = 0;
-var halt = false; // TODO: move to flags, halt
+let pc = 0;
+let accum = 0;
+let index = 0;
+let flags = 0;
+let halt = false; // TODO: move to flags, halt
 
 const OP_uuu = bts2n('iii');
 const OP_uu9 = bts2n('ii0');
@@ -66,18 +66,18 @@ function execute_alu_instruction(operation, addressing_mode) {
   // operation (aaa)
   // addressing mode
   
-  var read_arg, write_arg;
+  let read_arg, write_arg;
 
   switch(addressing_mode) {
     // absolute, 2-tryte address
     case -1:
-      var absolute = memory[++pc];
+      let absolute = memory[++pc];
       absolute += 3**TRITS_PER_TRYTE * memory[++pc];
 
       console.log('absolute',absolute);
 
-      var read_arg = function() { return memory[absolute]; };
-      var write_arg = function(x) { memory[absolute] = x; };
+      read_arg = function() { return memory[absolute]; };
+      write_arg = function(x) { memory[absolute] = x; };
 
       break;
 
@@ -85,8 +85,8 @@ function execute_alu_instruction(operation, addressing_mode) {
     // accumulator, register, no arguments
     case 0:
 
-      var read_arg = function() { return accum; };
-      var write_arg = function(x) { accum = x; };
+      read_arg = function() { return accum; };
+      write_arg = function(x) { accum = x; };
 
       console.log('accum');
 
@@ -94,12 +94,12 @@ function execute_alu_instruction(operation, addressing_mode) {
 
     // immediate, 1-tryte literal
     case 1:
-      var immediate = memory[++pc];
+      let immediate = memory[++pc];
 
       console.log('immediate',immediate);
 
-      var read_arg = function() { return immediate; };
-      var write_arg = function() { throw new Error('cannot write to immediate: '+immediate); };
+      read_arg = function() { return immediate; };
+      write_arg = function() { throw new Error('cannot write to immediate: '+immediate); };
 
       break;
 
@@ -157,7 +157,7 @@ function execute_misc_instruction(operation) {
 
 }
 
-var x=0;
+let x=0;
 memory[x++] = bts2n('10i10'); // operation 10i, addressing mode 1
 memory[x++] = bts2n('11001'); // flag 11, trit 0, compare 0
 memory[x++] = bts2n('00000'); // nop a
@@ -174,7 +174,7 @@ memory[x++] = bts2n('iiiii'); // iiiii abort
 console.log(bts2n('iiiii'));
 
 do {
-  var opcode = memory[pc];
+  let opcode = memory[pc];
   console.log('\npc=',pc,' opcode=',opcode);
 
   if (opcode === undefined) {
@@ -186,7 +186,7 @@ do {
     throw new Error('memory at pc='+pc+' value='+opcode+' out of 5-trit range');
   }
 
-  var family = get_trit(opcode, 0);
+  let family = get_trit(opcode, 0);
   //console.log('family',family,n2bts(opcode));
 
   // 5-trit trytes
@@ -196,18 +196,18 @@ do {
   // aaaai other instructions
 
   if (family === 0) {
-    var operation = slice_trits(opcode, 2, 5);
-    var addressing_mode = get_trit(opcode, 1);
+    let operation = slice_trits(opcode, 2, 5);
+    let addressing_mode = get_trit(opcode, 1);
 
     execute_alu_instruction(operation, addressing_mode);
   } else if (family === 1) {
-    var flag = slice_trits(opcode, 3, 5);
-    var compare = get_trit(opcode, 2);
-    var direction = get_trit(opcode, 3);
+    let flag = slice_trits(opcode, 3, 5);
+    let compare = get_trit(opcode, 2);
+    let direction = get_trit(opcode, 3);
 
     execute_branch_instruction(flag, compare, direction);
   } else if (family === -1) {
-    var operation = slice_trits(opcode, 1, 5);
+    let operation = slice_trits(opcode, 1, 5);
 
     execute_misc_instruction(operation);
   }

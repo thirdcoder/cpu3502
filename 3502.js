@@ -83,14 +83,14 @@ class CPU {
     // direction (c)
     // i less than (flag < trit)
     // 0 equal (flag = trit)
-    // 1 greater than (flag > trit)
+    // 1 not equal (flag != trit)
     let branch_taken = false;
     if (direction < 0) {
       branch_taken = flag_value < compare;
     } else if (direction === 0) {
       branch_taken = flag_value === compare;
     } else if (direction > 0) {
-      branch_taken = flag_value > compare;
+      branch_taken = flag_value !== compare;
     }
 
     console.log('flag',flag_value,branch_taken,rel_address);

@@ -64,7 +64,7 @@ function decode_next_instruction(cpu) {
   // 5-trit trytes
   // 43210
   // aaab0 aa=operation, b=addressing mode
-  // aabc1 aa=flag, b=compare with trit branch if c(i<, 0=, 1>)
+  // aabc1 aa=flag, b=compare with trit branch if c(i<, 0=, 1!=)
   // aaaai other instructions
 
   if (family === 0) {

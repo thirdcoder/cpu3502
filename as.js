@@ -126,7 +126,7 @@ for (var line of lines) {
   } else if (opcode.charAt(0) === 'B') {
     // TODO: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
     if (opcode === 'BEQ') opcode = 'BRSEZ'; // branch if equal = branch if sign equal to zero
-    //if (opcode === 'BNE') opcode = 'BRSNZ'; // TODO: not equal?? have >, <, =, but what about !=? (which is < or >). maybe change.. =, !=, something else(? <?)
+    if (opcode === 'BNE') opcode = 'BRSNZ'; // branch if not equal = branch if sign not equal to zero
 
     if (opcode.charAt(1) === 'R' && opcode.length === 5) {
       var flag = opcode.charAt(2);
@@ -137,7 +137,11 @@ for (var line of lines) {
       if (flag_value === undefined) {
         throw new Error('invalid flag '+flag+' in branch instruction '+opcode);
       }
-      var direction_value = {L:-1, E:0, G:1}[direction];
+      var direction_value = {
+        L:-1, '<':-1,
+        E:0, '=':0,
+        N:1, '!':1
+      }[direction];
       if (direction_value === undefined) {
         throw new Error('invalid direction '+direction+' in branch instruction '+opcode);
       }

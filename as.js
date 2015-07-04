@@ -123,9 +123,38 @@ for (var line of lines) {
 
     var tryte = opcode_value * Math.pow(3,1) + (-1);
     emit(tryte);
-  } else {
-    // TODO: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsn brsz brsp
-    // aabc1 a=flag, b=trit for comparison, c=direction
+  } else if (opcode.charAt(0) === 'B') {
+    // TODO: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
+    if (opcode === 'BEQ') opcode = 'BRSEZ'; // branch if equal = branch if sign equal to zero
+    //if (opcode === 'BNE') opcode = 'BRSNZ'; // TODO: not equal?? have >, <, =, but what about !=? (which is < or >). maybe change.. =, !=, something else(? <?)
+
+    if (opcode.charAt(1) === 'R' && opcode.length === 5) {
+      var flag = opcode.charAt(2);
+      var direction = opcode.charAt(3);
+      var compare = opcode.charAt(4);
+
+      var flag_value = FLAGS[flag];
+      if (flag_value === undefined) {
+        throw new Error('invalid flag '+flag+' in branch instruction '+opcode);
+      }
+      var direction_value = {L:-1, E:0, G:1}[direction];
+      if (direction_value === undefined) {
+        throw new Error('invalid direction '+direction+' in branch instruction '+opcode);
+      }
+      var compare_value = {N:-1, Z:0, P:1}[compare];
+      if (compare_value === undefined) {
+        throw new Error('invalid comparison trit '+compare_value+' in branch instruction '+opcode);
+      }
+      console.log('branch',flag_value,direction_value,compare_value);
+
+      // aabc1 a=flag, b=trit for comparison, c=direction
+      var tryte = flag_value * Math.pow(3,3) +
+        compare_value * Math.pow(3,2) +
+        direction_value * Math.pow(3,1) +
+        1;
+      emit(tryte);
+      emit(operand);
+    }
   }
 }
 

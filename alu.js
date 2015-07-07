@@ -41,9 +41,17 @@ class ALU {
         console.log('memory[0]=',this.cpu.memory[0]);
         break;
 
+      case OP.STX:
+        write_arg(this.cpu.index);
+        break;
+
       case OP.LDA:
         this.cpu.accum = read_arg();
         console.log('load, accum=',this.cpu.accum);
+        break;
+
+      case OP.LDX:
+        this.cpu.index = read_arg();
         break;
     }
 

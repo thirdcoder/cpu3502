@@ -37,14 +37,12 @@ control
 011ii = 32 
 011i0 = 33 
 011i1 = 34 
-
-arithmetic
-0110i = 35 * asterisk
-01100 = 36 ÷ U+00F7 division
-01101 = 37 -+ minus/plus
-0111i = 38 ± U+00B1 plus/minu
-01110 = 39 - dash
-01111 = 40 + plus
+0110i = 35
+01100 = 36
+01101 = 37
+0111i = 38
+01110 = 39
+01111 = 40
 
 lowercase letters (1cxxxx = letters, where c=case, i=lower, 1=upper)
 1iiii = 41 ‾ U+203E overline
@@ -75,42 +73,33 @@ lowercase letters (1cxxxx = letters, where c=case, i=lower, 1=upper)
 1i110 = 66 y
 1i111 = 67 z
 
-punctuation
-10iii = 68 !
-10ii0 = 69 "
-10ii1 = 70 #
-10i0i = 71 $
-10i00 = 72 %
-10i01 = 73 &
-10i1i = 74 '
-
-grouping TODO: flip bit to invert, pairs, also <>, \/, '" maybe
-10i10 = 75 (
-10i11 = 76 )
-100ii = 77 [
-100i0 = 78 ]
-100i1 = 79 {
-1000i = 80 }
-
-10000 = 81 /
-10001 = 82 \
-1001i = 83 |
-
-10010 = 84 ^
-10011 = 85 ~
-101ii = 86 `
-101i0 = 87 :
-101i1 = 88 ;
-
-equality
-1010i = 89 <
-10100 = 90 =
-10101 = 91 >
-1011i = 92 ?
-
-email
-10110 = 93 @
-10111 = 94 .
+10iii = 68 
+10ii0 = 69 
+10ii1 = 70 
+10i0i = 71 
+10i00 = 72 
+10i01 = 73 
+10i1i = 74 
+10i10 = 75 
+10i11 = 76 
+100ii = 77 
+100i0 = 78 
+100i1 = 79 
+1000i = 80 
+10000 = 81 
+10001 = 82 
+1001i = 83 
+10010 = 84 
+10011 = 85 
+101ii = 86 
+101i0 = 87 
+101i1 = 88 
+1010i = 89 
+10100 = 90 
+10101 = 91 
+1011i = 92 
+10110 = 93 
+10111 = 94 
 
 uppercase letters - toggle 2nd mst i=lowercase,1=uppercase (includes _ and ‾, allow in program identifiers)
 11iii = 95   _ underline

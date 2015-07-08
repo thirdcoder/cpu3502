@@ -21,7 +21,6 @@ class CPU {
     this.flags = 0;
 
     var lines = [
-      'NTI #%11001',
       'NOP A',
       'NOP #-121',
       'NOP 29524',
@@ -31,6 +30,10 @@ class CPU {
       'HALT_P',
       'LDA #42',
       'STA 0',
+
+      'LDA #%00i01',
+      'PTI A',
+
       'HALT_Z'
       /*
 

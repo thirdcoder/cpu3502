@@ -4,6 +4,7 @@ const {get_trit, set_trit, slice_trits} = require('trit-getset');
 const {OP, FLAGS} = require('./opcodes');
 const {bts2n, n2bts} = require('balanced-ternary');
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
+const {NTI, STI, PTI, FD, RD, TOR, TAND, BUT} = require('tritwise');
 
 class ALU {
   constructor(cpu) {
@@ -53,9 +54,17 @@ class ALU {
       case OP.LDX:
         this.cpu.index = read_arg();
         break;
+
+
+      case OP.NTI: write_arg(NTI(read_arg())); break;
+      case OP.STI: write_arg(STI(read_arg())); break;
+      case OP.PTI: write_arg(PTI(read_arg())); break;
+      case OP.FD:  write_arg( FD(read_arg())); break;
+      case OP.RD:  write_arg( RD(read_arg())); break;
     }
 
     this.update_flags_from_accum();
+    console.log('A=',n2bts(this.cpu.accum));
   }
 }
 

@@ -1,20 +1,23 @@
 5-trit text format, analogous to 7-bit ASCII
 
-control
-00000 = 0 NUL   null
-00001 = 1 SP    space
-0001i = 2 NL    newline, \n, linefeed
-00010 = 3
-00011 = 4
-001ii = 5
-001i0 = 6
-001i1 = 7
-0010i = 8
-00100 = 9
-00101 = 10
-0011i = 11
-00110 = 12
-00111 = 13
++1 to +121 normal text, black on white
+-1 to -121 inverted, reverse video white on black
+
+control/digits
+00000 = 0       NUL   null, string terminator, only unbalanced; in serial mode zero-width, matrix mode alternating flashing normal/inverted
+00001 = 1       1
+0001i = 2       2
+00010 = 3       3
+00011 = 4       4
+001ii = 5       5
+001i0 = 6       6
+001i1 = 7       7
+0010i = 8       8
+00100 = 9       9
+00101 = 10      0
+0011i = 11      ESC escape/reserved code
+00110 = 12      NL  newline, \n, linefeed
+00111 = 13      SP  space
 
 left punctuation (01xxx=left, pairs with 10xxx=right, and control(1i)=01, shift-control(11)=10)
 01iii = 14  @
@@ -84,7 +87,7 @@ right punctuation
 10i1i = 74  ♀ U+2640 female
 10i10 = 75  ☂ U+2602 umbrella
 10i11 = 76  → U+2192 right arrow
-100ii = 77  ↓ U+2193 downa rrow
+100ii = 77  ↓ U+2193 down arrow
 100i0 = 78  ► U+25BA right triangle
 100i1 = 79  ▼ U+25BC down triangle
 1000i = 80  )                                              

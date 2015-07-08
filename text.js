@@ -7,9 +7,9 @@
 -1 to -121 inverted, reverse video white on black
 */
 
-var n2unicode =  [
+var _chars =  [
 // control/digits
-/* 00000 = 0 */  '', // NUL   null, string terminator, only unbalanced; in serial mode zero-width, matrix mode alternating flashing normal/inverted
+/* 00000 = 0 */  '\0', // NUL   null, string terminator, only unbalanced; in serial mode zero-width, matrix mode alternating flashing normal/inverted
 /* 00001 = 1 */  '1',
 /* 0001i = 2 */  '2',
 /* 00010 = 3 */  '3',
@@ -141,4 +141,24 @@ var n2unicode =  [
 /* 11111 = 121 */ 'Z',
 ];
 
-module.exports = n2unicode; // TODO: both ways
+function toUnicode(n) {
+  return _chars[Math.abs(n)];
+}
+
+function isInverted(n) {
+  return n < 0;
+}
+
+function fromUnicode(c, inverted) {
+  var n = _chars.indexOf(c);
+  if (n === -1) return null; // TODO: extended escape for full Unicode support?
+  if (inverted) n = -n;
+
+  return n;
+}
+
+module.exports = {
+  toUnicode: toUnicode,
+  isInverted: isInverted,
+  fromUnicode: fromUnicode,
+};

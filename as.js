@@ -2,7 +2,7 @@
 
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
-const {nonary2bts} = require('./nonary');
+const {nonary2bts} = require('nonary');
 const {get_trit, slice_trits} = require('trit-getset');
 
 // assembler

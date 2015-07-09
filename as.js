@@ -47,22 +47,26 @@ function assemble(lines) {
         }
 
         switch(operand.charAt(0)) {
-          case '%': // base 3, trits
+          case '%': // base 3, trits (%iiiii to %11111)
             operand = bts2n(operand.substring(1));
             break;
-          case '$': // base 9, nonary
+          case '$': // base 9, nonary ($imm to $144)
             operand = bts2n(nonary2bts(operand.substring(1)));
             break;
-          case '&': // base 27, septemvigesimal
+          case '&': // base 27, septemvigesimal (&QZ to &DM)
             operand = bts2n(sv2bts(operand.substring(1)));
-            if (operand < -121 || operand > 121) { // %0iiiii to %011111, &QZ to &DM
-              throw new Error('septemvigesimal operand out of 5-trit range: '+operand);
-            }
             break;
 
           default:
             operand = Number.parseInt(operand, 10);
         }
+
+        if (addressing_mode === ADDR_MODE.IMMEDIATE) {
+          if (operand < -121 || operand > 121) {
+            throw new Error('immediate operand out of 5-trit range: '+operand+', in line: '+line);
+          }
+        }
+        // TODO: range check absolute
       }
     }
 

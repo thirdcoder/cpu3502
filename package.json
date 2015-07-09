@@ -22,6 +22,7 @@
   "dependencies": {
     "balanced-ternary": "*",
     "trit-getset": "*",
+    "trit-text": "*",
     "tritwise": "*"
   },
   "devDependencies": {

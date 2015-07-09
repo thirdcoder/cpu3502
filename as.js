@@ -2,6 +2,7 @@
 
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
+const {nonary2bts} = require('./nonary');
 const {get_trit, slice_trits} = require('trit-getset');
 
 // assembler
@@ -48,7 +49,9 @@ function assemble(lines) {
           case '%': // base 3, trits
             operand = bts2n(operand.substring(1));
             break;
-          case '$': // TODO: base 9
+          case '$': // base 9, nonary
+            operand = bts2n(nonary2bts(operand.substring(1)));
+            break;
           case '&': // TODO: base 27
           default:
             operand = Number.parseInt(operand, 10);

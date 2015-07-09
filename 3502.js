@@ -21,6 +21,8 @@ class CPU {
     this.flags = 0;
 
     var lines = [
+      'LDA #$ijk',
+      'LDA #%ii1i0',
       'NOP A',
       'NOP #-121',
       'NOP 29524',

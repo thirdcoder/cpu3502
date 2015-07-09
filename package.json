@@ -19,7 +19,11 @@
   "scripts": {
     "start": "babel-node 3502.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "balanced-ternary": "*",
+    "trit-getset": "*",
+    "tritwise": "*"
+  },
   "devDependencies": {
     "babel": "^5.6.14"
   }

@@ -24,6 +24,7 @@
     "trit-getset": "*",
     "trit-text": "*",
     "nonary": "*",
+    "base27": "*",
     "tritwise": "*"
   },
   "devDependencies": {

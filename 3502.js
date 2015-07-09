@@ -23,6 +23,7 @@ class CPU {
     var lines = [
       'LDA #$ijk',
       'LDA #%ii1i0',
+      'LDA #&QF',
       'NOP A',
       'NOP #-121',
       'NOP 29524',

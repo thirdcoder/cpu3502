@@ -65,8 +65,14 @@ function assemble(lines) {
           if (operand < -121 || operand > 121) {
             throw new Error('immediate operand out of 5-trit range: '+operand+', in line: '+line);
           }
+        } else if (addressing_mode === ADDR_MODE.ABSOLUTE) {
+          // %iiiiiiiiii to %1111111111
+          // $mmmmm to $44444
+          // &NZZZ to &AMMM
+          if (operand < -29524 || operand > 29524) {
+            throw new Error('absolute operand out of 10-trit range: '+operand+', in line: '+line);
+          }
         }
-        // TODO: range check absolute
       }
     }
 

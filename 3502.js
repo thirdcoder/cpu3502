@@ -19,6 +19,7 @@ class CPU {
     this.pc = 0;
     this.accum = 0;
     this.index = 0;
+    this.stackptr = 0;
     this.flags = 0;
 
     var lines = [
@@ -28,6 +29,7 @@ class CPU {
       'NOP A',
       'NOP #-121',
       'NOP 29524',
+      'LDA #0',
       'BNE -1',
       'BEQ +2',
       'HALT_N',
@@ -37,6 +39,8 @@ class CPU {
 
       'LDA #%00i01',
       'PTI A',
+
+      'TAX',
 
       'HALT_Z'
       /*

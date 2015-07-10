@@ -64,6 +64,12 @@ const FLAGS = {
 };
 
 const XOP = {
+
+  TAX: 1,       // 0001 transfer accumulator to index
+  TSX: 2,       // 001i transfer stack pointer to index
+  TXA: 3,       // 0010 transfer index to accumulator
+  TXS: 4,       // 0011 transfer index to stack pointer
+
   HALT_P: -38,  // iii1 halt positive
   HALT_Z: -39,  // iii0 halt zero
   HALT_N: -40,  // iiii halt negative

@@ -11,7 +11,7 @@ class ALU {
     this.cpu = cpu;
   }
 
-  update_flags_from_accum() {
+  update_flags_from_accum() { // TODO: genericize to update flags from argument (for index,etc. vs accum)
     this.cpu.set_flag(FLAGS.L, get_trit(this.cpu.accum, 0)); // L = least significant trit of A
 
     // set to most significant nonzero trit, or zero (TODO: optimize? since packed can really just check <0, >0,==0)

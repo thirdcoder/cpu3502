@@ -22,7 +22,7 @@ class ALU {
     }
     this.cpu.set_flag(FLAGS.S, sign);
 
-    console.log('flags:','FHRVS_CPL');
+    console.log('flags:','FHRVSDCPL');
     console.log('flags:',n2bts(this.cpu.flags));
   }
 

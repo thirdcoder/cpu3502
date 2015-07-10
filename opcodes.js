@@ -55,7 +55,7 @@ const FLAGS = {
   L: -4, // -4 ii L least significant trit of A (if 0, divisible by 3)
   P: -3, // -3 i0 P parity, sum of all trits in A
   C: -2, // -2 i1 C carry
-  _: -1, // -1 0i _
+  D: -1, // -1 0i D dead zero
   S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)
   V:  1, // +1 01 V overflow/underflow
   R:  2, // +2 1i R running, 1 when executing forward, i backwards, 0 halted

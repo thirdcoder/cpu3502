@@ -9,6 +9,7 @@ const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 
 const decode_next_instruction = require('./instr_decode');
 const ALU = require('./alu');
+const execute_xop_instruction = require('./xop');
 
 const assembler = require('./as');
 
@@ -134,24 +135,8 @@ class CPU {
     }
   }
 
-  execute_misc_instruction(operation) {
-    console.log('misc', operation);
-
-    switch(operation) {
-      // halts - set H to halt code, set R to 0 to stop running
-      case XOP.HALT_N:
-        this.set_flag(FLAGS.H, -1);
-        this.set_flag(FLAGS.R, 0);
-        break;
-      case XOP.HALT_Z:
-        this.set_flag(FLAGS.H, 0);
-        this.set_flag(FLAGS.R, 0);
-        break;
-      case XOP.HALT_P:
-        this.set_flag(FLAGS.H, 1);
-        this.set_flag(FLAGS.R, 0);
-        break;
-    }
+  execute_xop_instruction(operation) {
+    execute_xop_instruction(this, operation);
   }
 
   advance_memory() {

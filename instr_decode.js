@@ -85,7 +85,7 @@ function decode_next_instruction(cpu) {
   } else if (family === -1) {
     const operation = slice_trits(opcode, 1, 5);
 
-    cpu.execute_misc_instruction(operation);
+    cpu.execute_xop_instruction(operation);
   }
 };
 

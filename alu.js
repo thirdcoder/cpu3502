@@ -11,13 +11,13 @@ class ALU {
     this.cpu = cpu;
   }
 
-  update_flags_from_accum() { // TODO: genericize to update flags from argument (for index,etc. vs accum)
-    this.cpu.set_flag(FLAGS.L, get_trit(this.cpu.accum, 0)); // L = least significant trit of A
+  update_flags_from(value) {
+    this.cpu.set_flag(FLAGS.L, get_trit(value, 0)); // L = least significant trit of A
 
     // set to most significant nonzero trit, or zero (TODO: optimize? since packed can really just check <0, >0,==0)
     var sign = 0;
     for (var i = TRITS_PER_TRYTE; i; --i) {
-      sign = get_trit(this.cpu.accum, i);
+      sign = get_trit(value, i);
       if (sign !== 0) break;
     }
     this.cpu.set_flag(FLAGS.S, sign);
@@ -63,7 +63,7 @@ class ALU {
       case OP.RD:  write_arg( RD(read_arg())); break;
     }
 
-    this.update_flags_from_accum();
+    this.update_flags_from(this.accum);
     console.log('A=',n2bts(this.cpu.accum));
   }
 }

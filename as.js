@@ -1,6 +1,6 @@
 'use strict';
 
-const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
@@ -106,8 +106,8 @@ function assemble(lines) {
       emit(tryte);
     } else if (opcode.charAt(0) === 'B') {
       // TODO: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
-      if (opcode === 'BEQ') opcode = 'BRSEZ'; // branch if equal = branch if sign equal to zero
-      if (opcode === 'BNE') opcode = 'BRSNZ'; // branch if not equal = branch if sign not equal to zero
+      // convenience aliases
+      if (BRANCH_INSTRUCTION_ALIASES[opcode]) opcode = BRANCH_INSTRUCTION_ALIASES[opcode];
 
       if (opcode.charAt(1) === 'R' && opcode.length === 5) {
         var flag = opcode.charAt(2);

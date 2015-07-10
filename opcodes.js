@@ -57,10 +57,23 @@ const FLAGS = {
   C: -2, // -2 i1 C carry
   _: -1, // -1 0i _
   S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)
-  O:  1, // +1 01 O overflow/underflow
+  V:  1, // +1 01 V overflow/underflow
   R:  2, // +2 1i R running, 1 when executing forward, i backwards, 0 halted
   H:  3, // +3 10 H halt code
   F:  4, // +4 11 F fixed to -1
+};
+
+const BRANCH_INSTRUCTION_ALIASES = {
+  // generic branch instruction format is BR<flag><operation><compare-trit>
+  //  flag: code from FLAGS
+  //  operation: L=less than, E=equal, N=not equal
+  //  compare-trit: N=-1, Z=0, P=1
+  BEQ: 'BRSEZ', // branch if equal = branch if sign equal to zero
+  BNE: 'BRSNZ', // branch if not equal = branch if sign not equal to zero
+  BMI: 'BRSEN', // branch if minus = branch if sign equal to negative
+  BPL: 'BRSEP', // branch if positive = branch if sign equal to positive
+  BVC: 'BRVEZ', // branch if overflow clear = branch if overflow equal to zero
+  BVS: 'BRVNZ', // branch if overflow set = branch if overflow nonzero
 };
 
 const XOP = {
@@ -79,5 +92,6 @@ module.exports = {
   OP,
   ADDR_MODE,
   FLAGS,
+  BRANCH_INSTRUCTION_ALIASES,
   XOP
 };

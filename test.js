@@ -128,14 +128,27 @@ test('assemble/disassemble roundtrip', (t) => {
   t.end();
 });
 
-test('assembler directives', (t) => {
+test('assembler directive .equ absolute', (t) => {
   const machine_code = assembler([
     '.equ -29524 foo',
     'STA foo',
     ]);
 
-  t.equal(machine_code[1], -121);
-  t.equal(machine_code[2], -121);
+  t.equal(machine_code[0], 33);   // STA absolute
+  t.equal(machine_code[1], -121); // absolute address
+  t.equal(machine_code[2], -121); // absolute address
+
+  t.end();
+});
+
+test('assembler directive .equ immediate', (t) => {
+  const machine_code = assembler([
+    '.equ -100 foo',
+    'STA #foo'
+    ]);
+
+  t.equal(machine_code[0], 39);   // STA immediate
+  t.equal(machine_code[1], -100); // immediate value
 
   t.end();
 });

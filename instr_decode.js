@@ -45,7 +45,7 @@ function read_alu_operand(cpu, addressing_mode) {
   return [read_arg, write_arg];
 }
 
-function decode_next_instruction(cpu) {
+function execute_next_instruction(cpu) {
   const opcode = cpu.memory[cpu.pc];
   console.log('\npc=',cpu.pc,' opcode=',opcode);
 
@@ -89,4 +89,4 @@ function decode_next_instruction(cpu) {
   }
 };
 
-module.exports = decode_next_instruction;
+module.exports = execute_next_instruction;

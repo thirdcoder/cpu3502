@@ -2,6 +2,7 @@
 
 const test = require('tape');
 const CPU = require('./3502');
+const Memory = require('./memory');
 const assembler = require('./as');
 const {decode_instruction, disasm1, disasm} = require('./instr_decode');
 const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcodes');
@@ -16,14 +17,25 @@ test('halts', (t) => {
 
 test('branch instruction decoding', (t) => {
 
-  let machine_code = assembler(['BRSNZ +121']);
+  const machine_code = assembler(['BRSNZ +121']);
 
-  let di = decode_instruction(machine_code[0]);
+  const di = decode_instruction(machine_code[0]);
 
   console.log(di);
   t.equal(di.flag, FLAGS.S);  // sign (S)
   t.equal(di.direction, 1);   // not equal (N)
   t.equal(di.compare, 0);     // zero (Z)
+  t.end();
+});
+
+test('memory', (t) => {
+  const memory = Memory();
+
+  t.equal(memory.read(0), 0); // 0 initialized
+
+  memory.write(0, 42);
+  t.equal(memory.read(0), 42);
+
   t.end();
 });
 
@@ -46,15 +58,15 @@ test('assemble/disassemble roundtrip', (t) => {
       'TAX',
       'HALT_Z'];
 
-  let machine_code = assembler(lines); 
+  const machine_code = assembler(lines); 
 
-  let dis = disasm(machine_code);
+  const dis = disasm(machine_code);
 
   console.log(dis);
 
   for (let i = 0; i < lines.length; ++i) {
-    let before = lines[i];
-    let after = dis[i];
+    const before = lines[i];
+    const after = dis[i];
 
     t.equal(before, after);
   }
@@ -118,7 +130,7 @@ test('execute', (t) => {
         this.memory[x++] = bts2n('iii0i'); // iiiii halt 0
     */
 
-  let machine_code = assembler(lines);
+  const machine_code = assembler(lines);
   cpu.writeTrytes(0, machine_code);
   cpu.run();
 

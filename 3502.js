@@ -88,10 +88,6 @@ class CPU {
     execute_xop_instruction(this, operation);
   }
 
-  advance_memory() {
-    return this.memory[this.pc += this.get_flag(FLAGS.R)];
-  }
-
   read_memory(address) {
     return this.memory[address];
   }
@@ -154,7 +150,7 @@ class CPU {
 
       this.execute_alu_instruction(di.operation, read_arg, write_arg);
     } else if (di.family === 1) {
-      const rel_address = this.advance_memory();
+      const rel_address = this.read_memory(this.pc += this.get_flag(FLAGS.R));
 
       this.execute_branch_instruction(di.flag, di.compare, di.direction, rel_address);
     } else if (di.family === -1) {

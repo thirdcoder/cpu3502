@@ -25,7 +25,8 @@ test('disasm', (t) => {
   t.equal(di.direction, 1);   // not equal (N)
   t.equal(di.compare, 0);     // zero (Z)
 
-  let asm = disasm(di);
+
+  let asm = disasm(machine_code);
 
   t.equal(asm, 'BRSNZ'); // TODO: opcode
 

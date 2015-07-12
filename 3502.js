@@ -146,7 +146,7 @@ class CPU {
     }
 
     const di = decode_instruction(opcode);
-    console.log('DISASM:',di,'=',disasm(di));
+    //console.log('DISASM:',di,'=',disasm([opcode]));
 
     if (di.family === 0) {
       let read_arg, write_arg;

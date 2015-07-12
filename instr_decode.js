@@ -35,7 +35,10 @@ function decode_instruction(opcode) {
   throw new Error('unable to decode instruction: '+op);
 };
 
-function disasm(di) {
+// Disassemble one instruction in machine_code
+function disasm(machine_code) {
+  let di = decode_instruction(machine_code[0]);
+
   let name;
 
   if (di.family === 0) {

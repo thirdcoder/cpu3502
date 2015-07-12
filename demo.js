@@ -25,12 +25,10 @@ const memory = Memory({
       start: VIDEO_ADDRESS_OFFSET,                      // -3280      00iii iiiii
       end: VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET,   // 29524, end 11111 11111
     },
-      /* TODO
-    input: {
-      start: -3,
-      end: -1,
+    chargen: {
+      start: -3281, // 0i111 11111,
+      end: -3281,
     },
-    */
   }
 });
 
@@ -48,6 +46,10 @@ memory.map.video.write = (address, value) => {
   term.tc.refresh();
 };
 
+memory.map.chargen.write = (address, value) => {
+  term.writeUChar(value);
+  // TODO: write to row,col from another memory address value (no trap needed). -3282, -3283? - for cursor
+};
 
 const cpu = CPU({
   memory: memory
@@ -75,6 +77,8 @@ var lines = [
     'PTI A',
 
     'TAX',
+
+    'STA -3281',
 
     'HALT_Z'
   ];

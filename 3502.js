@@ -14,8 +14,10 @@ const execute_xop_instruction = require('./xop');
 
 class CPU {
   constructor(opts={}) {
-    this.memory = Memory({tryteCount: MEMORY_SIZE});
-    this.memoryMap = opts.memoryMap || {}; // TODO: move to memory
+    this.memory = Memory({
+      tryteCount: MEMORY_SIZE,
+      map: opts.memoryMap || {}
+    });
     this.pc = 0;
     this.accum = 0;
     this.index = 0;

@@ -17,7 +17,7 @@ global.cpu = cpu;
 
 const term = Triterm({
   addressTryteSize: VIDEO_TRYTE_ADDRESS_SIZE,
-  tritmap: cpu.memory.subarray(cpu.memoryMap.video.start, cpu.memoryMap.video.end)
+  tritmap: cpu.memory.array.subarray(cpu.memory.map.video.start, cpu.memory.map.video.end)
 });
 
 const assembler = require('./as');
@@ -45,7 +45,7 @@ var lines = [
     'HALT_Z'
   ];
 
-cpu.writeTrytes(0, assembler(lines));
+cpu.memory.writeArray(0, assembler(lines));
 
 term.tc.refresh();
 

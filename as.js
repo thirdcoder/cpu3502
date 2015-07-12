@@ -27,7 +27,7 @@ function assemble(lines) {
     output.push(tryte);
   }
 
-  let symbols = {};
+  let symbols = new Map();
 
 
   for (let line of lines) {
@@ -66,9 +66,15 @@ function assemble(lines) {
           // TODO: ' for trit-text characters
 
           default:
-            operand = Number.parseInt(operand, 10);
-            if (Number.isNaN(operand)) {
-              throw new Error('invalid non-numeric operand: '+operand+', in line: '+line);
+            if (operand.match(/^[-+]?[0-9]+$/)) {
+              // decimal
+              operand = Number.parseInt(operand, 10);
+            } else {
+              if (symbols.has(operand)) {
+                operand = symbols.get(operand);
+              } else {
+                throw new Error('undefined symbol reference: '+operand+', in line: '+line);
+              }
             }
         }
 
@@ -91,7 +97,21 @@ function assemble(lines) {
 
     if (opcode.charAt(0) === '.') {
       // assembler directives
-      // TODO
+      opcode = opcode.substring(1);
+
+      if (opcode === 'equ') {
+        let name = tokens[2];
+        if (name === undefined) {
+          throw new Error('.equ directive requires name, in line: '+line);
+        }
+
+        if (symbols.has(name)) {
+          throw new Error('symbol redefinition: '+name+', in line: '+line);
+        }
+
+        symbols.set(name, operand);
+        console.log(`assigned symbol ${name} to ${operand}`);
+      }
     } else if (OP[opcode] !== undefined) {
       // alu
       let opcode_value = OP[opcode]; // aaab0 3-trits

@@ -91,6 +91,14 @@ class CPU {
     return this.memory[this.pc += this.get_flag(FLAGS.R)];
   }
 
+  read_memory(address) {
+    return this.memory[address];
+  }
+
+  write_memory(address, value) {
+    this.memory[address] = value;
+  }
+
   // Read instruction operand from decoded instruction, return read/write accessors
   read_alu_operand(di) {
     let read_arg, write_arg;
@@ -103,8 +111,8 @@ class CPU {
       // absolute, 2-tryte address
       console.log('absolute',decoded_operand.absolute);
 
-      read_arg = () => { return this.memory[decoded_operand.absolute]; };
-      write_arg = (x) => { this.memory[decoded_operand.absolute] = x; };
+      read_arg = () => { return this.read_memory(decoded_operand.absolute); };
+      write_arg = (x) => { this.write_memory(decoded_operand.absolute, x); };
 
     } else if ('accumulator' in decoded_operand) {
       // accumulator, register, no arguments

@@ -5,6 +5,13 @@ class Memory {
   constructor(opts={}) {
     this.tryteCount = opts.tryteCount;
     if (this.tryteCount === undefined) throw new Error('memory reqires tryteCount option');
+
+    // Addresses are balanced ± TODO
+    if (!Number.isInteger((this.tryteCount - 1) / 2)) throw new Error('memory (tryteCount-1)/2 must be integral: '+tryteCount);
+    this.maxAddress = (this.tryteCount - 1) / 2;
+    this.midAddress = 0;
+    this.minAddress = -this.maxAddress;
+
     this.arrayType = Int8Array; // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
     this._array = opts._array || new this.arrayType(new ArrayBuffer(this.tryteCount));
     this.map = opts.map || {};

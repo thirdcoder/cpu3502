@@ -115,7 +115,7 @@ function assemble(lines) {
       // convenience aliases
       if (BRANCH_INSTRUCTION_ALIASES[opcode]) opcode = BRANCH_INSTRUCTION_ALIASES[opcode];
 
-      if (opcode.charAt(1) === 'R' && opcode.length === 5) {
+      if (opcode.charAt(1) === 'R' && opcode.length === 5) { // BR opcodes
         var flag = opcode.charAt(2);
         var direction = opcode.charAt(3);
         var compare = opcode.charAt(4);
@@ -136,12 +136,12 @@ function assemble(lines) {
         if (compare_value === undefined) {
           throw new Error('invalid comparison trit '+compare_value+' in branch instruction '+opcode);
         }
-        console.log('branch',flag_value,direction_value,compare_value);
+        console.log(`branch opcode=${opcode}, flag=${flag_value}/${flag}, direction=${direction_value}/${direction} compare=${compare_value}/${compare}`);;
 
-        // aabc1 a=flag, b=trit for comparison, c=direction
+        // aabc1 a=flag, b=direction, c=trit for comparison
         var tryte = flag_value * Math.pow(3,3) +
-          compare_value * Math.pow(3,2) +
-          direction_value * Math.pow(3,1) +
+          direction_value * Math.pow(3,2) +
+          compare_value * Math.pow(3,1) +
           1;
         emit(tryte);
         emit(operand);

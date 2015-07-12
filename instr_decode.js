@@ -12,7 +12,7 @@ function decode_instruction(opcode) {
   // 5-trit trytes
   // 43210
   // aaab0 aa=operation, b=addressing mode
-  // aabc1 aa=flag, b=compare with trit branch if c(i<, 0=, 1!=)
+  // aabc1 aa=flag, b=direction(i<, 0=,1!=), c=trit to compare with
   // aaaai other instructions
 
   if (family === 0) {
@@ -22,8 +22,8 @@ function decode_instruction(opcode) {
     return {family, operation, addressing_mode};
   } else if (family === 1) {
     const flag = slice_trits(opcode, 3, 5);
-    const compare = get_trit(opcode, 1);
     const direction = get_trit(opcode, 2);
+    const compare = get_trit(opcode, 1);
 
     return {family, flag, compare, direction};
   } else if (family === -1) {

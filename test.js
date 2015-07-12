@@ -4,6 +4,7 @@ const test = require('tape');
 const CPU = require('./3502');
 const assembler = require('./as');
 const {decode_instruction, disasm} = require('./instr_decode');
+const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcodes');
 
 test('halts', (t) => {
   const cpu = CPU();
@@ -15,12 +16,18 @@ test('halts', (t) => {
 
 test('disasm', (t) => {
 
-  let machine_code = assembler(['BRSEZ +121']);
+  let machine_code = assembler(['BRSNZ +121']);
 
   let di = decode_instruction(machine_code[0]);
+
+  console.log(di);
+  t.equal(di.flag, FLAGS.S);  // sign (S)
+  t.equal(di.direction, 1);   // not equal (N)
+  t.equal(di.compare, 0);     // zero (Z)
+
   let asm = disasm(di);
 
-  t.equal(asm, 'BRSEZ'); // TODO: opcode
+  t.equal(asm, 'BRSNZ'); // TODO: opcode
 
   t.end();
 });

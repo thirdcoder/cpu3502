@@ -15,19 +15,19 @@ const Memory = require('./memory');
 const MAX_ADDRESS = (3**TRITS_PER_WORD - 1) / 2;
 const MIN_ADDRESS = -MAX_ADDRESS;
 
-const VIDEO_ADDRESS_OFFSET = MAX_ADDRESS - VIDEO_ADDRESS_SIZE; // -3280,
+const VIDEO_ADDRESS_OFFSET = MAX_ADDRESS - VIDEO_ADDRESS_SIZE; // -3281
 if (VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET !== MAX_ADDRESS) throw new Error('wrong video address size');
 
 const memory = Memory({
   tryteCount: MEMORY_SIZE,
   map: {
     video: {
-      start: VIDEO_ADDRESS_OFFSET,                      // -3280      00iii iiiii
+      start: VIDEO_ADDRESS_OFFSET,                      // -3281      0i111 11111
       end: VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET,   // 29524, end 11111 11111
     },
     chargen: {
-      start: -3281, // 0i111 11111,
-      end: -3281,
+      start: -3282, // 0i111 11110
+      end: -3282,
     },
   }
 });
@@ -47,7 +47,9 @@ memory.map.video.write = (address, value) => {
 };
 
 memory.map.chargen.write = (address, value) => {
-  term.writeUChar(value);
+  console.log('chargen',value);
+  term.writeTTChar(value);
+  //term.tc.refresh(); // hmm
   // TODO: write to row,col from another memory address value (no trap needed). -3282, -3283? - for cursor
 };
 
@@ -78,7 +80,13 @@ var lines = [
 
     'TAX',
 
-    'STA -3281',
+    'LDA #%11111',
+    'STA -3000',
+
+    // write characters in accumulator
+    'STA -3282',
+    'STA -3282',
+    'STA -3282',
 
     'HALT_Z'
   ];

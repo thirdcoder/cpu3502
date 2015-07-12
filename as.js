@@ -20,18 +20,21 @@ const {get_trit, slice_trits} = require('trit-getset');
 
 function assemble(lines) {
   // TODO: port to run on cpu (self-hosting)
-  var output = [];
+  let output = [];
 
-  var emit = function(tryte) {
+  let emit = function(tryte) {
     console.log('emit',n2bts(tryte));
     output.push(tryte);
   }
 
+  let symbols = {};
 
-  for (var line of lines) {
-    var tokens = line.split(/\s+/);
-    var opcode = tokens[0];
-    var operand = tokens[1];
+
+  for (let line of lines) {
+    let tokens = line.split(/\s+/);
+    let opcode = tokens[0];
+    let operand = tokens[1];
+    let addressing_mode;
 
     // TODO: comments, ; to end-of-line
     // TODO: labels, foo:, and resolving to 10-trit
@@ -39,7 +42,6 @@ function assemble(lines) {
     // TODO: .org, start assembly
 
     if (operand !== undefined) {
-      var addressing_mode;
 
       if (operand === 'A') {
         addressing_mode = ADDR_MODE.ACCUMULATOR;
@@ -82,13 +84,13 @@ function assemble(lines) {
       }
     }
 
-    console.log(tokens,opcode_value,operand);
+    console.log(tokens,operand);
 
     if (OP[opcode] !== undefined) {
       // alu
-      var opcode_value = OP[opcode]; // aaab0 3-trits
+      let opcode_value = OP[opcode]; // aaab0 3-trits
 
-      var tryte = opcode_value * Math.pow(3,2) +
+      let tryte = opcode_value * Math.pow(3,2) +
         addressing_mode * Math.pow(3,1) +
         0;
 
@@ -106,9 +108,9 @@ function assemble(lines) {
           break;
       }
     } else if (XOP[opcode] !== undefined) {
-      var opcode_value = XOP[opcode]; // aaaai 4-trits
+      let opcode_value = XOP[opcode]; // aaaai 4-trits
 
-      var tryte = opcode_value * Math.pow(3,1) + (-1);
+      let tryte = opcode_value * Math.pow(3,1) + (-1);
       emit(tryte);
     } else if (opcode.charAt(0) === 'B') {
       // TODO: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
@@ -116,15 +118,15 @@ function assemble(lines) {
       if (BRANCH_INSTRUCTION_ALIASES[opcode]) opcode = BRANCH_INSTRUCTION_ALIASES[opcode];
 
       if (opcode.charAt(1) === 'R' && opcode.length === 5) { // BR opcodes
-        var flag = opcode.charAt(2);
-        var direction = opcode.charAt(3);
-        var compare = opcode.charAt(4);
+        let flag = opcode.charAt(2);
+        let direction = opcode.charAt(3);
+        let compare = opcode.charAt(4);
 
-        var flag_value = FLAGS[flag];
+        let flag_value = FLAGS[flag];
         if (flag_value === undefined) {
           throw new Error('invalid flag '+flag+' in branch instruction '+opcode);
         }
-        var direction_value = {
+        let direction_value = {
           L:-1, '<':-1,
           E:0, '=':0,
           N:1, '!':1
@@ -132,14 +134,14 @@ function assemble(lines) {
         if (direction_value === undefined) {
           throw new Error('invalid direction '+direction+' in branch instruction '+opcode);
         }
-        var compare_value = {N:-1, Z:0, P:1}[compare];
+        let compare_value = {N:-1, Z:0, P:1}[compare];
         if (compare_value === undefined) {
           throw new Error('invalid comparison trit '+compare_value+' in branch instruction '+opcode);
         }
         console.log(`branch opcode=${opcode}, flag=${flag_value}/${flag}, direction=${direction_value}/${direction} compare=${compare_value}/${compare}`);;
 
         // aabc1 a=flag, b=direction, c=trit for comparison
-        var tryte = flag_value * Math.pow(3,3) +
+        let tryte = flag_value * Math.pow(3,3) +
           direction_value * Math.pow(3,2) +
           compare_value * Math.pow(3,1) +
           1;

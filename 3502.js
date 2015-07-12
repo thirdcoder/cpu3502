@@ -7,7 +7,7 @@ const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, M
 
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 
-const execute_next_instruction = require('./instr_decode');
+const decode_instruction = require('./instr_decode');
 const ALU = require('./alu');
 const execute_xop_instruction = require('./xop');
 
@@ -95,8 +95,79 @@ class CPU {
     return this.memory[this.pc += this.get_flag(FLAGS.R)];
   }
 
+  read_alu_operand(addressing_mode) {
+    const cpu = this; // TODO: arrow functions
+    let read_arg, write_arg;
+
+    switch(addressing_mode) {
+      // absolute, 2-tryte address
+      case ADDR_MODE.ABSOLUTE:
+        let absolute = cpu.advance_memory();
+        absolute += 3**TRITS_PER_TRYTE * cpu.advance_memory(); // TODO: endian?
+
+        console.log('absolute',absolute);
+
+        read_arg = function() { return cpu.memory[absolute]; };
+        write_arg = function(x) { cpu.memory[absolute] = x; };
+
+        break;
+
+      // accumulator, register, no arguments
+      case ADDR_MODE.ACCUMULATOR:
+
+        read_arg = function() { return cpu.accum; };
+        write_arg = function(x) { cpu.accum = x; };
+
+        console.log('accum');
+
+        break;
+
+      // immediate, 1-tryte literal
+      case ADDR_MODE.IMMEDIATE:
+        let immediate = cpu.advance_memory();
+
+        console.log('immediate',immediate);
+
+        read_arg = function() { return immediate; };
+        write_arg = function() { throw new Error('cannot write to immediate: '+immediate); };
+
+        break;
+    }
+
+    return [read_arg, write_arg];
+  }
+
+  execute_next_instruction() {
+    const opcode = this.memory[this.pc];
+    console.log('\npc=',this.pc,' opcode=',opcode);
+
+    if (opcode === undefined) {
+      // increase MEMORY_SIZE if running out too often
+      throw new Error('program counter '+this.pc+' out of range into undefined memory');
+    }
+    if (opcode > MAX_TRYTE || opcode < MIN_TRYTE) {
+      // indicates internal error in simulator, backing store shouldn't be written out of this range
+      throw new Error('memory at pc='+this.pc+' value='+opcode+' out of 5-trit range');
+    }
+
+    const di = decode_instruction(opcode);
+
+    if (di.family === 0) {
+      let read_arg, write_arg;
+      [read_arg, write_arg] = this.read_alu_operand(di.addressing_mode);
+
+      this.execute_alu_instruction(di.operation, read_arg, write_arg);
+    } else if (di.family === 1) {
+      const rel_address = this.advance_memory();
+
+      this.execute_branch_instruction(di.flag, di.compare, di.direction, rel_address);
+    } else if (di.family === -1) {
+      this.execute_xop_instruction(di.operation);
+    }
+  }
+
   step() {
-    execute_next_instruction(this);
+    this.execute_next_instruction();
     this.pc += this.get_flag(FLAGS.R);
   }
 

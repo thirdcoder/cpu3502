@@ -12,6 +12,8 @@ class Memory {
     this.midAddress = 0;
     this.minAddress = -this.maxAddress;
 
+    this.bal2unbal = this.maxAddress;
+
     this.arrayType = Int8Array; // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
     this._array = opts._array || new this.arrayType(new ArrayBuffer(this.tryteCount));
     this.map = opts.map || {};
@@ -29,11 +31,18 @@ class Memory {
   }
 
   readNoTrap(address) {
-    return this._array[address];
+    if (address < this.minAddress || address > this.maxAddress) throw new Error('out-of-range read: '+address);
+    //console.log('READ',address,address+this.bal2unbal,this._array[address+this.bal2unbal]);
+    return this._array[address + this.bal2unbal];
   }
 
   writeNoTrap(address, value) {
-    this._array[address] = value;
+    if (address < this.minAddress || address > this.maxAddress) throw new Error('out-of-range write: '+address+','+value);
+    //console.log('WRITE',address,value,address+this.bal2unbal);
+    this._array[address + this.bal2unbal] = value;
+    //if (this._array[address + this.bal2unbal] !== value) {
+    //  console.log('FAILED TO WRITE',this._array[address + this.bal2unbal],value,this._array.length);
+    //}
   }
 
   // Read one tryte
@@ -69,7 +78,8 @@ class Memory {
 
   // Get a subarray view of memory starting at address, to end
   subarray(address, end) {
-    return this._array.subarray(address, end);
+    if (end !== undefined) end += this.bal2unbal;
+    return this._array.subarray(address + this.bal2unbal, end);
   }
 
   // TODO: write individual trits, tritmapped-canvas

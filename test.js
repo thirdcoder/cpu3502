@@ -51,11 +51,11 @@ test('memory maps', (t) => {
   let trappedWrite, trappedWriteValue;
 
   const memory = Memory({
-    tryteCount:9,
+    tryteCount:9, // ±4
     map: {
       trap1: {
-        start: 5,
-        end: 6,
+        start: 3,
+        end: 4,
         read: (address) => {
           console.log('trap1 read',address);
           trappedRead = address;
@@ -77,18 +77,18 @@ test('memory maps', (t) => {
   t.equal(trappedWrite === undefined, true);
   t.equal(trappedWriteValue === undefined, true);
 
-  t.equal(memory.read(5), 42);
-  t.equal(trappedRead, 5);
+  t.equal(memory.read(3), 42);
+  t.equal(trappedRead, 3);
   t.equal(trappedWrite === undefined, true);
   t.equal(trappedWriteValue === undefined, true);
 
-  t.equal(memory.read(6), 42);
-  t.equal(trappedRead, 6);
+  t.equal(memory.read(4), 42);
+  t.equal(trappedRead, 4);
   t.equal(trappedWrite === undefined, true);
   t.equal(trappedWriteValue === undefined, true);
 
-  memory.write(5, 33);
-  t.equal(trappedWrite, 5);
+  memory.write(4, 33);
+  t.equal(trappedWrite, 4);
   t.equal(trappedWriteValue, 33);
 
   t.end();

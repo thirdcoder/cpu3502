@@ -131,7 +131,7 @@ test('execute', (t) => {
     */
 
   const machine_code = assembler(lines);
-  cpu.writeTrytes(0, machine_code);
+  cpu.memory.writeArray(0, machine_code);
   cpu.run();
 
   //TODO: tests t.equal(cpu.accum, 42);

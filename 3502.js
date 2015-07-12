@@ -30,10 +30,6 @@ class CPU {
     console.log('initial flags=',n2bts(this.flags));
   }
 
-  writeTrytes(address, data) {
-    this.memory.writeArray(address, data); // TODO: remove
-  }
-
   // get a flag trit value given FLAGS.foo
   get_flag(flag) {
     let flag_index = flag + 4; // -4..4 to 0..8

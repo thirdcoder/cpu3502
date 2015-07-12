@@ -17,15 +17,15 @@ const memory = Memory({
   }
 });
 
+const term = Triterm({
+  addressTryteSize: VIDEO_TRYTE_ADDRESS_SIZE,
+  tritmap: memory.array.subarray(memory.map.video.start, memory.map.video.end)
+});
+
 const cpu = CPU({
   memory: memory
 });
 global.cpu = cpu;
-
-const term = Triterm({
-  addressTryteSize: VIDEO_TRYTE_ADDRESS_SIZE,
-  tritmap: cpu.memory.array.subarray(cpu.memory.map.video.start, cpu.memory.map.video.end)
-});
 
 const assembler = require('./as');
 

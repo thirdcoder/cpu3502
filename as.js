@@ -86,7 +86,10 @@ function assemble(lines) {
 
     console.log(tokens,operand);
 
-    if (OP[opcode] !== undefined) {
+    if (opcode.charAt(0) === '.') {
+      // assembler directives
+      // TODO
+    } else if (OP[opcode] !== undefined) {
       // alu
       let opcode_value = OP[opcode]; // aaab0 3-trits
 
@@ -98,10 +101,18 @@ function assemble(lines) {
 
       switch(addressing_mode) {
         case ADDR_MODE.IMMEDIATE:
+          if (!Number.isInteger(operand)) {
+            throw new Error('opcode '+opcode+' (immediate) requires operand: '+operand);
+          }
+
           emit(operand);
           break;
 
         case ADDR_MODE.ABSOLUTE:
+          if (!Number.isInteger(operand)) {
+            throw new Error('opcode '+opcode+' (absolute) requires operand: '+operand);
+          }
+
           // TODO: endian?
           emit(slice_trits(operand, 0, 5));
           emit(slice_trits(operand, 5, 10));

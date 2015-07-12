@@ -128,6 +128,19 @@ test('assemble/disassemble roundtrip', (t) => {
   t.end();
 });
 
+/* TODO
+test('assembler directives', (t) => {
+  const machine_code = assembler([
+    '.equ -3282 foo',
+    'STA foo',
+    ]);
+
+  console.log('PPP',machine_code);
+
+  t.end();
+});
+*/
+
 test('execute', (t) => {
   const cpu = CPU();
   var lines = [

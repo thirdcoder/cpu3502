@@ -1,10 +1,11 @@
 'use strict';
 
-const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
-
+// Array of 5-trit tryte memory cells backed by an Int8Array
 class Memory {
   constructor(opts={}) {
-    this.array = new Int8Array(new ArrayBuffer(MEMORY_SIZE));
+    this.tryteCount = opts.tryteCount;
+    if (this.tryteCount === undefined) throw new Error('memory reqires tryteCount option');
+    this.array = opts.array || new Int8Array(new ArrayBuffer(this.tryteCount));
     this.map = opts.map || {};
   }
 

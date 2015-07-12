@@ -29,7 +29,7 @@ test('branch instruction decoding', (t) => {
 });
 
 test('memory', (t) => {
-  const memory = Memory();
+  const memory = Memory({tryteCount:10});
 
   t.equal(memory.read(0), 0); // 0 initialized
 

@@ -55,8 +55,12 @@ memory.map.chargen.write = (address, value) => {
 
   var row = memory.read(CURSOR_ROW_ADDRESS);
   var col = memory.read(CURSOR_COL_ADDRESS);
-  // TODO: % row,col by this.tc.width / CHAR_WIDTH; CHAR_HEIGHT; wrap-around/negative
 
+  // wrap-around if row/col out of terminal range
+  row %= term.rowCount; if (row < 0) row += term.rowCount;
+  col %= term.colCount; if (col < 0) col += term.colCount;
+
+  console.log('COLROW',col,row);
 
   term.setTTChar(value, col, row);
   // TODO: write to row,col from another memory address value (no trap needed). -3282, -3283? - for cursor
@@ -106,6 +110,10 @@ var lines = [
     'STX row',
     'LDX #2',
     'STX col',
+    'STA chargen',
+
+    'LDX #-1',
+    'STX row',
     'STA chargen',
 
     'HALT_Z'

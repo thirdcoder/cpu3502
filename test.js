@@ -2,11 +2,12 @@
 
 const test = require('tape');
 const CPU = require('./3502');
+const assembler = require('./as');
 
 test('halts', (t) => {
   const cpu = CPU();
 
-  cpu.assemble(['HALT_Z']);
+  cpu.memory[0] = -118; // iii0i HALT_Z
   cpu.run();
   t.end();
 });
@@ -68,7 +69,8 @@ test('assembly', (t) => {
         this.memory[x++] = bts2n('iii0i'); // iiiii halt 0
     */
 
-  cpu.assemble(lines);
+  let machine_code = assembler(lines);
+  cpu.writeTrytes(0, machine_code);
   cpu.run();
 
   //TODO: tests t.equal(cpu.accum, 42);

@@ -42,8 +42,14 @@ function disasm(di) {
     name = invertKv(OP)[di.operation]; // inefficient lookup, but probably doesn't matter
   } else if (di.family === 1) {
     name = 'BR';
+    name += invertKv(FLAGS)[di.flag];
+    // TODO
+    name += {'-1':'L', 0:'E', 1:'N'}[di.direction];
+    name += {'-1':'N', 0:'Z', 1:'P'}[di.compare];
+
   } else if (di.family === -1) {
     name = invertKv(XOP)[di.operation];
+    // TODO: undefined opcodes
   }
   // TODO: operands
 

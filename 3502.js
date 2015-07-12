@@ -11,8 +11,6 @@ const {decode_instruction, disasm} = require('./instr_decode');
 const ALU = require('./alu');
 const execute_xop_instruction = require('./xop');
 
-const assembler = require('./as');
-
 class CPU {
   constructor() {
     this.memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
@@ -30,11 +28,9 @@ class CPU {
     console.log('initial flags=',n2bts(this.flags));
   }
 
-  assemble(source) {
-    let lines = source;
-    let machine_code = assembler(lines);
-    let i = 0; // TODO .org, offset to assemble into
-    for(let tryte of machine_code) {
+  writeTrytes(address, data) {
+    let i = address;
+    for(let tryte of data) {
       this.memory[i++] = tryte;
     }
   }
@@ -150,7 +146,7 @@ class CPU {
     }
 
     const di = decode_instruction(opcode);
-    console.log('DISASM:',disasm(di));
+    console.log('DISASM:',di,'=',disasm(di));
 
     if (di.family === 0) {
       let read_arg, write_arg;

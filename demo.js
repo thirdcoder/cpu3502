@@ -27,7 +27,7 @@ console.log('memory.map',memory.map);
 
 const term = Triterm({
   addressTryteSize: VIDEO_TRYTE_ADDRESS_SIZE,
-  tritmap: memory.array.subarray(memory.map.video.start, memory.map.video.end)
+  tritmap: memory.subarray(memory.map.video.start, memory.map.video.end)
 });
 
 memory.map.video.write = (address, value) => {

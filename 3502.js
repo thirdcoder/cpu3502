@@ -119,7 +119,7 @@ class CPU {
 
   execute_next_instruction() {
     const opcode = this.memory.read(this.pc);
-    console.log('\npc=',this.pc,' opcode=',opcode,'disasm=',disasm1(this.memory.array,this.pc).asm);
+    console.log('\npc=',this.pc,' opcode=',opcode,'disasm=',disasm1(this.memory.subarray(this.pc)).asm);
 
     if (opcode === undefined) {
       // increase MEMORY_SIZE if running out too often

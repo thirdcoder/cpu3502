@@ -12,12 +12,18 @@ const VIDEO_ADDRESS_SIZE = (3**VIDEO_TRYTE_COUNT * TRITS_PER_TRYTE)**TRYTES_PER_
 
 const Memory = require('./memory');
 
+const MAX_ADDRESS = (3**TRITS_PER_WORD - 1) / 2;
+const MIN_ADDRESS = -MAX_ADDRESS;
+
+const VIDEO_ADDRESS_OFFSET = MAX_ADDRESS - VIDEO_ADDRESS_SIZE; // -3280,
+if (VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET !== MAX_ADDRESS) throw new Error('wrong video address size');
+
 const memory = Memory({
   tryteCount: MEMORY_SIZE,
   map: {
     video: {
-      start: -3280,
-      end: VIDEO_ADDRESS_SIZE,
+      start: VIDEO_ADDRESS_OFFSET,                      // -3280      00iii iiiii
+      end: VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET,   // 29524, end 11111 11111
     },
       /* TODO
     input: {

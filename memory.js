@@ -28,26 +28,34 @@ class Memory {
     return {};
   }
 
+  readNoTrap(address) {
+    return this._array[address];
+  }
+
+  writeNoTrap(address, value) {
+    this._array[address] = value;
+  }
+
   // Read one tryte
   read(address) {
     const traps = this.getTraps(address);
     if (traps.read) {
       const value = traps.read(address);
       if (value !== undefined) {
-        this._array[address] = value;
+        this.writeNoTrap(address, value);
       }
     }
 
-    return this._array[address];
+    return this.readNoTrap(address);
   }
 
   // Write one tryte
   write(address, value) {
-    this._array[address] = value;
+    this.writeNoTrap(address, value);
 
     const traps = this.getTraps(address);
     if (traps.write) {
-      traps.write(address, this._array[address]);
+      traps.write(address, this.readNoTrap(address));
     }
   }
 

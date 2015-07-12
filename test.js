@@ -10,7 +10,7 @@ const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcod
 test('halts', (t) => {
   const cpu = CPU();
 
-  cpu.memory[0] = -118; // iii0i HALT_Z
+  cpu.memory.write(0, -118); // iii0i HALT_Z
   cpu.run();
   t.end();
 });

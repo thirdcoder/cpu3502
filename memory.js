@@ -5,7 +5,7 @@ class Memory {
   constructor(opts={}) {
     this.tryteCount = opts.tryteCount;
     if (this.tryteCount === undefined) throw new Error('memory reqires tryteCount option');
-    this.array = opts.array || new Int8Array(new ArrayBuffer(this.tryteCount));
+    this.array = opts.array || new Int8Array(new ArrayBuffer(this.tryteCount)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
     this.map = opts.map || {};
   }
 

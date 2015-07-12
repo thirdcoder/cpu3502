@@ -9,12 +9,13 @@ const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 
 const {decode_instruction, decode_operand, disasm1} = require('./instr_decode');
 const ALU = require('./alu');
+const Memory = require('./memory');
 const execute_xop_instruction = require('./xop');
 
 class CPU {
   constructor(opts={}) {
-    this.memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
-    this.memoryMap = opts.memoryMap || {};
+    this.memory = Memory({tryteCount: MEMORY_SIZE});
+    this.memoryMap = opts.memoryMap || {}; // TODO: move to memory
     this.pc = 0;
     this.accum = 0;
     this.index = 0;
@@ -30,10 +31,7 @@ class CPU {
   }
 
   writeTrytes(address, data) {
-    let i = address;
-    for(let tryte of data) {
-      this.memory[i++] = tryte;
-    }
+    this.memory.writeArray(address, data); // TODO: remove
   }
 
   // get a flag trit value given FLAGS.foo
@@ -88,19 +86,11 @@ class CPU {
     execute_xop_instruction(this, operation);
   }
 
-  read_memory(address) {
-    return this.memory[address];
-  }
-
-  write_memory(address, value) {
-    this.memory[address] = value;
-  }
-
   // Read instruction operand from decoded instruction, return read/write accessors
   read_alu_operand(di) {
     let read_arg, write_arg;
 
-    let decoded_operand = decode_operand(di, this.memory, this.pc);
+    let decoded_operand = decode_operand(di, this.memory.array, this.pc);
 
     this.pc += decoded_operand.consumed * this.get_flag(FLAGS.R);
 
@@ -108,8 +98,8 @@ class CPU {
       // absolute, 2-tryte address
       console.log('absolute',decoded_operand.absolute);
 
-      read_arg = () => { return this.read_memory(decoded_operand.absolute); };
-      write_arg = (x) => { this.write_memory(decoded_operand.absolute, x); };
+      read_arg = () => { return this.memory.read(decoded_operand.absolute); };
+      write_arg = (x) => { this.memory.write(decoded_operand.absolute, x); };
 
     } else if ('accumulator' in decoded_operand) {
       // accumulator, register, no arguments
@@ -130,8 +120,8 @@ class CPU {
   }
 
   execute_next_instruction() {
-    const opcode = this.memory[this.pc];
-    console.log('\npc=',this.pc,' opcode=',opcode,'disasm=',disasm1(this.memory,this.pc).asm);
+    const opcode = this.memory.read(this.pc);
+    console.log('\npc=',this.pc,' opcode=',opcode,'disasm=',disasm1(this.memory.array,this.pc).asm);
 
     if (opcode === undefined) {
       // increase MEMORY_SIZE if running out too often
@@ -150,7 +140,7 @@ class CPU {
 
       this.execute_alu_instruction(di.operation, read_arg, write_arg);
     } else if (di.family === 1) {
-      const rel_address = this.read_memory(this.pc += this.get_flag(FLAGS.R));
+      const rel_address = this.memory.read(this.pc += this.get_flag(FLAGS.R));
 
       this.execute_branch_instruction(di.flag, di.compare, di.direction, rel_address);
     } else if (di.family === -1) {

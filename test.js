@@ -28,7 +28,7 @@ test('disasm', (t) => {
 
   let asm = disasm(machine_code);
 
-  t.equal(asm, 'BRSNZ'); // TODO: opcode
+  t.equal(asm, 'BRSNZ +121');
 
   t.end();
 });

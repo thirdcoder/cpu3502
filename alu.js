@@ -63,7 +63,7 @@ class ALU {
       case OP.RD:  write_arg( RD(read_arg())); break;
     }
 
-    this.update_flags_from(this.accum);
+    this.update_flags_from(this.cpu.accum);
     console.log('A=',n2bts(this.cpu.accum));
   }
 }

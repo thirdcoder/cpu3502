@@ -51,7 +51,7 @@ class CPU {
   }
 
   execute_branch_instruction(flag, compare, direction, rel_address) {
-    console.log('compare',flag,compare,direction);
+    console.log(`compare flag=${flag}, direction=${direction}, compare=${compare}`);
 
     // compare (b) trit to compare flag with
     const flag_value = this.get_flag(flag);
@@ -61,15 +61,15 @@ class CPU {
     // 0 equal (flag = trit)
     // 1 not equal (flag != trit)
     let branch_taken = false;
-    if (direction < 0) {
+    if (direction === -1) {
       branch_taken = flag_value < compare;
     } else if (direction === 0) {
       branch_taken = flag_value === compare;
-    } else if (direction > 0) {
+    } else if (direction === 1) {
       branch_taken = flag_value !== compare;
     }
 
-    console.log('flag',flag_value,branch_taken,rel_address);
+    console.log(`flag flag_value=${flag_value}, branch_taken=${branch_taken}, rel_address=${rel_address}`);
 
     // if matches, relative branch (+/- 121)
     if (branch_taken) {

@@ -58,6 +58,23 @@ function execute_next_instruction(cpu) {
     throw new Error('memory at pc='+cpu.pc+' value='+opcode+' out of 5-trit range');
   }
 
+  const di = decode_instruction(opcode);
+
+  if (di.family === 0) {
+    let read_arg, write_arg;
+    [read_arg, write_arg] = read_alu_operand(cpu, di.addressing_mode);
+
+    cpu.execute_alu_instruction(di.operation, read_arg, write_arg);
+  } else if (di.family === 1) {
+    const rel_address = cpu.advance_memory();
+
+    cpu.execute_branch_instruction(di.flag, di.compare, di.direction, rel_address);
+  } else if (di.family === -1) {
+    cpu.execute_xop_instruction(di.operation);
+  }
+};
+
+function decode_instruction(opcode) {
   const family = get_trit(opcode, 0);
   //console.log('family',family,n2bts(opcode));
 
@@ -70,23 +87,21 @@ function execute_next_instruction(cpu) {
   if (family === 0) {
     const operation = slice_trits(opcode, 2, 5);
     const addressing_mode = get_trit(opcode, 1);
-    let read_arg, write_arg;
-    [read_arg, write_arg] = read_alu_operand(cpu, addressing_mode);
 
-    cpu.execute_alu_instruction(operation, read_arg, write_arg);
+    return {family, operation, addressing_mode};
   } else if (family === 1) {
     const flag = slice_trits(opcode, 3, 5);
     const compare = get_trit(opcode, 1);
     const direction = get_trit(opcode, 2);
 
-    const rel_address = cpu.advance_memory();
-
-    cpu.execute_branch_instruction(flag, compare, direction, rel_address);
+    return {family, flag, compare, direction};
   } else if (family === -1) {
     const operation = slice_trits(opcode, 1, 5);
 
-    cpu.execute_xop_instruction(operation);
+    return {family, operation};
   }
+
+  throw new Error('unable to decode instruction: '+op);
 };
 
 module.exports = execute_next_instruction;

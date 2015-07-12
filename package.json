@@ -27,10 +27,11 @@
   },
   "dependencies": {
     "balanced-ternary": "*",
+    "base27": "*",
+    "invert-kv": "^1.0.0",
+    "nonary": "*",
     "trit-getset": "*",
     "trit-text": "*",
-    "nonary": "*",
-    "base27": "*",
     "tritwise": "*"
   },
   "devDependencies": {

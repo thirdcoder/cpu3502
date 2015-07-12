@@ -1,8 +1,9 @@
 'use strict';
 
 const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE} = require('./arch');
-const {ADDR_MODE} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
+const invertKv = require('invert-kv');
 
 function decode_instruction(opcode) {
   const family = get_trit(opcode, 0);
@@ -34,8 +35,22 @@ function decode_instruction(opcode) {
   throw new Error('unable to decode instruction: '+op);
 };
 
-// TODO: disassemble
+function disasm(di) {
+  let name;
+
+  if (di.family === 0) {
+    name = invertKv(OP)[di.operation]; // inefficient lookup, but probably doesn't matter
+  } else if (di.family === 1) {
+    name = 'BR';
+  } else if (di.family === -1) {
+    name = invertKv(XOP)[di.operation];
+  }
+  // TODO: operands
+
+  return name;
+}
 
 module.exports = {
   decode_instruction,
+  disasm,
 };

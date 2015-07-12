@@ -7,7 +7,7 @@ const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, M
 
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 
-const {decode_instruction} = require('./instr_decode');
+const {decode_instruction, disasm} = require('./instr_decode');
 const ALU = require('./alu');
 const execute_xop_instruction = require('./xop');
 
@@ -150,6 +150,7 @@ class CPU {
     }
 
     const di = decode_instruction(opcode);
+    console.log('DISASM:',disasm(di));
 
     if (di.family === 0) {
       let read_arg, write_arg;

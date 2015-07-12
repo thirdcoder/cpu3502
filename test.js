@@ -3,12 +3,25 @@
 const test = require('tape');
 const CPU = require('./3502');
 const assembler = require('./as');
+const {decode_instruction, disasm} = require('./instr_decode');
 
 test('halts', (t) => {
   const cpu = CPU();
 
   cpu.memory[0] = -118; // iii0i HALT_Z
   cpu.run();
+  t.end();
+});
+
+test('disasm', (t) => {
+
+  let machine_code = assembler(['BRSEZ +121']);
+
+  let di = decode_instruction(machine_code[0]);
+  let asm = disasm(di);
+
+  t.equal(asm, 'BRSEZ'); // TODO: opcode
+
   t.end();
 });
 

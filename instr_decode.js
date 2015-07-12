@@ -63,7 +63,7 @@ function decode_operand(di, machine_code, offset=0) {
 }
 
 // Disassemble one instruction in machine_code
-function disasm(machine_code, offset=0) {
+function disasm1(machine_code, offset=0) {
   let di = decode_instruction(machine_code[offset]);
 
   let opcode, operand;
@@ -124,5 +124,5 @@ function disasm(machine_code, offset=0) {
 module.exports = {
   decode_instruction,
   decode_operand,
-  disasm,
+  disasm1,
 };

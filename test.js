@@ -3,7 +3,7 @@
 const test = require('tape');
 const CPU = require('./3502');
 const assembler = require('./as');
-const {decode_instruction, disasm} = require('./instr_decode');
+const {decode_instruction, disasm1} = require('./instr_decode');
 const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcodes');
 
 test('halts', (t) => {
@@ -14,7 +14,7 @@ test('halts', (t) => {
   t.end();
 });
 
-test('disasm', (t) => {
+test('branch instruction decoding', (t) => {
 
   let machine_code = assembler(['BRSNZ +121']);
 
@@ -24,15 +24,37 @@ test('disasm', (t) => {
   t.equal(di.flag, FLAGS.S);  // sign (S)
   t.equal(di.direction, 1);   // not equal (N)
   t.equal(di.compare, 0);     // zero (Z)
+  t.end();
+});
 
+test('assemble/disassemble roundtrip', (t) => {
+  let lines = [
+      'LDA #%ii1i0',
+      'NOP A',
+      'NOP #-121',
+      'NOP 29524',
+      //'LDA #0',
+      'BNE -1',
+      'BEQ +2',
+      'HALT_N',
+      'HALT_P',
+      'LDA #42',
+      'STA 0',
+      'PTI A',
+      'TAX',
+      'HALT_Z'];
 
-  t.equal(disasm(machine_code).asm, 'BRSNZ +121');
-  t.equal(disasm(machine_code).consumed, 2);
+  let machine_code = assembler(lines); 
+
+  console.log('XXX',disasm1(machine_code));
+
+  //t.equal(disasm(machine_code).asm, 'BRSNZ +121');
+  //t.equal(disasm(machine_code).consumed, 2);
 
   t.end();
 });
 
-test('assembly', (t) => {
+test('execute', (t) => {
   const cpu = CPU();
   var lines = [
       'LDA #$ijk',

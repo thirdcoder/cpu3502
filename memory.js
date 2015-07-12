@@ -52,6 +52,11 @@ class Memory {
     }
   } 
 
+  // Get a subarray view of memory starting at address, to end
+  subarray(address) {
+    return this.array.subarray(address);
+  }
+
   // TODO: write individual trits, tritmapped-canvas
 }
 

@@ -88,7 +88,7 @@ class CPU {
   read_alu_operand(di) {
     let read_arg, write_arg;
 
-    let decoded_operand = decode_operand(di, this.memory.array, this.pc);
+    let decoded_operand = decode_operand(di, this.memory.subarray(this.pc), 0);
 
     this.pc += decoded_operand.consumed * this.get_flag(FLAGS.R);
 

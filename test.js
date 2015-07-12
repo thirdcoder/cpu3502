@@ -29,12 +29,16 @@ test('branch instruction decoding', (t) => {
 });
 
 test('memory read/write', (t) => {
-  const memory = Memory({tryteCount:10});
+  const memory = Memory({tryteCount:9});
 
   t.equal(memory.read(0), 0); // 0 initialized
 
   memory.write(0, 42);
   t.equal(memory.read(0), 42);
+
+  t.equal(memory.read(-1), 0);
+  memory.write(-1, 33);
+  t.equal(memory.read(-1), 33);
 
   t.end();
 });
@@ -45,7 +49,7 @@ test('memory maps', (t) => {
   let trappedWrite, trappedWriteValue;
 
   const memory = Memory({
-    tryteCount:10,
+    tryteCount:9,
     map: {
       trap1: {
         start: 5,

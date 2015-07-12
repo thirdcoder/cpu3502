@@ -14,8 +14,16 @@ const memory = Memory({
       start: 0, // TODO: start at higher address?
       end: (3**VIDEO_TRYTE_ADDRESS_SIZE * TRITS_PER_TRYTE)**TRYTES_PER_WORD / TRITS_PER_TRYTE, // '00xxx xyyyy' address -> 'xxxxx' tritmap value
     },
+      /* TODO
+    input: {
+      start: -3,
+      end: -1,
+    },
+    */
   }
 });
+
+console.log('memory.map',memory.map);
 
 const term = Triterm({
   addressTryteSize: VIDEO_TRYTE_ADDRESS_SIZE,
@@ -28,6 +36,7 @@ memory.map.video.write = (address, value) => {
   //console.log('video write:',address,value);
   term.tc.refresh();
 };
+
 
 const cpu = CPU({
   memory: memory

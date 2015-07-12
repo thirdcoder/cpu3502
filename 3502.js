@@ -7,7 +7,7 @@ const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, M
 
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 
-const {decode_instruction, disasm} = require('./instr_decode');
+const {decode_instruction, decode_operand, disasm} = require('./instr_decode');
 const ALU = require('./alu');
 const execute_xop_instruction = require('./xop');
 
@@ -91,42 +91,34 @@ class CPU {
     return this.memory[this.pc += this.get_flag(FLAGS.R)];
   }
 
-  read_alu_operand(addressing_mode) {
+  // Read instruction operand from decoded instruction, return read/write accessors
+  read_alu_operand(di) {
     let read_arg, write_arg;
 
-    switch(addressing_mode) {
+    let decoded_operand = decode_operand(di, this.memory, this.pc);
+
+    this.pc += decoded_operand.consumed * this.get_flag(FLAGS.R);
+
+    if ('absolute' in decoded_operand) {
       // absolute, 2-tryte address
-      case ADDR_MODE.ABSOLUTE:
-        let absolute = this.advance_memory();
-        absolute += 3**TRITS_PER_TRYTE * this.advance_memory(); // TODO: endian?
+      console.log('absolute',decoded_operand.absolute);
 
-        console.log('absolute',absolute);
+      read_arg = () => { return this.memory[decoded_operand.absolute]; };
+      write_arg = (x) => { this.memory[decoded_operand.absolute] = x; };
 
-        read_arg = () => { return this.memory[absolute]; };
-        write_arg = (x) => { this.memory[absolute] = x; };
-
-        break;
-
+    } else if ('accumulator' in decoded_operand) {
       // accumulator, register, no arguments
-      case ADDR_MODE.ACCUMULATOR:
+      read_arg = () => { return this.accum; };
+      write_arg = (x) => { this.accum = x; };
 
-        read_arg = () => { return this.accum; };
-        write_arg = (x) => { this.accum = x; };
+      console.log('accum');
 
-        console.log('accum');
-
-        break;
-
+    } else if ('immediate' in decoded_operand) {
       // immediate, 1-tryte literal
-      case ADDR_MODE.IMMEDIATE:
-        let immediate = this.advance_memory();
+      console.log('immediate',decoded_operand.immediate);
 
-        console.log('immediate',immediate);
-
-        read_arg = () => { return immediate; };
-        write_arg = () => { throw new Error('cannot write to immediate: '+immediate); };
-
-        break;
+      read_arg = () => { return decoded_operand.immediate; };
+      write_arg = () => { throw new Error('cannot write to immediate: '+decoded_operandimmediate); };
     }
 
     return [read_arg, write_arg];
@@ -150,7 +142,7 @@ class CPU {
 
     if (di.family === 0) {
       let read_arg, write_arg;
-      [read_arg, write_arg] = this.read_alu_operand(di.addressing_mode);
+      [read_arg, write_arg] = this.read_alu_operand(di);
 
       this.execute_alu_instruction(di.operation, read_arg, write_arg);
     } else if (di.family === 1) {

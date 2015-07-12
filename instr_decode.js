@@ -37,33 +37,22 @@ function decode_instruction(opcode) {
 
 // Read operands from a decoded instruction start at machine_code[offset] (offset=opcode)
 function decode_operand(di, machine_code, offset=0) {
-  let operand;
-
   switch(di.addressing_mode) {
     // absolute, 2-tryte address
     case ADDR_MODE.ABSOLUTE:
       let absolute = machine_code[offset + 1];
       absolute += 3**TRITS_PER_TRYTE * machine_code[offset + 2]; // TODO: endian?
 
-      operand = absolute.toString(); // decimal address
-      //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
-
       return {absolute, consumed:2};
-      break;
 
     // accumulator, register, no arguments
     case ADDR_MODE.ACCUMULATOR:
-      operand = 'A';
-
       return {accumulator:true, consumed:0};
-      break;
 
     // immediate, 1-tryte literal
     case ADDR_MODE.IMMEDIATE:
       let immediate = machine_code[offset + 1];
       return {immediate, consumed:1};
-      operand = '#' + '%' + n2bts(immediate); // TODO: again, what base?
-      break;
   }
 
   // TODO: XOPs might have custom operands
@@ -129,5 +118,6 @@ function disasm(machine_code) {
 
 module.exports = {
   decode_instruction,
+  decode_operand,
   disasm,
 };

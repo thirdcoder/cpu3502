@@ -18,6 +18,10 @@ const MIN_ADDRESS = -MAX_ADDRESS;
 const VIDEO_ADDRESS_OFFSET = MAX_ADDRESS - VIDEO_ADDRESS_SIZE; // -3281
 if (VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET !== MAX_ADDRESS) throw new Error('wrong video address size');
 
+const CHARGEN_ADDRESS = -3282; // 0i111 11110
+const CURSOR_ROW_ADDRESS = -3283;
+const CURSOR_COL_ADDRESS = -3284;
+
 const memory = Memory({
   tryteCount: MEMORY_SIZE,
   map: {
@@ -26,8 +30,8 @@ const memory = Memory({
       end: VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET,   // 29524, end 11111 11111
     },
     chargen: {
-      start: -3282, // 0i111 11110
-      end: -3282,
+      start: CHARGEN_ADDRESS,
+      end: CHARGEN_ADDRESS,
     },
   }
 });
@@ -48,8 +52,13 @@ memory.map.video.write = (address, value) => {
 
 memory.map.chargen.write = (address, value) => {
   console.log('chargen',value);
-  term.writeTTChar(value);
-  //term.tc.refresh(); // hmm
+
+  var row = memory.read(CURSOR_ROW_ADDRESS);
+  var col = memory.read(CURSOR_COL_ADDRESS);
+  // TODO: % row,col by this.tc.width / CHAR_WIDTH; CHAR_HEIGHT; wrap-around/negative
+
+
+  term.setTTChar(value, col, row);
   // TODO: write to row,col from another memory address value (no trap needed). -3282, -3283? - for cursor
 };
 
@@ -84,9 +93,19 @@ var lines = [
     'STA -3000',
 
     '.equ -3282 chargen',
+    '.equ -3283 row',
+    '.equ -3284 col',
 
     'STA chargen',
+
+    'LDX #1',
+    'STX col',
     'STA chargen',
+
+    'LDX #1',
+    'STX row',
+    'LDX #2',
+    'STX col',
     'STA chargen',
 
     'HALT_Z'

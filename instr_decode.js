@@ -35,39 +35,66 @@ function decode_instruction(opcode) {
   throw new Error('unable to decode instruction: '+op);
 };
 
+// Read operands from a decoded instruction start at machine_code[offset] (offset=opcode)
+function decode_operand(di, machine_code, offset=0) {
+  let operand;
+
+  switch(di.addressing_mode) {
+    // absolute, 2-tryte address
+    case ADDR_MODE.ABSOLUTE:
+      let absolute = machine_code[offset + 1];
+      absolute += 3**TRITS_PER_TRYTE * machine_code[offset + 2]; // TODO: endian?
+
+      operand = absolute.toString(); // decimal address
+      //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
+
+      return {absolute, consumed:2};
+      break;
+
+    // accumulator, register, no arguments
+    case ADDR_MODE.ACCUMULATOR:
+      operand = 'A';
+
+      return {accumulator:true, consumed:0};
+      break;
+
+    // immediate, 1-tryte literal
+    case ADDR_MODE.IMMEDIATE:
+      let immediate = machine_code[offset + 1];
+      return {immediate, consumed:1};
+      operand = '#' + '%' + n2bts(immediate); // TODO: again, what base?
+      break;
+  }
+
+  // TODO: XOPs might have custom operands
+
+  // No operands
+  return {consumed:0};
+}
+
 // Disassemble one instruction in machine_code
 function disasm(machine_code) {
   let di = decode_instruction(machine_code[0]);
 
   let opcode, operand;
+  let consumed = 1; // 1-tryte opcode, incremented later if operands
 
   if (di.family === 0) {
     opcode = invertKv(OP)[di.operation]; // inefficient lookup, but probably doesn't matter
 
     // note: some duplication with cpu read_alu_operand TODO: factor out
     // TODO: handle reading beyond end
-    switch(di.addressing_mode) {
-      // absolute, 2-tryte address
-      case ADDR_MODE.ABSOLUTE:
-        let absolute = machine_code[1];
-        absolute += 3**TRITS_PER_TRYTE * machine_code[2]; // TODO: endian?
+    let decoded_operand = decode_operand(di, machine_code, 0);
 
-        operand = absolute.toString(); // decimal address
+    if ('absolute' in decoded_operand) {
+        operand = decoded_operand.absolute.toString(); // decimal address
         //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
-        break;
-
-      // accumulator, register, no arguments
-      case ADDR_MODE.ACCUMULATOR:
+    } else if ('accumulator' in decoded_operand) {
         operand = 'A';
-        break;
-
-      // immediate, 1-tryte literal
-      case ADDR_MODE.IMMEDIATE:
-        let immediate = machine_code[1];
-        operand = '#' + '%' + n2bts(immediate); // TODO: again, what base?
-        break;
+    } else if ('immediate' in decoded_operand) {
+        operand = '#' + '%' + n2bts(decoded_operand.immediate); // TODO: again, what base?
     }
-
+    consumed += decoded_operand.consumed;
   } else if (di.family === 1) {
     opcode = 'BR';
     opcode += invertKv(FLAGS)[di.flag];
@@ -83,6 +110,7 @@ function disasm(machine_code) {
       operand = machine_code[1].toString();
     }
 
+    consumed += 1;
   } else if (di.family === -1) {
     opcode = invertKv(XOP)[di.operation];
     // TODO: undefined opcodes
@@ -96,7 +124,7 @@ function disasm(machine_code) {
     asm = opcode;
   }
 
-  return asm;
+  return {asm, consumed};
 }
 
 module.exports = {

@@ -26,9 +26,8 @@ test('disasm', (t) => {
   t.equal(di.compare, 0);     // zero (Z)
 
 
-  let asm = disasm(machine_code);
-
-  t.equal(asm, 'BRSNZ +121');
+  t.equal(disasm(machine_code).asm, 'BRSNZ +121');
+  t.equal(disasm(machine_code).consumed, 2);
 
   t.end();
 });

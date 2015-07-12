@@ -28,13 +28,62 @@ test('branch instruction decoding', (t) => {
   t.end();
 });
 
-test('memory', (t) => {
+test('memory read/write', (t) => {
   const memory = Memory({tryteCount:10});
 
   t.equal(memory.read(0), 0); // 0 initialized
 
   memory.write(0, 42);
   t.equal(memory.read(0), 42);
+
+  t.end();
+});
+
+test('memory maps', (t) => {
+
+  let trappedRead;
+  let trappedWrite, trappedWriteValue;
+
+  const memory = Memory({
+    tryteCount:10,
+    map: {
+      trap1: {
+        start: 5,
+        end: 6,
+        read: (address) => {
+          console.log('trap1 read',address);
+          trappedRead = address;
+          return 42;
+        },
+        write: (address, value) => {
+          console.log('trap1 write',address,value);
+          trappedWrite = address;
+          trappedWriteValue = value;
+        },
+      }
+    }
+  });
+
+  t.equal(memory.read(0), 0);
+  memory.write(0, 1);
+  t.equal(memory.read(0), 1);
+  t.equal(trappedRead === undefined, true);
+  t.equal(trappedWrite === undefined, true);
+  t.equal(trappedWriteValue === undefined, true);
+
+  t.equal(memory.read(5), 42);
+  t.equal(trappedRead, 5);
+  t.equal(trappedWrite === undefined, true);
+  t.equal(trappedWriteValue === undefined, true);
+
+  t.equal(memory.read(6), 42);
+  t.equal(trappedRead, 6);
+  t.equal(trappedWrite === undefined, true);
+  t.equal(trappedWriteValue === undefined, true);
+
+  memory.write(5, 33);
+  t.equal(trappedWrite, 5);
+  t.equal(trappedWriteValue, 33);
 
   t.end();
 });

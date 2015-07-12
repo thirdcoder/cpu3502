@@ -34,4 +34,8 @@ function decode_instruction(opcode) {
   throw new Error('unable to decode instruction: '+op);
 };
 
-module.exports = decode_instruction;
+// TODO: disassemble
+
+module.exports = {
+  decode_instruction,
+};

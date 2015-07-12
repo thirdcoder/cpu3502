@@ -33,6 +33,11 @@ function assemble(lines) {
     var opcode = tokens[0];
     var operand = tokens[1];
 
+    // TODO: comments, ; to end-of-line
+    // TODO: labels, foo:, and resolving to 10-trit
+    // TODO: defines, .equ, constants
+    // TODO: .org, start assembly
+
     if (operand !== undefined) {
       var addressing_mode;
 
@@ -56,6 +61,7 @@ function assemble(lines) {
           case '&': // base 27, septemvigesimal (&QZ to &DM)
             operand = bts2n(sv2bts(operand.substring(1)));
             break;
+          // TODO: ' for trit-text characters
 
           default:
             operand = Number.parseInt(operand, 10);

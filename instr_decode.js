@@ -121,8 +121,22 @@ function disasm1(machine_code, offset=0) {
   return {asm, consumed};
 }
 
+function disasm(machine_code) {
+  let offset = 0;
+  let asms= [];
+
+  do {
+    let {asm, consumed} = disasm1(machine_code, offset);
+    asms.push(asm);
+    offset += consumed;
+  } while(offset < machine_code.length);
+
+  return asms;
+}
+
 module.exports = {
   decode_instruction,
   decode_operand,
   disasm1,
+  disasm,
 };

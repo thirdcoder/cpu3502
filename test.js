@@ -3,7 +3,7 @@
 const test = require('tape');
 const CPU = require('./3502');
 const assembler = require('./as');
-const {decode_instruction, disasm1} = require('./instr_decode');
+const {decode_instruction, disasm1, disasm} = require('./instr_decode');
 const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcodes');
 
 test('halts', (t) => {
@@ -28,17 +28,19 @@ test('branch instruction decoding', (t) => {
 });
 
 test('assemble/disassemble roundtrip', (t) => {
+  // test assembly -> machine code -> assembly
+  // note some instructions can be written multiple ways;
+  // only test canonical forms
   let lines = [
       'LDA #%ii1i0',
       'NOP A',
-      'NOP #-121',
+      'NOP #%iiiii', // -121',
       'NOP 29524',
-      //'LDA #0',
-      'BNE -1',
-      'BEQ +2',
+      'BRSNZ -1', //'BNE -1',
+      'BRSEZ +2', //BEQ +2
       'HALT_N',
       'HALT_P',
-      'LDA #42',
+      'LDA #%1iii0', // #42
       'STA 0',
       'PTI A',
       'TAX',
@@ -46,11 +48,16 @@ test('assemble/disassemble roundtrip', (t) => {
 
   let machine_code = assembler(lines); 
 
-  console.log('XXX',disasm1(machine_code));
+  let dis = disasm(machine_code);
 
-  //t.equal(disasm(machine_code).asm, 'BRSNZ +121');
-  //t.equal(disasm(machine_code).consumed, 2);
+  console.log(dis);
 
+  for (let i = 0; i < lines.length; ++i) {
+    let before = lines[i];
+    let after = dis[i];
+
+    t.equal(before, after);
+  }
   t.end();
 });
 

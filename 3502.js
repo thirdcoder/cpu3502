@@ -96,27 +96,26 @@ class CPU {
   }
 
   read_alu_operand(addressing_mode) {
-    const cpu = this; // TODO: arrow functions
     let read_arg, write_arg;
 
     switch(addressing_mode) {
       // absolute, 2-tryte address
       case ADDR_MODE.ABSOLUTE:
-        let absolute = cpu.advance_memory();
-        absolute += 3**TRITS_PER_TRYTE * cpu.advance_memory(); // TODO: endian?
+        let absolute = this.advance_memory();
+        absolute += 3**TRITS_PER_TRYTE * this.advance_memory(); // TODO: endian?
 
         console.log('absolute',absolute);
 
-        read_arg = function() { return cpu.memory[absolute]; };
-        write_arg = function(x) { cpu.memory[absolute] = x; };
+        read_arg = () => { return this.memory[absolute]; };
+        write_arg = (x) => { this.memory[absolute] = x; };
 
         break;
 
       // accumulator, register, no arguments
       case ADDR_MODE.ACCUMULATOR:
 
-        read_arg = function() { return cpu.accum; };
-        write_arg = function(x) { cpu.accum = x; };
+        read_arg = () => { return this.accum; };
+        write_arg = (x) => { this.accum = x; };
 
         console.log('accum');
 
@@ -124,12 +123,12 @@ class CPU {
 
       // immediate, 1-tryte literal
       case ADDR_MODE.IMMEDIATE:
-        let immediate = cpu.advance_memory();
+        let immediate = this.advance_memory();
 
         console.log('immediate',immediate);
 
-        read_arg = function() { return immediate; };
-        write_arg = function() { throw new Error('cannot write to immediate: '+immediate); };
+        read_arg = () => { return immediate; };
+        write_arg = () => { throw new Error('cannot write to immediate: '+immediate); };
 
         break;
     }

@@ -126,7 +126,7 @@ class CPU {
 
   execute_next_instruction() {
     const opcode = this.memory[this.pc];
-    console.log('\npc=',this.pc,' opcode=',opcode);
+    console.log('\npc=',this.pc,' opcode=',opcode,'disasm=',disasm(this.memory,this.pc).asm);
 
     if (opcode === undefined) {
       // increase MEMORY_SIZE if running out too often
@@ -138,7 +138,6 @@ class CPU {
     }
 
     const di = decode_instruction(opcode);
-    //console.log('DISASM:',di,'=',disasm([opcode]));
 
     if (di.family === 0) {
       let read_arg, write_arg;

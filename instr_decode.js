@@ -4,6 +4,7 @@ const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE} = require('./arch');
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
 const invertKv = require('invert-kv');
+const {n2bts}  = require('balanced-ternary');
 
 function decode_instruction(opcode) {
   const family = get_trit(opcode, 0);
@@ -62,8 +63,8 @@ function decode_operand(di, machine_code, offset=0) {
 }
 
 // Disassemble one instruction in machine_code
-function disasm(machine_code) {
-  let di = decode_instruction(machine_code[0]);
+function disasm(machine_code, offset=0) {
+  let di = decode_instruction(machine_code[offset]);
 
   let opcode, operand;
   let consumed = 1; // 1-tryte opcode, incremented later if operands
@@ -73,7 +74,7 @@ function disasm(machine_code) {
 
     // note: some duplication with cpu read_alu_operand TODO: factor out
     // TODO: handle reading beyond end
-    let decoded_operand = decode_operand(di, machine_code, 0);
+    let decoded_operand = decode_operand(di, machine_code, offset);
 
     if ('absolute' in decoded_operand) {
         operand = decoded_operand.absolute.toString(); // decimal address
@@ -91,12 +92,16 @@ function disasm(machine_code) {
     opcode += {'-1':'L', 0:'E', 1:'N'}[di.direction];
     opcode += {'-1':'N', 0:'Z', 1:'P'}[di.compare];
 
-    operand = machine_code[1].toString();
-    if (machine_code[1] > 0) {
-      // always add +, since makes relativity clearer
-      operand = '+' + machine_code[1].toString();
+    let rel_address = machine_code[offset + 1];
+    if (rel_address === undefined) {
+      operand = '???'
     } else {
-      operand = machine_code[1].toString();
+      if (rel_address > 0) {
+        // always add +, since makes relativity clearer
+        operand = '+' + rel_address.toString();
+      } else {
+        operand = rel_address.toString();
+      }
     }
 
     consumed += 1;

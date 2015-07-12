@@ -67,6 +67,9 @@ function assemble(lines) {
 
           default:
             operand = Number.parseInt(operand, 10);
+            if (Number.isNaN(operand)) {
+              throw new Error('invalid non-numeric operand: '+operand+', in line: '+line);
+            }
         }
 
         if (addressing_mode === ADDR_MODE.IMMEDIATE) {
@@ -102,7 +105,7 @@ function assemble(lines) {
       switch(addressing_mode) {
         case ADDR_MODE.IMMEDIATE:
           if (!Number.isInteger(operand)) {
-            throw new Error('opcode '+opcode+' (immediate) requires operand: '+operand);
+            throw new Error('opcode '+opcode+' (immediate) requires operand: '+operand+', in line: '+line);
           }
 
           emit(operand);
@@ -110,7 +113,7 @@ function assemble(lines) {
 
         case ADDR_MODE.ABSOLUTE:
           if (!Number.isInteger(operand)) {
-            throw new Error('opcode '+opcode+' (absolute) requires operand: '+operand);
+            throw new Error('opcode '+opcode+' (absolute) requires operand: '+operand+', in line: '+line);
           }
 
           // TODO: endian?

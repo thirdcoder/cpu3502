@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "wzrd demo.js",
-    "test": "babel-node demo.js"
+    "test": "babel-node test.js"
   },
   "dependencies": {
     "balanced-ternary": "*",
@@ -34,8 +34,9 @@
     "tritwise": "*"
   },
   "devDependencies": {
-    "tritmapped-terminal": "*",
     "babel": "^5.6.14",
-    "babelify": "^6.1.3"
+    "babelify": "^6.1.3",
+    "tape": "^4.0.0",
+    "tritmapped-terminal": "*"
   }
 }

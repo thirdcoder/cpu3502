@@ -22,6 +22,13 @@ const term = Triterm({
   tritmap: memory.array.subarray(memory.map.video.start, memory.map.video.end)
 });
 
+memory.map.video.write = (address, value) => {
+  // When writing to video, refresh the terminal canvas
+  // TODO: optimize to throttle refresh? refresh rate 60 Hz?/requestAnimationFrame? dirty, only if changes?
+  //console.log('video write:',address,value);
+  term.tc.refresh();
+};
+
 const cpu = CPU({
   memory: memory
 });
@@ -53,8 +60,6 @@ var lines = [
   ];
 
 cpu.memory.writeArray(0, assembler(lines));
-
-term.tc.refresh();
 
 cpu.run();
 

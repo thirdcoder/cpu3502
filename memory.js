@@ -47,7 +47,7 @@ class Memory {
   writeArray(address, data) {
     let i = address;
     for(let tryte of data) {
-      this.array[i++] = tryte;
+      this.write(i++, tryte);
     }
   } 
 

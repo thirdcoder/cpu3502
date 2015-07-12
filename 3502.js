@@ -132,10 +132,10 @@ class CPU {
 
     // if matches, relative branch (+/- 121)
     if (branch_taken) {
-      console.log('taking branch from',cpu.pc,'to',cpu.pc+rel_address);
-      cpu.pc += rel_address;
+      console.log('taking branch from',this.pc,'to',this.pc+rel_address);
+      this.pc += rel_address;
     } else {
-      console.log('not taking branch from',cpu.pc,'to',cpu.pc+rel_address);
+      console.log('not taking branch from',this.pc,'to',this.pc+rel_address);
     }
   }
 
@@ -148,7 +148,7 @@ class CPU {
   }
 
   step() {
-    execute_next_instruction(cpu);
+    execute_next_instruction(this);
     this.pc += this.get_flag(FLAGS.R);
   }
 
@@ -160,6 +160,7 @@ class CPU {
   }
 }
 
-var cpu = new CPU();
-cpu.run();
+module.exports = function(opts) {
+  return new CPU(opts);
+};
 

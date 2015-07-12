@@ -22,8 +22,8 @@
     ]
   },
   "scripts": {
-    "start": "wzrd 3502.js",
-    "test": "babel-node 3502.js"
+    "start": "wzrd demo.js",
+    "test": "babel-node demo.js"
   },
   "dependencies": {
     "balanced-ternary": "*",

@@ -11,7 +11,7 @@ const memory = Memory({
   tryteCount: MEMORY_SIZE,
   map: {
     video: {
-      start: 0, // TODO: start at higher address?
+      start: -3280,
       end: (3**VIDEO_TRYTE_ADDRESS_SIZE * TRITS_PER_TRYTE)**TRYTES_PER_WORD / TRITS_PER_TRYTE, // '00xxx xyyyy' address -> 'xxxxx' tritmap value
     },
       /* TODO

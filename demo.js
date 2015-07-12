@@ -80,13 +80,14 @@ var lines = [
 
     'TAX',
 
-    'LDA #%11111',
+    'LDA #%1111i',
     'STA -3000',
 
-    // write characters in accumulator
-    'STA -3282',
-    'STA -3282',
-    'STA -3282',
+    '.equ -3282 chargen',
+
+    'STA chargen',
+    'STA chargen',
+    'STA chargen',
 
     'HALT_Z'
   ];

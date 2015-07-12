@@ -12,8 +12,9 @@ const ALU = require('./alu');
 const execute_xop_instruction = require('./xop');
 
 class CPU {
-  constructor() {
+  constructor(opts={}) {
     this.memory = new Int8Array(new ArrayBuffer(MEMORY_SIZE)); // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
+    this.memoryMap = opts.memoryMap || {};
     this.pc = 0;
     this.accum = 0;
     this.index = 0;

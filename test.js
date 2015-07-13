@@ -228,6 +228,15 @@ test('assembly labels', (t) => {
   t.equal(machine_code[2], 10); // 1: BNE
   t.equal(machine_code[3], -2); // 2: relative label
 
+  // forward reference
+  machine_code = assembler([
+    'BNE foo2',
+    'foo2:',
+  ]);
+  console.log(machine_code);
+  t.equal(machine_code[0], 10); // BNE
+  t.equal(machine_code[1], 2);  // +2 relative address, after 2-byte instruction
+
   t.end();
 });
 

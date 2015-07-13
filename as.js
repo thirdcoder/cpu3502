@@ -31,7 +31,7 @@ function assemble(lines) {
   }
 
   let symbols = new Map();
-
+  let unresolved_symbols = [];
 
   for (let line of lines) {
     if (line.endsWith(':')) {
@@ -86,23 +86,20 @@ function assemble(lines) {
               if (symbols.has(operand)) {
                 operand = symbols.get(operand);
               } else {
-                throw new Error('undefined symbol reference: '+operand+', in line: '+line);
+                unresolved_symbols.push({
+                  code_address: codeOffset + 1, // write right after opcode
+                  symbol_name: operand,
+                  addressing_mode: addressing_mode,
+                  asm_line: line,
+                });
+                console.log(`saving unresolved symbol ${operand} at ${codeOffset}`);
+                operand = 0;//61; // overwritten in second phase
+                //throw new Error('unresolved symbol reference: '+operand+', in line: '+line);
               }
             }
         }
 
-        if (addressing_mode === ADDR_MODE.IMMEDIATE) {
-          if (operand < -121 || operand > 121) {
-            throw new Error('immediate operand out of 5-trit range: '+operand+', in line: '+line);
-          }
-        } else if (addressing_mode === ADDR_MODE.ABSOLUTE) {
-          // %iiiiiiiiii to %1111111111
-          // $mmmmm to $44444
-          // &NZZZ to &AMMM
-          if (operand < -29524 || operand > 29524) {
-            throw new Error('absolute operand out of 10-trit range: '+operand+', in line: '+line);
-          }
-        }
+        validate_operand_range(operand, addressing_mode, line);
       }
     }
 
@@ -217,9 +214,44 @@ function assemble(lines) {
     }
   }
 
+  // Resolve unresolved symbols, writing their values in the machine code
+  for (let us of unresolved_symbols) {
+    if (!symbols.has(us.symbol_name)) {
+      throw new Error(`unresolved symbol ${us.symbol_name}, in line=${us.line}`);
+    }
+
+    const resolved_value = symbols.get(us.symbol_name);
+    validate_operand_range(resolved_value, us.addressing_mode, us.line);
+    console.log(`resolved symbol ${us.symbol_name} to ${resolved_value}`);
+
+    if (us.addressing_mode === ADDR_MODE.IMMEDIATE) {
+      output[us.code_address] = resolved_value;
+    } else if (us.addressing_mode === ADDR_MODE.ABSOLUTE) {
+      output[us.code_address] = slice_trits(resolved_value, 0, 5);
+      output[us.code_address + 1] = slice_trits(resolved_value, 5, 10);
+    } else {
+      throw new Error('unknown addressing mode resolving '+us);
+    }
+  }
+
   console.log('assembled '+lines.length+' lines into '+output.length+' trytes');
   console.log(output);
   return output;
+}
+
+function validate_operand_range(operand, addressing_mode, line) {
+  if (addressing_mode === ADDR_MODE.IMMEDIATE) {
+    if (operand < -121 || operand > 121) {
+      throw new Error('immediate operand out of 5-trit range: '+operand+', in line: '+line);
+    }
+  } else if (addressing_mode === ADDR_MODE.ABSOLUTE) {
+    // %iiiiiiiiii to %1111111111
+    // $mmmmm to $44444
+    // &NZZZ to &AMMM
+    if (operand < -29524 || operand > 29524) {
+      throw new Error('absolute operand out of 10-trit range: '+operand+', in line: '+line);
+    }
+  }
 }
 
 module.exports = assemble;

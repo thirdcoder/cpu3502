@@ -79,11 +79,12 @@ const BRANCH_INSTRUCTION_ALIASES = {
 const XOP = {
 
   TAX: 1,       // 0001 transfer accumulator to index
-  TSX: 2,       // 001i transfer stack pointer to index
+  TAY: 2,       // 001i transfer accumulator to yindex
   TXA: 3,       // 0010 transfer index to accumulator
-  TXS: 4,       // 0011 transfer index to stack pointer
+  TYA: 4,       // 0011 transfer yindex to accumulator
 
   INX: 5,       // 01ii increment index
+  INY: 6,       // 01i0 increment yindex
 
   HALT_P: -38,  // iii1 halt positive
   HALT_Z: -39,  // iii0 halt zero

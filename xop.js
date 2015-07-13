@@ -14,9 +14,9 @@ function execute_xop_instruction(cpu, operation) {
       console.log('TAX index=',cpu.index);
       break;
 
-    case XOP.TSX: // X = S
-      cpu.index = cpu.stackptr;
-      cpu.alu.update_flags_from(cpu.index);
+    case XOP.TAY: // Y = A
+      cpu.yindex = cpu.accum;
+      cpu.alu.update_flags_from(cpu.yindex);
       break;
 
     case XOP.TXA: // A = X
@@ -24,9 +24,9 @@ function execute_xop_instruction(cpu, operation) {
       cpu.alu.update_flags_from(cpu.accum);
       break;
 
-    case XOP.TXS: // S = X
-      cpu.stackptr = cpu.index;
-      cpu.alu.update_flags_from(cpu.index);
+    case XOP.TYA: // A = Y
+      cpu.accum = cpu.yindex;
+      cpu.alu.update_flags_from(cpu.accum);
       break;
 
     // halts - set H to halt code, set R to 0 to stop running
@@ -43,10 +43,15 @@ function execute_xop_instruction(cpu, operation) {
       cpu.set_flag(FLAGS.R, 0);
       break;
 
-    // math
+    // arithmetic
     case XOP.INX:   // X = X+1
       cpu.index = inc(cpu.index);
       cpu.alu.update_flags_from(cpu.index);
+      break;
+
+    case XOP.INY:   // Y = Y+1
+      cpu.yindex = inc(cpu.yindex);
+      cpu.alu.update_flags_from(cpu.yindex);
       break;
   }
 }

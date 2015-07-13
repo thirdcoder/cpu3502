@@ -126,7 +126,8 @@ var lines = [
     'ADC #2',
     'STA chargen',  // trit-text 'Z'
 
-    'LDX #5',
+    'LDX #4',
+    'INX',
     'STX col',
     'DEC chargen',  // trit-text 'Y'
 

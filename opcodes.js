@@ -83,6 +83,8 @@ const XOP = {
   TXA: 3,       // 0010 transfer index to accumulator
   TXS: 4,       // 0011 transfer index to stack pointer
 
+  INX: 5,       // 01ii increment index
+
   HALT_P: -38,  // iii1 halt positive
   HALT_Z: -39,  // iii0 halt zero
   HALT_N: -40,  // iiii halt negative

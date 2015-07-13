@@ -65,9 +65,9 @@ class CPU {
     //
     // iiiii iii00 -29520 int +1
     // iiiii iii01 -29519
-    console.log('int',intnum,value);
-    const address = this.memory.readWord(this.memory.minAddress);
-    console.log('address',address);
+    console.log('interrupt',intnum,value);
+    const address = this.memory.readWord(this.memory.minAddress + ((intnum + 1) * 2));
+    console.log('interrupt vector address',address);
 
     // Set accumulator to passed in value, used to send data from I/O
     // TODO: other registers? index, yindex, flags; optional. Or at least clear

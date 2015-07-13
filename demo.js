@@ -83,8 +83,8 @@ var lines = [
     'NOP #-121',
     'NOP 29524',
     'LDA #0',
-    'BNE -1',
-    'BEQ +2',
+    'BNE #-1',
+    'BEQ #+2',
     'HALT_N',
     'HALT_P',
     'LDA #42',
@@ -140,7 +140,7 @@ var lines = [
     'STA col',
     'STA chargen',
     'CMP #20',
-    'BNE -11',
+    'BNE #-11',
 
     'HALT_Z'
  ];

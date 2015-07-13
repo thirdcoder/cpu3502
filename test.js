@@ -18,7 +18,7 @@ test('halts', (t) => {
 
 test('branch instruction decoding', (t) => {
 
-  const machine_code = assembler(['BRSNZ +121']);
+  const machine_code = assembler(['BRSNZ #+121']);
 
   const di = decode_instruction(machine_code[0]);
 

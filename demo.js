@@ -149,6 +149,12 @@ var lines = [
     //'BNE #-11',
     'BNE loop',
 
+    'LDA #1',
+    'STA row',
+    'LDA #0',
+    'STA col',
+
+    // set interrupt handler
     '.equ -29524 int_inputL',
     '.equ -29523 int_inputH',
     'LDA #handle_input.low',
@@ -158,10 +164,22 @@ var lines = [
 
     'HALT_Z',
 
+
+    // advance terminal to next line
+    'next_line:',
+    'INC row',
+    'LDA #0',
+    'STA col',
+    'HALT_Z',
+
     // interrupt handler:
     'handle_input:',
     'STA chargen',
     'INC col',
+    'LDX col',
+    '.equ 46 row_count', // TODO: > instead of =
+    'CPX #row_count',
+    'BEQ next_line',  // TODO: support unresolved forward references in relative labels, offsets..
     'HALT_Z',
 ];
 

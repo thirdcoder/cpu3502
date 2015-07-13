@@ -24,7 +24,7 @@ class ALU {
     this.cpu.set_flag(FLAGS.S, sign);
 
     console.log('flags:','FHRVSDCIL');
-    console.log('flags:',n2bts(this.cpu.flags));
+    console.log('flags:',n2bts(this.cpu.flags), `A=${this.cpu.accum}, X=${this.cpu.index}, Y=${this.cpu.yindex}`);
   }
 
   execute_alu_instruction(operation, read_arg, write_arg) {

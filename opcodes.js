@@ -85,6 +85,8 @@ const XOP = {
 
   INX: 5,       // 01ii increment index
   INY: 6,       // 01i0 increment yindex
+  DEX: 7,       // 01i1 decrement index
+  DEY: 8,       // 010i decrement yindex
 
   HALT_P: -38,  // iii1 halt positive
   HALT_Z: -39,  // iii0 halt zero

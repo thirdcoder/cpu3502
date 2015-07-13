@@ -53,6 +53,17 @@ function execute_xop_instruction(cpu, operation) {
       cpu.yindex = inc(cpu.yindex);
       cpu.alu.update_flags_from(cpu.yindex);
       break;
+
+    case XOP.DEX:   // X = X-1
+      cpu.index = dec(cpu.index);
+      cpu.alu.update_flags_from(cpu.index);
+      break;
+
+    case XOP.DEY:   // Y = Y-1
+      cpu.yindex = dec(cpu.yindex);
+      cpu.alu.update_flags_from(cpu.yindex);
+      break;
+
   }
 }
 

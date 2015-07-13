@@ -33,6 +33,31 @@ class CPU {
     console.log('initial flags=',n2bts(this.flags));
   }
 
+  state_snapshot() {
+    return {
+      pc: this.pc,
+      accum: this.accum,
+      index: this.index,
+      yindex: this.yindex,
+      stackptr: this.stackptr,
+      flags: this.flags
+    };
+  }
+
+  state_restore(state) {
+    this.pc = state.pc;
+    this.accum = state.accum;
+    this.index = state.index;
+    this.yindex = state.yindex;
+    this.stackptr = state.stackptr;
+    this.flags = state.flags;
+  }
+
+  interrupt() {
+    const old_pc = this.pc;
+    const old_flags = this.flags;
+  }
+
   // get a flag trit value given FLAGS.foo
   get_flag(flag) {
     let flag_index = flag + 4; // -4..4 to 0..8

@@ -64,6 +64,18 @@ function execute_xop_instruction(cpu, operation) {
       cpu.alu.update_flags_from(cpu.yindex);
       break;
 
+    // flags
+    case XOP.CLC:   // C = 0
+      cpu.set_flag(FLAGS.C, 0);
+      break;
+
+    case XOP.CLI:   // I = 0
+      cpu.set_flag(FLAGS.I, 0);
+      break;
+
+    case XOP.CLV:   // V = 0
+      cpu.set_flag(FLAGS.V, 0);
+      break;
   }
 }
 

@@ -297,4 +297,42 @@ test('execute', (t) => {
   t.end();
 });
 
+test('adc overflow flag', (t) => {
+  const cpu = CPU();
+  var lines = [
+    'LDA #121',
+    'ADC #121',
+    'HALT_Z'
+  ];
 
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  //  11111
+  //  11111
+  // 10000i
+  // Vaccum
+  t.equal(cpu.accum, -1);
+  t.equal(cpu.get_flag(FLAGS.V), 1);
+
+  t.end();
+});
+
+test('clear overflow flag', (t) => {
+  const cpu = CPU();
+  var lines = [
+    'LDA #121',
+    'ADC #121', // V = 1
+    'CLV',      // V = 0
+    'HALT_Z'
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.get_flag(FLAGS.V), 0);
+
+  t.end();
+});

@@ -53,7 +53,7 @@ const ADDR_MODE = {
 const FLAGS = {
   // flag (aa) 9 trits
   L: -4, // -4 ii L least significant trit of A (if 0, divisible by 3)
-  I: -3, // -3 i0 I interrupts enabled
+  I: -3, // -3 i0 I interrupts masked
   C: -2, // -2 i1 C carry
   D: -1, // -1 0i D dead zero
   S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)
@@ -90,6 +90,11 @@ const XOP = {
   INY: 6,       // 01i0 increment yindex
   DEX: 7,       // 01i1 decrement index
   DEY: 8,       // 010i decrement yindex
+
+  CLC: 9,       // 0100 clear carry flag
+  CLI: 10,      // 0101 clear interrupt-disable flag
+  CLV: 11,      // 011i clear overflow flag
+
 
   HALT_P: -38,  // iii1 halt positive
   HALT_Z: -39,  // iii0 halt zero

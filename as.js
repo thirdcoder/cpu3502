@@ -188,29 +188,31 @@ function assemble(lines) {
           direction_value * Math.pow(3,2) +
           compare_value * Math.pow(3,1) +
           1;
-        emit(tryte);
 
+        let rel_address;
         switch(addressing_mode) {
           case ADDR_MODE.IMMEDIATE:
             // 'immediate mode' branch instructions, BEQ #+2, means encode relative offset directly
-            emit(operand);
+            rel_address = operand;
             break;
 
           case ADDR_MODE.ABSOLUTE:
             // given absolute address, need to compute relative to current location for instruction encoding
-            // -1 to account for the size of this opcode
-            let rel_address = operand - codeOffset - 1;
+            // -2 to account for size of the branch instruction (opcode+operand) itself
+            rel_address = operand - codeOffset - 2;
 
             if (rel_address < -121 || rel_address > 121) {
               throw new Error(`branch instruction to too-far absolute address: operand=${operand}, codeOffset=${codeOffset}, rel_address=${rel_address}, in line=${line}`);
             }
 
-            emit(rel_address);
             break;
 
           default:
             throw new Error('invalid addressing mode for branch instruction: '+addressing_mode+', in line='+line);
         }
+
+        emit(tryte);
+        emit(rel_address);
       }
     }
   }

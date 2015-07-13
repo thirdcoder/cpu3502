@@ -197,9 +197,14 @@ function assemble(lines) {
             break;
 
           case ADDR_MODE.ABSOLUTE:
-            // given absolute address,
-            //throw new Error('TODO'+operand);
-            emit(operand);
+            // given absolute address, need to compute relative to current location for instruction encoding
+            let rel_address = operand - codeOffset;
+
+            if (rel_address < -121 || rel_address > 121) {
+              throw new Error(`branch instruction to too-far absolute address: operand=${operand}, codeOffset=${codeOffset}, rel_address=${rel_address}, in line=${line}`);
+            }
+
+            emit(rel_address);
             break;
 
           default:

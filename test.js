@@ -197,7 +197,29 @@ test('assembly labels', (t) => {
   t.equal(machine_code[0], 0);  // 0: NOP A
   t.equal(machine_code[1], 0);  // 0: NOP A
   t.equal(machine_code[2], 10); // 1: BNE
-  t.equal(machine_code[3], 2);  // 2: label
+  t.equal(machine_code[3], -1); // 2: relative label (2 - 1 = -1)
+
+  t.end();
+});
+
+test('assembly branch out-of-range', (t) => {
+  t.doesNotThrow(() => {
+    let machine_code = assembler(['BNE 122']); // from 1 to 122 absolute, maximum range 121
+    t.equal(machine_code[1], 121);
+
+    machine_code = assembler(['BNE -120']); // from 1 to -120, minimum range -121
+    t.equal(machine_code[1], -121);
+  });
+
+  t.throws(() => {
+    const machine_code = assembler(['BNE 123']); // from 1 to 123, a branch too far (122)
+    console.log(machine_code);
+  });
+
+  t.throws(() => {
+    const machine_code = assembler(['BNE -121']);
+    console.log(machine_code);
+  });
 
   t.end();
 });

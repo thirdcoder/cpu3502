@@ -1,5 +1,8 @@
 'use strict';
 
+const ARRAY_TYPE = Int8Array; // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
+const TRITS_PER_TRYTE = 5;
+
 // Array of 5-trit tryte memory cells backed by an Int8Array
 class Memory {
   constructor(opts={}) {
@@ -14,8 +17,7 @@ class Memory {
 
     this.bal2unbal = this.maxAddress;
 
-    this.arrayType = Int8Array; // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
-    this._array = opts._array || new this.arrayType(new ArrayBuffer(this.tryteCount));
+    this._array = opts._array || new ARRAY_TYPE(new ArrayBuffer(this.tryteCount));
     this.map = opts.map || {};
   }
 
@@ -58,6 +60,11 @@ class Memory {
     return this.readNoTrap(address);
   }
 
+  readWord(address) {
+    // 2-tryte word TODO: endian?
+    return this.read(address) + 3**TRITS_PER_TRYTE * this.read(address + 1);
+  }
+
   // Write one tryte
   write(address, value) {
     this.writeNoTrap(address, value);
@@ -70,7 +77,7 @@ class Memory {
     return this.readNoTrap(address);
   }
 
-  // Write an _array of trytes
+  // Write an array of trytes
   writeArray(address, data) {
     let i = address;
     for(let tryte of data) {

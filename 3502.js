@@ -53,9 +53,31 @@ class CPU {
     this.flags = state.flags;
   }
 
-  interrupt() {
-    const old_pc = this.pc;
-    const old_flags = this.flags;
+  interrupt(intnum, value) {
+    const before = this.state_snapshot();
+
+    // Read interrupt vector table at negative-most memory, word addresses pointers:
+    // iiiii iiiii -29524 int -1
+    // iiiii iiii0 -29523
+    //
+    // iiiii iiii1 -29522 int 0
+    // iiiii iii0i -29521
+    //
+    // iiiii iii00 -29520 int +1
+    // iiiii iii01 -29519
+    console.log('int',intnum,value);
+    const address = this.memory.readWord(this.memory.minAddress);
+    console.log('address',address);
+
+    // Set accumulator to passed in value, used to send data from I/O
+    // TODO: other registers? index, yindex, flags; optional. Or at least clear
+    this.accum = value;
+
+    // Execute interrupt handler
+    this.pc = address;
+    this.run();
+
+    this.state_restore(before);
   }
 
   // get a flag trit value given FLAGS.foo

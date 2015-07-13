@@ -43,7 +43,10 @@ console.log('memory.map',memory.map);
 const term = Triterm({
   addressTryteSize: VIDEO_TRYTE_COUNT,
   tritmap: memory.subarray(memory.map.video.start, memory.map.video.end),
-  handleInput: (tt, ev) => term.writeTTChar(tt), // TODO: interrupts
+  handleInput: (tt, ev) => {
+    cpu.interrupt(-1, tt);
+    //term.writeTTChar(tt), // TODO: interrupts
+  },
 });
 
 memory.map.video.write = (address, value) => {
@@ -146,8 +149,13 @@ var lines = [
     //'BNE #-11',
     'BNE loop',
 
-    'HALT_Z'
- ];
+    'HALT_Z',
+
+    // interrupt handler:
+    'input:',
+    'STA chargen',
+    'HALT_Z',
+];
 
 cpu.memory.writeArray(0, assembler(lines));
 

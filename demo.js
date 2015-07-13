@@ -197,7 +197,7 @@ var lines = [
 
     // interrupt handler:
     'handle_input:',
-    'CMP #11',        // trit-text newline
+    'CMP #12',        // trit-text newline
     'BEQ next_line',
     'CMP #0',
     'BEQ backspace',

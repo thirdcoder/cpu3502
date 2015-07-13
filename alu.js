@@ -15,12 +15,17 @@ class ALU {
   update_flags_from(value) {
     this.cpu.set_flag(FLAGS.L, get_trit(value, 0)); // L = least significant trit of A
 
-    // set to most significant nonzero trit, or zero (TODO: optimize? since packed can really just check <0, >0,==0)
-    var sign = 0;
+    // set to most significant nonzero trit, or zero
+    let sign;
+    if (value < 0) sign = -1;
+    else if (value === 0) sign = 0;
+    else sign = 1;
+    /*
     for (var i = TRITS_PER_TRYTE; i; --i) {
       sign = get_trit(value, i);
       if (sign !== 0) break;
     }
+    */
     this.cpu.set_flag(FLAGS.S, sign);
 
     console.log('flags:','FHRVSDCIL');

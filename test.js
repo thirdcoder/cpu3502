@@ -356,14 +356,16 @@ test('assemble low/high addresses', (t) => {
     lines.push('NOP A');
 
   lines = lines.concat([
-    //'NOP A',
+    'NOP A',
     'end:',
-    'LDA #end',
+    'LDA #end.low',
+    'LDA #end.high',
   ]);
 
   const machine_code = assembler(lines);
 
-  t.equal(machine_code[122], 121);  // address
+  t.equal(machine_code[123], -121); // #end.low
+  t.equal(machine_code[125], 1);    // #end.high
 
   t.end();
 });

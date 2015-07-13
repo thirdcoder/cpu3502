@@ -33,6 +33,13 @@ function assemble(lines) {
   let symbols = new Map();
   let unresolved_symbols = [];
 
+  function set_symbol(name, value) {
+    symbols.set(name, value);
+    // also add low and high trytes (5-trit), useful for immediate mode, registers
+    symbols.set(`${name}.low`, low_tryte(value));
+    symbols.set(`${name}.high`, high_tryte(value));
+  }
+
   for (let line of lines) {
     if (line.endsWith(':')) {
       // labels TODO: support other instructions on line
@@ -40,7 +47,7 @@ function assemble(lines) {
       if (symbols.has(label)) {
         throw new Error(`label symbol redefinition: ${label}, in line=${line}`);
       }
-      symbols.set(label, codeOffset); // use emitted code length TODO: code assembly offset (0 ok?)
+      set_symbol(label, codeOffset); // use emitted code length TODO: code assembly offset (0 ok?)
       continue;
     }
     // TODO: comments, ; to end-of-line
@@ -119,7 +126,7 @@ function assemble(lines) {
           throw new Error('symbol redefinition: '+name+', in line: '+line);
         }
 
-        symbols.set(name, operand);
+        set_symbol(name, operand);
         console.log(`assigned symbol ${name} to ${operand}`);
       }
     } else if (OP[opcode] !== undefined) {

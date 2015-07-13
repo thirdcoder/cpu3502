@@ -136,11 +136,13 @@ var lines = [
     'TXA',  // X->A, 5
 
     // loop 6..19
+    'loop:',
     'INC A',
     'STA col',
     'STA chargen',
     'CMP #20',
-    'BNE #-11',
+    //'BNE #-11',
+    'BNE loop',
 
     'HALT_Z'
  ];

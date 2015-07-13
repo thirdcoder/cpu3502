@@ -187,7 +187,36 @@ test('assembler directive .equ immediate', (t) => {
 });
 
 test('assembly labels', (t) => {
-  const machine_code = assembler([
+  let machine_code = assembler([
+    'foo1:',
+    'BNE foo1'
+    ]);
+  t.equal(machine_code[0], 10); // BNE
+  t.equal(machine_code[1], -2); // relative address
+
+  // immediate, relative address
+  machine_code = assembler([
+    'BNE #-1'
+    ]);
+  t.equal(machine_code[0], 10); // BNE
+  t.equal(machine_code[1], -1);
+
+  machine_code = assembler([
+    'BNE #1'
+    ]);
+  t.equal(machine_code[0], 10); // BNE
+  t.equal(machine_code[1], 1);
+
+
+  // absolute
+  machine_code = assembler([
+    'BNE 0'
+    ]);
+  t.equal(machine_code[0], 10); // BNE
+  t.equal(machine_code[1], -2); // 2(end of this instruction) - -2(relative offset) = 0(absolute jump destination)
+
+
+  machine_code = assembler([
     'NOP A',
     'NOP A',
     'foo1:',
@@ -197,27 +226,27 @@ test('assembly labels', (t) => {
   t.equal(machine_code[0], 0);  // 0: NOP A
   t.equal(machine_code[1], 0);  // 0: NOP A
   t.equal(machine_code[2], 10); // 1: BNE
-  t.equal(machine_code[3], -1); // 2: relative label (2 - 1 = -1)
+  t.equal(machine_code[3], -2); // 2: relative label
 
   t.end();
 });
 
 test('assembly branch out-of-range', (t) => {
   t.doesNotThrow(() => {
-    let machine_code = assembler(['BNE 122']); // from 1 to 122 absolute, maximum range 121
+    let machine_code = assembler(['BNE 123']); // from 2 to 123 absolute, maximum range 121
     t.equal(machine_code[1], 121);
 
-    machine_code = assembler(['BNE -120']); // from 1 to -120, minimum range -121
+    machine_code = assembler(['BNE -119']); // from 2 to -119, minimum range -121
     t.equal(machine_code[1], -121);
   });
 
   t.throws(() => {
-    const machine_code = assembler(['BNE 123']); // from 1 to 123, a branch too far (122)
+    const machine_code = assembler(['BNE 124']); // from 2 to 123, a branch too far (122)
     console.log(machine_code);
   });
 
   t.throws(() => {
-    const machine_code = assembler(['BNE -121']);
+    const machine_code = assembler(['BNE -120']); // from 2 to -120, a branch too far (-122)
     console.log(machine_code);
   });
 

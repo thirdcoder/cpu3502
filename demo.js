@@ -161,6 +161,7 @@ var lines = [
     // interrupt handler:
     'handle_input:',
     'STA chargen',
+    'INC col',
     'HALT_Z',
 ];
 

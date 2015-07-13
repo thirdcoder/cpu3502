@@ -53,7 +53,7 @@ const ADDR_MODE = {
 const FLAGS = {
   // flag (aa) 9 trits
   L: -4, // -4 ii L least significant trit of A (if 0, divisible by 3)
-  P: -3, // -3 i0 P parity, sum of all trits in A
+  I: -3, // -3 i0 I interrupts enabled
   C: -2, // -2 i1 C carry
   D: -1, // -1 0i D dead zero
   S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)

@@ -120,8 +120,8 @@ var lines = [
 
     'LDX #0',
     'STX row',
-    'LDX #4',
-    'STX col',
+    'LDY #4',
+    'STY col',
     'LDX #1',
     'STA chargen',
 

@@ -39,23 +39,29 @@ class ALU {
 
       case OP.STA:  // M = A
         write_arg(this.cpu.accum);
-        console.log('stored accum',this.cpu.accum);
-        console.log('memory[0]=',this.cpu.memory[0]);
         break;
 
       case OP.STX:  // M = X
         write_arg(this.cpu.index);
         break;
 
+      case OP.STY:  // M = Y
+        write_arg(this.cpu.yindex);
+        break;
+
       case OP.LDA:  // A = M
         this.cpu.accum = read_arg();
         this.update_flags_from(this.cpu.accum);
-        console.log('load, accum=',this.cpu.accum);
         break;
 
       case OP.LDX:  // X = M
         this.cpu.index = read_arg();
         this.update_flags_from(this.cpu.index);
+        break;
+
+      case OP.LDY:  // Y = M
+        this.cpu.yindex = read_arg();
+        this.update_flags_from(this.cpu.yindex);
         break;
 
       // unary functions TODO: how should these set flags?

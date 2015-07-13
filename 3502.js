@@ -21,6 +21,7 @@ class CPU {
     this.pc = 0;
     this.accum = 0;
     this.index = 0;
+    this.yindex = 0;
     this.stackptr = 0;
     this.flags = 0;
 

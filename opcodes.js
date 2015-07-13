@@ -17,8 +17,8 @@ const OP = {
   AND: -5, // i11 pref-i01, TAND, minimum, ↓ U+2193, ∧ U+2227, f iii,i00,i01
   EOR: -4, // 0ii exclusive max ⇑ U+2d1                        f i01,0i1,11i
 
-  CPX: -3, // 0i0 compare index
-  TRI: -2, // 0i1 tritmask, like 6502 BIT
+  STY: -3, // 0i0 store Y
+  LDY: -2, // 0i1 load Y
 
   // increment/no-op/decrement
   DEC: -1, // 00i decrement

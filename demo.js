@@ -23,8 +23,8 @@ const CHARGEN_ADDRESS = -3282; // 0i111 11110
 const CURSOR_ROW_ADDRESS = -3283;
 const CURSOR_COL_ADDRESS = -3284;
 
-const INT_VECTOR_N_ADDRESS = -29524;  // input
-const INT_VECTOR_Z_ADDRESS = -29522;  // start
+const INT_VECTOR_N_ADDRESS = -29524; const INT_INPUT = -1;
+const INT_VECTOR_Z_ADDRESS = -29522; const INT_START = 0;
 const INT_VECTOR_P_ADDRESS = -29520;
 
 const CODE_START_ADDRESS = -29518;
@@ -49,8 +49,9 @@ const term = Triterm({
   addressTryteSize: VIDEO_TRYTE_COUNT,
   tritmap: memory.subarray(memory.map.video.start, memory.map.video.end),
   handleInput: (tt, ev) => {
-    cpu.interrupt(-1, tt);
-    //term.writeTTChar(tt), // TODO: interrupts
+    if (Number.isInteger(tt)) {
+      cpu.interrupt(INT_INPUT, tt);
+    }
   },
 });
 
@@ -198,5 +199,5 @@ cpu.memory.write(INT_VECTOR_Z_ADDRESS + 1, slice_trits(CODE_START_ADDRESS, 5, 10
 //cpu.pc = cpu.read_int_vector(0);
 //cpu.run();
 
-cpu.interrupt(0);
+cpu.interrupt(INT_START);
 

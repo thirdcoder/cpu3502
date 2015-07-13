@@ -5,7 +5,7 @@ const CPU = require('./3502');
 const Memory = require('./memory');
 const assembler = require('./as');
 const {decode_instruction, disasm1, disasm} = require('./instr_decode');
-const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 const {add, inc, dec} = require('./arithmetic');
 
 test('halts', (t) => {

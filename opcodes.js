@@ -63,7 +63,10 @@ const FLAGS = {
   F:  4, // +4 11 F fixed to -1
 };
 
-const BRANCH_INSTRUCTION_ALIASES = {
+const INSTRUCTION_ALIASES = {
+  NEG: 'STI', // negate = simple ternary inverter
+  NOT: 'STI', // not = simple ternary inverter
+
   // generic branch instruction format is BR<flag><operation><compare-trit>
   //  flag: code from FLAGS
   //  operation: L=less than, E=equal, N=not equal
@@ -97,6 +100,6 @@ module.exports = {
   OP,
   ADDR_MODE,
   FLAGS,
-  BRANCH_INSTRUCTION_ALIASES,
+  INSTRUCTION_ALIASES,
   XOP
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
@@ -49,6 +49,10 @@ function assemble(lines) {
     let opcode = tokens[0];
     let operand = tokens[1];
     let addressing_mode;
+
+    // Convenience aliases
+    // ex: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
+    if (INSTRUCTION_ALIASES[opcode]) opcode = INSTRUCTION_ALIASES[opcode];
 
     if (operand !== undefined) {
 
@@ -156,10 +160,6 @@ function assemble(lines) {
       let tryte = opcode_value * Math.pow(3,1) + (-1);
       emit(tryte);
     } else if (opcode.charAt(0) === 'B') {
-      // TODO: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
-      // convenience aliases
-      if (BRANCH_INSTRUCTION_ALIASES[opcode]) opcode = BRANCH_INSTRUCTION_ALIASES[opcode];
-
       if (opcode.charAt(1) === 'R' && opcode.length === 5) { // BR opcodes
         let flag = opcode.charAt(2);
         let direction = opcode.charAt(3);

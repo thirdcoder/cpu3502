@@ -26,7 +26,6 @@ class CPU {
     this.flags = 0;
 
     this.set_flag(FLAGS.F, -1); // fixed value
-    this.set_flag(FLAGS.R, 1); // running: 1, program counter increments by; -1 runs backwards, 0 halts
 
     this.alu = new ALU(this);
 
@@ -200,6 +199,7 @@ class CPU {
   }
 
   run() {
+    this.set_flag(FLAGS.R, 1); // running: 1, program counter increments by; -1 runs backwards, 0 halts
     do {
       this.step();
     } while(this.get_flag(FLAGS.R) !== 0);

@@ -84,6 +84,7 @@ class ALU {
 
       case OP.CMP:  //     A-M
         this.update_flags_from(this.cpu.accum - read_arg());
+        break;
 
       default:
         throw new Error('unimplemented alu instruction: '+operation);

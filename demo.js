@@ -131,6 +131,15 @@ var lines = [
     'STX col',
     'DEC chargen',  // trit-text 'Y'
 
+    'TXA',  // X->A, 5
+
+    // loop 6..19
+    'INC A',
+    'STA col',
+    'STA chargen',
+    'CMP #20',
+    'BNE -11',
+
     'HALT_Z'
  ];
 

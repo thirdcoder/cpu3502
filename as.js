@@ -22,7 +22,8 @@ function assemble(lines) {
   // TODO: port to run on cpu (self-hosting)
   let output = [];
 
-  let codeOffset = 0; // always start at zero, but can override with .org
+  let codeOffset = 0;
+  let origin = 0;
 
   let emit = function(tryte) {
     console.log('emit',n2bts(tryte));
@@ -47,7 +48,7 @@ function assemble(lines) {
       if (symbols.has(label)) {
         throw new Error(`label symbol redefinition: ${label}, in line=${line}`);
       }
-      set_symbol(label, codeOffset); // use emitted code length TODO: code assembly offset (0 ok?)
+      set_symbol(label, origin + codeOffset);
       continue;
     }
     // TODO: comments, ; to end-of-line
@@ -130,7 +131,7 @@ function assemble(lines) {
         console.log(`assigned symbol ${name} to ${operand}`);
       } else if (opcode === 'org') {
         if (operand === undefined) throw new Error('.org directive requires operand, in line: '+line);
-        codeOffset = operand;
+        origin = operand;
       }
     } else if (OP[opcode] !== undefined) {
       // alu
@@ -206,7 +207,7 @@ function assemble(lines) {
           case ADDR_MODE.ABSOLUTE:
             // given absolute address, need to compute relative to current location for instruction encoding
             // -2 to account for size of the branch instruction (opcode+operand) itself
-            rel_address = operand - codeOffset - 2;
+            rel_address = operand - (codeOffset + origin) - 2;
 
             if (rel_address < -121 || rel_address > 121) {
               throw new Error(`branch instruction to too-far absolute address: operand=${operand}, codeOffset=${codeOffset}, rel_address=${rel_address}, in line=${line}`);

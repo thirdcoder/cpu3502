@@ -176,10 +176,12 @@ var lines = [
     'INC row',
     'LDA #0',
     'STA col',
-    'HALT_Z',
+    'HALT_Z',       // TODO: RTI? return from interrupt
 
     // interrupt handler:
     'handle_input:',
+    'CMP #11',        // trit-text newline
+    'BEQ next_line',
     'STA chargen',
     'INC col',
     'LDX col',

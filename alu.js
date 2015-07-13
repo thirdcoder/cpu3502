@@ -88,9 +88,19 @@ class ALU {
         this.update_flags_from(write_arg(dec(read_arg())));
         break;
 
+
       case OP.CMP:  //     A-M
         this.update_flags_from(this.cpu.accum - read_arg());
         break;
+
+      case OP.CPX:  //     X-M
+        this.update_flags_from(this.cpu.index - read_arg());
+        break;
+
+      case OP.CPY:  //     Y-M
+        this.update_flags_from(this.cpu.yindex - read_arg());
+        break;
+
 
       default:
         throw new Error('unimplemented alu instruction: '+operation);

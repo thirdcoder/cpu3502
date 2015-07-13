@@ -25,13 +25,13 @@ const OP = {
   NOP: 0,  // 000 no operation
   INC: 1,  // 001 increment
 
-  JMP: 2, // 01i jump
+  CPX: 2,  // 01i compare X
 
   // arithmetic
   ADC: 3, // 010 add with carry
   STA: 4, // 011 store accumulator
   LDA: 5, // 1ii load accumulator
-  CMP: 6, // 1i0 compare
+  CMP: 6, // 1i0 compare A
   SBC: 7, // 1i1 subtract borrow carry
 
   // unary ternary functions (a.3.5) https://www.scribd.com/doc/78370674/Ternary-Computing-Testbed-3-Trit-Computer-Architecture
@@ -41,7 +41,7 @@ const OP = {
   FD: 11, // 11i forward diode             (tritwise i01 -> 001)
   RD: 12, // 110 reverse diode             (tritwise i01 -> i00)
 
-  uuu:13  // 111
+  CPY:13  // 111 compare Y
 };
 
 const ADDR_MODE = {

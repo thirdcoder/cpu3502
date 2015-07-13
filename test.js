@@ -301,6 +301,7 @@ test('adc overflow flag', (t) => {
   const cpu = CPU();
   var lines = [
     'LDA #121',
+    'SECN',
     'ADC #121',
     'HALT_Z'
   ];
@@ -311,9 +312,10 @@ test('adc overflow flag', (t) => {
 
   //  11111
   //  11111
-  // 10000i
+  //      i
+  // 1000i1
   // Vaccum
-  t.equal(cpu.accum, -1);
+  t.equal(cpu.accum, -2);
   t.equal(cpu.get_flag(FLAGS.V), 1);
 
   t.end();

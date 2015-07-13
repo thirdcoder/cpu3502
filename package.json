@@ -29,6 +29,7 @@
     "balanced-ternary": "*",
     "base27": "*",
     "invert-kv": "^1.0.0",
+    "is-integer": "^1.0.4",
     "nonary": "*",
     "trit-getset": "*",
     "trit-text": "*",

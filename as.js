@@ -5,6 +5,7 @@ const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary')
 const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
 const {get_trit, slice_trits} = require('trit-getset');
+const isInteger = require('is-integer');
 
 // assembler
 
@@ -145,7 +146,7 @@ function assemble(lines) {
 
       switch(addressing_mode) {
         case ADDR_MODE.IMMEDIATE:
-          if (!Number.isInteger(operand)) {
+          if (!isInteger(operand)) {
             throw new Error('opcode '+opcode+' (immediate) requires operand: '+operand+', in line: '+line);
           }
 
@@ -153,7 +154,7 @@ function assemble(lines) {
           break;
 
         case ADDR_MODE.ABSOLUTE:
-          if (!Number.isInteger(operand)) {
+          if (!isInteger(operand)) {
             throw new Error('opcode '+opcode+' (absolute) requires operand: '+operand+', in line: '+line);
           }
 

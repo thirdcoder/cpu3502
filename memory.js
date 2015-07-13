@@ -2,6 +2,7 @@
 
 const ARRAY_TYPE = Int8Array; // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
 const TRITS_PER_TRYTE = 5;
+const isInteger = require('is-integer');
 
 // Array of 5-trit tryte memory cells backed by an Int8Array
 class Memory {
@@ -10,7 +11,7 @@ class Memory {
     if (this.tryteCount === undefined) throw new Error('memory reqires tryteCount option');
 
     // Addresses are balanced ± TODO
-    if (!Number.isInteger((this.tryteCount - 1) / 2)) throw new Error('memory (tryteCount-1)/2 must be integral: '+tryteCount);
+    if (!isInteger((this.tryteCount - 1) / 2)) throw new Error('memory (tryteCount-1)/2 must be integral: '+tryteCount);
     this.maxAddress = (this.tryteCount - 1) / 2;
     this.midAddress = 0;
     this.minAddress = -this.maxAddress;

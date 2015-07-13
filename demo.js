@@ -179,10 +179,18 @@ var lines = [
     'STA col',
     'HALT_Z',       // TODO: RTI? return from interrupt
 
+    'backspace:',
+    'DEC col',    // TODO: wraparound row
+    'LDA #0',     // null to erase TODO: space?
+    'STA chargen',
+    'HALT_Z',
+
     // interrupt handler:
     'handle_input:',
     'CMP #11',        // trit-text newline
     'BEQ next_line',
+    'CMP #0',
+    'BEQ backspace',
     'STA chargen',
     'INC col',
     'LDX col',

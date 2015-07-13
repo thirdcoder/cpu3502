@@ -39,7 +39,7 @@ class Memory {
   writeNoTrap(address, value) {
     if (address < this.minAddress || address > this.maxAddress) throw new Error('out-of-range write: '+address+','+value);
     //console.log('WRITE',address,value,address+this.bal2unbal);
-    this._array[address + this.bal2unbal] = value;
+    return (this._array[address + this.bal2unbal] = value);
     //if (this._array[address + this.bal2unbal] !== value) {
     //  console.log('FAILED TO WRITE',this._array[address + this.bal2unbal],value,this._array.length);
     //}
@@ -66,6 +66,8 @@ class Memory {
     if (traps.write) {
       traps.write(address, this.readNoTrap(address));
     }
+
+    return this.readNoTrap(address);
   }
 
   // Write an _array of trytes

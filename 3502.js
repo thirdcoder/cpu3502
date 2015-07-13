@@ -97,12 +97,12 @@ class CPU {
       console.log('absolute',decoded_operand.absolute);
 
       read_arg = () => { return this.memory.read(decoded_operand.absolute); };
-      write_arg = (x) => { this.memory.write(decoded_operand.absolute, x); };
+      write_arg = (x) => { return this.memory.write(decoded_operand.absolute, x); };
 
     } else if ('accumulator' in decoded_operand) {
       // accumulator, register, no arguments
       read_arg = () => { return this.accum; };
-      write_arg = (x) => { this.accum = x; };
+      write_arg = (x) => { return (this.accum = x); };
 
       console.log('accum');
 

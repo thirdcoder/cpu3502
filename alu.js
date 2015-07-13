@@ -71,6 +71,14 @@ class ALU {
         break;
       }
 
+      case OP.INC:  // M = M+1
+        write_arg(inc(read_arg()));
+        break;
+
+      case OP.DEC:  // M = M-1
+        write_arg(dec(read_arg()));
+        break;
+
       default:
         throw new Error('unimplemented alu instruction: '+operation);
     }

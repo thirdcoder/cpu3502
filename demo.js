@@ -93,8 +93,7 @@ var lines = [
 
     'TAX',
 
-    'LDA #%1111i',
-    'STA -3000',
+    'LDA #%1111i',    // trit-text 'X'
 
     '.equ -3282 chargen',
     '.equ -3283 row',
@@ -124,10 +123,12 @@ var lines = [
     'LDX #1',
     'STA chargen',
 
-    'ADC #1',
-    'STA chargen',
+    'ADC #2',
+    'STA chargen',  // trit-text 'Z'
 
-
+    'LDX #5',
+    'STX col',
+    'DEC chargen',  // trit-text 'Y'
 
     'HALT_Z'
  ];

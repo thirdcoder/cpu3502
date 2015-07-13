@@ -49,14 +49,16 @@ class ALU {
 
       case OP.LDA:  // A = M
         this.cpu.accum = read_arg();
+        this.update_flags_from(this.cpu.accum);
         console.log('load, accum=',this.cpu.accum);
         break;
 
       case OP.LDX:  // X = M
         this.cpu.index = read_arg();
+        this.update_flags_from(this.cpu.index);
         break;
 
-
+      // unary functions TODO: how should these set flags?
       case OP.NTI: write_arg(NTI(read_arg())); break;
       case OP.STI: write_arg(STI(read_arg())); break;
       case OP.PTI: write_arg(PTI(read_arg())); break;
@@ -67,23 +69,26 @@ class ALU {
         const result = add(this.cpu.accum, read_arg(), this.cpu.get_flag(FLAGS.C));
 
         this.cpu.accum = result.result;
+        this.update_flags_from(this.cpu.accum);
         this.cpu.set_flag(FLAGS.V, result.overflow);
         break;
       }
 
       case OP.INC:  // M = M+1
-        write_arg(inc(read_arg()));
+        this.update_flags_from(write_arg(inc(read_arg())));
         break;
 
       case OP.DEC:  // M = M-1
-        write_arg(dec(read_arg()));
+        this.update_flags_from(write_arg(dec(read_arg())));
         break;
+
+      case OP.CMP:  //     A-M
+        this.update_flags_from(this.cpu.accum - read_arg());
 
       default:
         throw new Error('unimplemented alu instruction: '+operation);
     }
 
-    this.update_flags_from(this.cpu.accum);
     console.log('A=',n2bts(this.cpu.accum));
   }
 }

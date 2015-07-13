@@ -22,6 +22,8 @@ const CHARGEN_ADDRESS = -3282; // 0i111 11110
 const CURSOR_ROW_ADDRESS = -3283;
 const CURSOR_COL_ADDRESS = -3284;
 
+//TODO: const KEYBOARD_INTERRUPT_ADDRESS = -3286;//,-3285
+
 const memory = Memory({
   tryteCount: MEMORY_SIZE,
   map: {

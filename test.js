@@ -186,6 +186,22 @@ test('assembler directive .equ immediate', (t) => {
   t.end();
 });
 
+test('assembly labels', (t) => {
+  const machine_code = assembler([
+    'NOP A',
+    'NOP A',
+    'foo1:',
+    'BNE foo1'
+    ]);
+
+  t.equal(machine_code[0], 0);  // 0: NOP A
+  t.equal(machine_code[1], 0);  // 0: NOP A
+  t.equal(machine_code[2], 10); // 1: BNE
+  t.equal(machine_code[3], 2);  // 2: label
+
+  t.end();
+});
+
 test('execute', (t) => {
   const cpu = CPU();
   var lines = [

@@ -31,6 +31,16 @@ function assemble(lines) {
 
 
   for (let line of lines) {
+    if (line.endsWith(':')) {
+      // labels TODO: support other instructions on line
+      const label = line.substring(0, line.length - 1);
+      if (symbols.has(label)) {
+        throw new Error(`label symbol redefinition: ${label}, in line=${line}`);
+      }
+      symbols.set(label, output.length); // use emitted code length TODO: code assembly offset (0 ok?)
+      continue;
+    }
+
     let tokens = line.split(/\s+/);
     let opcode = tokens[0];
     let operand = tokens[1];

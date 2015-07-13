@@ -61,6 +61,9 @@ class ALU {
       case OP.PTI: write_arg(PTI(read_arg())); break;
       case OP.FD:  write_arg( FD(read_arg())); break;
       case OP.RD:  write_arg( RD(read_arg())); break;
+
+      default:
+        throw new Error('unimplemented alu instruction: '+operation);
     }
 
     this.update_flags_from(this.cpu.accum);

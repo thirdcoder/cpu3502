@@ -6,6 +6,7 @@ const Memory = require('./memory');
 const assembler = require('./as');
 const {decode_instruction, disasm1, disasm} = require('./instr_decode');
 const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_ALIASES, XOP} = require('./opcodes');
+const {add, inc, dec} = require('./arithmetic');
 
 test('halts', (t) => {
   const cpu = CPU();
@@ -90,6 +91,38 @@ test('memory maps', (t) => {
   memory.write(4, 33);
   t.equal(trappedWrite, 4);
   t.equal(trappedWriteValue, 33);
+
+  t.end();
+});
+
+test('arithmetic', (t) => {
+  t.deepEqual(add(1, 2), {result:3, overflow:0});
+  t.deepEqual(add(1, -2), {result:-1, overflow:0});
+  t.deepEqual(add(1, -1), {result:0, overflow:0});
+
+  //   11111
+  // +     1
+  // -------
+  //  1iiiii
+  // / ^^^^^
+  //v   result
+  t.deepEqual(add(121, 1), {result:-121, overflow:1}); // overflow wraps around
+
+  t.deepEqual(add(121, 2), {result:-120, overflow:1});
+  t.deepEqual(add(121, 121), {result:-1, overflow:1});
+
+
+  t.deepEqual(add(0, 0), {result:0, overflow:0});
+  t.deepEqual(add(0, -1), {result:-1, overflow:0});
+  t.deepEqual(add(-1, -2), {result:-3, overflow:0});
+
+  t.deepEqual(add(-121, -1), {result:121, overflow:-1}); // underflow
+  t.deepEqual(add(-121, -121), {result:1, overflow:-1});
+
+  t.deepEqual(add(-121, -121, 0), {result:1, overflow:-1});
+  t.deepEqual(add(-121, -121, 1), {result:2, overflow:-1});
+  t.deepEqual(add(-121, -121, -1), {result:0, overflow:-1});
+  t.deepEqual(add(-121, 0, -1), {result:121, overflow:-1});
 
   t.end();
 });

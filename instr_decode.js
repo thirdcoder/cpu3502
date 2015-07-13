@@ -98,9 +98,9 @@ function disasm1(machine_code, offset=0) {
     } else {
       if (rel_address > 0) {
         // always add +, since makes relativity clearer
-        operand = '+' + rel_address.toString();
+        operand = '#+' + rel_address.toString();
       } else {
-        operand = rel_address.toString();
+        operand = '#' + rel_address.toString();
       }
     }
 

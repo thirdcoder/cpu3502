@@ -40,16 +40,13 @@ function assemble(lines) {
       symbols.set(label, output.length); // use emitted code length TODO: code assembly offset (0 ok?)
       continue;
     }
+    // TODO: comments, ; to end-of-line
+    // TODO: .org, start assembly
 
     let tokens = line.split(/\s+/);
     let opcode = tokens[0];
     let operand = tokens[1];
     let addressing_mode;
-
-    // TODO: comments, ; to end-of-line
-    // TODO: labels, foo:, and resolving to 10-trit
-    // TODO: defines, .equ, constants
-    // TODO: .org, start assembly
 
     if (operand !== undefined) {
 

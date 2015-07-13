@@ -136,8 +136,8 @@ test('assemble/disassemble roundtrip', (t) => {
       'NOP A',
       'NOP #%iiiii', // -121',
       'NOP 29524',
-      'BRSNZ -1', //'BNE -1',
-      'BRSEZ +2', //BEQ +2
+      'BRSNZ #-1', //'BNE -1',
+      'BRSEZ #+2', //BEQ +2
       'HALT_N',
       'HALT_P',
       'LDA #%1iii0', // #42
@@ -212,8 +212,8 @@ test('execute', (t) => {
       'NOP #-121',
       'NOP 29524',
       'LDA #0',
-      'BNE -1',
-      'BEQ +2',
+      'BNE #-1',
+      'BEQ #+2',
       'HALT_N',
       'HALT_P',
       'LDA #42',

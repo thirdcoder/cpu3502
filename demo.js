@@ -42,7 +42,8 @@ console.log('memory.map',memory.map);
 
 const term = Triterm({
   addressTryteSize: VIDEO_TRYTE_COUNT,
-  tritmap: memory.subarray(memory.map.video.start, memory.map.video.end)
+  tritmap: memory.subarray(memory.map.video.start, memory.map.video.end),
+  handleInput: (tt, ev) => term.writeTTChar(tt), // TODO: interrupts
 });
 
 memory.map.video.write = (address, value) => {

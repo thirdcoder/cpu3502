@@ -325,6 +325,7 @@ test('clear overflow flag', (t) => {
     'LDA #121',
     'ADC #121', // V = 1
     'CLV',      // V = 0
+    'SECN',     // C = -1
     'HALT_Z'
   ];
 
@@ -333,6 +334,7 @@ test('clear overflow flag', (t) => {
   cpu.run();
 
   t.equal(cpu.get_flag(FLAGS.V), 0);
+  t.equal(cpu.get_flag(FLAGS.C), -1);
 
   t.end();
 });

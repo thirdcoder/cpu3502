@@ -76,6 +76,14 @@ function execute_xop_instruction(cpu, operation) {
     case XOP.CLV:   // V = 0
       cpu.set_flag(FLAGS.V, 0);
       break;
+
+    case XOP.SECP:  // C = 1
+      cpu.set_flag(FLAGS.C, 1);
+      break;
+
+    case XOP.SECN:  // C = i
+      cpu.set_flag(FLAGS.C, -1);
+      break;
   }
 }
 

@@ -22,9 +22,12 @@ function assemble(lines) {
   // TODO: port to run on cpu (self-hosting)
   let output = [];
 
+  let codeOffset = 0; // always start at zero TODO: .org, start assembly
+
   let emit = function(tryte) {
     console.log('emit',n2bts(tryte));
     output.push(tryte);
+    ++codeOffset;
   }
 
   let symbols = new Map();
@@ -37,11 +40,10 @@ function assemble(lines) {
       if (symbols.has(label)) {
         throw new Error(`label symbol redefinition: ${label}, in line=${line}`);
       }
-      symbols.set(label, output.length); // use emitted code length TODO: code assembly offset (0 ok?)
+      symbols.set(label, codeOffset); // use emitted code length TODO: code assembly offset (0 ok?)
       continue;
     }
     // TODO: comments, ; to end-of-line
-    // TODO: .org, start assembly
 
     let tokens = line.split(/\s+/);
     let opcode = tokens[0];
@@ -187,7 +189,22 @@ function assemble(lines) {
           compare_value * Math.pow(3,1) +
           1;
         emit(tryte);
-        emit(operand);
+
+        switch(addressing_mode) {
+          case ADDR_MODE.IMMEDIATE:
+            // 'immediate mode' branch instructions, BEQ #+2, means encode relative offset directly
+            emit(operand);
+            break;
+
+          case ADDR_MODE.ABSOLUTE:
+            // given absolute address,
+            //throw new Error('TODO'+operand);
+            emit(operand);
+            break;
+
+          default:
+            throw new Error('invalid addressing mode for branch instruction: '+addressing_mode+', in line='+line);
+        }
       }
     }
   }

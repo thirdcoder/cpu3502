@@ -52,6 +52,10 @@ class CPU {
     this.flags = state.flags;
   }
 
+  read_int_vector(intnum) {
+    return this.memory.readWord(this.memory.minAddress + ((intnum + 1) * 2));
+  }
+
   interrupt(intnum, value) {
     const before = this.state_snapshot();
 
@@ -65,12 +69,17 @@ class CPU {
     // iiiii iii00 -29520 int +1
     // iiiii iii01 -29519
     console.log('interrupt',intnum,value);
-    const address = this.memory.readWord(this.memory.minAddress + ((intnum + 1) * 2));
+    const address = this.read_int_vector(intnum);
     console.log('interrupt vector address',address);
+
+    if (address === 0) { // probably wrong
+      debugger;
+      throw new Error(`unset interrupt vector for ${intum}`);
+    }
 
     // Set accumulator to passed in value, used to send data from I/O
     // TODO: other registers? index, yindex, flags; optional. Or at least clear
-    this.accum = value;
+    if (value !== undefined) this.accum = value;
 
     // Execute interrupt handler
     this.pc = address;

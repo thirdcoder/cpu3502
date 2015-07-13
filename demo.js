@@ -2,6 +2,7 @@
 
 const CPU = require('./3502');
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
+const {get_trit, set_trit, slice_trits} = require('trit-getset');
 const Triterm = require('tritmapped-terminal');
 
 // 4 trits in each dimension, xxxx and yyyy
@@ -22,7 +23,11 @@ const CHARGEN_ADDRESS = -3282; // 0i111 11110
 const CURSOR_ROW_ADDRESS = -3283;
 const CURSOR_COL_ADDRESS = -3284;
 
-//TODO: const KEYBOARD_INTERRUPT_ADDRESS = -3286;//,-3285
+const INT_VECTOR_N_ADDRESS = -29524;  // input
+const INT_VECTOR_Z_ADDRESS = -29522;  // start
+const INT_VECTOR_P_ADDRESS = -29520;
+
+const CODE_START_ADDRESS = -29518;
 
 const memory = Memory({
   tryteCount: MEMORY_SIZE,
@@ -80,7 +85,7 @@ global.cpu = cpu;
 const assembler = require('./as');
 
 var lines = [
-    '.org 0',
+    '.org '+CODE_START_ADDRESS,
     'LDA #$ijk',
     'LDA #%ii1i0',
     'LDA #&QF',
@@ -184,7 +189,12 @@ var lines = [
     'HALT_Z',
 ];
 
-cpu.memory.writeArray(0, assembler(lines));
+cpu.memory.writeArray(CODE_START_ADDRESS, assembler(lines));
+cpu.memory.write(INT_VECTOR_Z_ADDRESS, slice_trits(CODE_START_ADDRESS, 0, 5));
+cpu.memory.write(INT_VECTOR_Z_ADDRESS + 1, slice_trits(CODE_START_ADDRESS, 5, 10));
 
-cpu.run();
+//cpu.pc = cpu.read_int_vector(0);
+//cpu.run();
+
+cpu.interrupt(0);
 

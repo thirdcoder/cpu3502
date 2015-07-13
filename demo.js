@@ -116,8 +116,21 @@ var lines = [
     'STX row',
     'STA chargen',
 
+
+    'LDX #0',
+    'STX row',
+    'LDX #4',
+    'STX col',
+    'LDX #1',
+    'STA chargen',
+
+    'ADC #1',
+    'STA chargen',
+
+
+
     'HALT_Z'
-  ];
+ ];
 
 cpu.memory.writeArray(0, assembler(lines));
 

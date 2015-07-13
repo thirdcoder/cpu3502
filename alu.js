@@ -5,6 +5,7 @@ const {OP, FLAGS} = require('./opcodes');
 const {bts2n, n2bts} = require('balanced-ternary');
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 const {NTI, STI, PTI, FD, RD, TOR, TAND, BUT} = require('tritwise');
+const {add, inc, dec} = require('./arithmetic');
 
 class ALU {
   constructor(cpu) {
@@ -36,22 +37,22 @@ class ALU {
         console.log('nop');
         break;
 
-      case OP.STA:
+      case OP.STA:  // M = A
         write_arg(this.cpu.accum);
         console.log('stored accum',this.cpu.accum);
         console.log('memory[0]=',this.cpu.memory[0]);
         break;
 
-      case OP.STX:
+      case OP.STX:  // M = X
         write_arg(this.cpu.index);
         break;
 
-      case OP.LDA:
+      case OP.LDA:  // A = M
         this.cpu.accum = read_arg();
         console.log('load, accum=',this.cpu.accum);
         break;
 
-      case OP.LDX:
+      case OP.LDX:  // X = M
         this.cpu.index = read_arg();
         break;
 
@@ -61,6 +62,14 @@ class ALU {
       case OP.PTI: write_arg(PTI(read_arg())); break;
       case OP.FD:  write_arg( FD(read_arg())); break;
       case OP.RD:  write_arg( RD(read_arg())); break;
+
+      case OP.ADC: {  // A = A+M+C
+        const result = add(this.cpu.accum, read_arg(), this.cpu.get_flag(FLAGS.C));
+
+        this.cpu.accum = result.result;
+        this.cpu.set_flag(FLAGS.V, result.overflow);
+        break;
+      }
 
       default:
         throw new Error('unimplemented alu instruction: '+operation);

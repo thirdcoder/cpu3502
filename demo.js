@@ -179,8 +179,17 @@ var lines = [
     'STA col',
     'HALT_Z',       // TODO: RTI? return from interrupt
 
+    'prev_line:',
+    'DEC row',
+    'LDA #44',    // TODO: .equ
+    'STA col',
+    'HALT_Z',
+
     'backspace:',
-    'DEC col',    // TODO: wraparound row
+    'DEC col',
+    'LDA col',
+    'CMP #-1',
+    'BEQ prev_line',
     'LDA #0',     // null to erase TODO: space?
     'STA chargen',
     'HALT_Z',

@@ -147,8 +147,8 @@ function assemble(lines) {
           }
 
           // TODO: endian?
-          emit(slice_trits(operand, 0, 5));
-          emit(slice_trits(operand, 5, 10));
+          emit(low_tryte(operand));
+          emit(high_tryte(operand));
           break;
       }
     } else if (XOP[opcode] !== undefined) {
@@ -227,8 +227,8 @@ function assemble(lines) {
     if (us.addressing_mode === ADDR_MODE.IMMEDIATE) {
       output[us.code_address] = resolved_value;
     } else if (us.addressing_mode === ADDR_MODE.ABSOLUTE) {
-      output[us.code_address] = slice_trits(resolved_value, 0, 5);
-      output[us.code_address + 1] = slice_trits(resolved_value, 5, 10);
+      output[us.code_address] = low_tryte(resolved_value);
+      output[us.code_address + 1] = high_tryte(resolved_value);
     } else {
       throw new Error('unknown addressing mode resolving '+us);
     }
@@ -252,6 +252,14 @@ function validate_operand_range(operand, addressing_mode, line) {
       throw new Error('absolute operand out of 10-trit range: '+operand+', in line: '+line);
     }
   }
+}
+
+function low_tryte(n) {
+  return slice_trits(n, 0, 5);
+}
+
+function high_tryte(n) {
+  return slice_trits(n, 5, 10);
 }
 
 module.exports = assemble;

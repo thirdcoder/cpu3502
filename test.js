@@ -349,3 +349,21 @@ test('clear overflow flag', (t) => {
 
   t.end();
 });
+
+test('assemble low/high addresses', (t) => {
+  let lines = [];
+  for (let i = 0; i < 121; ++i)
+    lines.push('NOP A');
+
+  lines = lines.concat([
+    //'NOP A',
+    'end:',
+    'LDA #end',
+  ]);
+
+  const machine_code = assembler(lines);
+
+  t.equal(machine_code[122], 121);  // address
+
+  t.end();
+});

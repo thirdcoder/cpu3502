@@ -235,7 +235,7 @@ function assemble(lines) {
   }
 
   console.log('assembled '+lines.length+' lines into '+output.length+' trytes');
-  console.log(output);
+  //console.log(output);
   return output;
 }
 

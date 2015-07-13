@@ -150,8 +150,9 @@ var lines = [
     'BNE loop',
 
     'LDA #handle_input', // TODO: high/low trytes of word; this only works at low addresses!
-    '.equ -29524 int_input',
-    'STA int_input',
+    '.equ -29524 int_inputL',
+    '.equ -29523 int_inputH',
+    'STA int_inputL',
 
     'HALT_Z',
 

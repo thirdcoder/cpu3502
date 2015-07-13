@@ -22,7 +22,7 @@ function assemble(lines) {
   // TODO: port to run on cpu (self-hosting)
   let output = [];
 
-  let codeOffset = 0; // always start at zero TODO: .org, start assembly
+  let codeOffset = 0; // always start at zero, but can override with .org
 
   let emit = function(tryte) {
     console.log('emit',n2bts(tryte));
@@ -128,6 +128,9 @@ function assemble(lines) {
 
         set_symbol(name, operand);
         console.log(`assigned symbol ${name} to ${operand}`);
+      } else if (opcode === 'org') {
+        if (operand === undefined) throw new Error('.org directive requires operand, in line: '+line);
+        codeOffset = operand;
       }
     } else if (OP[opcode] !== undefined) {
       // alu

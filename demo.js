@@ -80,6 +80,7 @@ global.cpu = cpu;
 const assembler = require('./as');
 
 var lines = [
+    '.org 0',
     'LDA #$ijk',
     'LDA #%ii1i0',
     'LDA #&QF',

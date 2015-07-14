@@ -105,6 +105,9 @@ const XOP = {
 
   BRK: 19,      // 1i01 breakpoint
 
+  LDAXY: 20,    // 1i1i load into accumulator absolute from Y<<5 + X
+  STAXY: 21,    // 1i10 store accumulator absolut to Y<<5 + X
+
   HALTP: -38,   // iii1 halt positive
   HALTZ: -39,   // iii0 halt zero
   HALTN: -40,   // iiii halt negative

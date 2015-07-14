@@ -2,6 +2,7 @@
 
 const {XOP} = require('./opcodes');
 const {add, inc, dec} = require('./arithmetic');
+const {TRITS_PER_TRYTE} = require('./arch');
 
 function execute_xop_instruction(cpu, operation) {
   console.log('misc', operation);
@@ -109,6 +110,19 @@ function execute_xop_instruction(cpu, operation) {
     case XOP.BRK:
       debugger;
       break;
+
+    case XOP.LDAXY:{// A = [Y<<5 + X]
+      const address = cpu.yindex * 3**TRITS_PER_TRYTE + cpu.index;
+      cpu.accum = cpu.memory.read(address);
+      cpu.alu.update_flags_from(cpu.accum);
+      break;
+      }
+
+    case XOP.STAXY:{// [Y<<5 + X] = A
+      const address = cpu.yindex * 3**TRITS_PER_TRYTE + cpu.index;
+      cpu.accum = cpu.memory.write(address, cpu.accum);
+      break;
+    }
   }
 }
 

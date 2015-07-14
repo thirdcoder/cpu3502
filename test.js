@@ -436,3 +436,44 @@ test('assembler data', (t) => {
 
   t.end();
 });
+
+test('load pointer LDAXY', (t) => {
+  const cpu = CPU();
+  var lines = [
+    'LDY #%11111',  // upper address
+    'LDX #%iiiii',  // lower address
+    'LDAXY',
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.memory.write(29282, 33); // 11111iiiii
+  cpu.run();
+  
+  t.equal(cpu.accum, 33);
+
+  t.end();
+});
+
+test('store pointer STAXY', (t) => {
+  const cpu = CPU();
+  var lines = [
+    'LDY #%11111',  // upper address
+    'LDX #%iiiii',  // lower address
+    'LDA #33',
+    'STAXY',
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  
+  t.equal(cpu.memory.read(29282), 33); // 11111iiiii
+
+  t.end();
+});
+
+
+

@@ -476,4 +476,26 @@ test('store pointer STAXY', (t) => {
 });
 
 
+test('forward unresolved branch labels origin 0', (t) => {
+  const machine_code = assembler([
+    '.org 0',
+    'BEQ done',
+    'done:',
+  ]);
+  t.equal(machine_code[0], 1);   // BEQ
+  t.equal(machine_code[1], 2); // +2(instruction size)
+  t.end();
+});
 
+/*
+test('forward unresolved branch labels origin 100', (t) => {
+  const machine_code = assembler([
+    '.org 100',
+    'BEQ done',
+    'done:',
+  ]);
+  t.equal(machine_code[0], 1);   // BEQ
+  t.equal(machine_code[1], 2); // +2(instruction size)
+  t.end();
+});
+*/

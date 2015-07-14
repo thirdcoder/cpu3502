@@ -54,6 +54,16 @@ function assemble(lines) {
       continue;
     }
 
+    // 'opcode' is first token, 'rest' is everything after
+    let opcode, rest;
+    if (line.indexOf(' ') !== -1) {
+      opcode = line.substr(0, line.indexOf(' '));
+      rest = line.substr(line.indexOf(' ') + 1);
+    } else {
+      opcode = line;
+    }
+
+
     // special-cased .data directive for parsing purposes TODO: refactor, for each instruction to ask for operands, instead of always parsing
     if (line.startsWith('.data "')) { // only string literals for now, TODO
       if (!line.endsWith('"')) throw new Error(`.text directive missing terminating double-quote, in line=${line}`);
@@ -70,106 +80,38 @@ function assemble(lines) {
 
     // TODO: comments, ; to end-of-line
 
-    let tokens = line.split(/\s+/);
-    let opcode = tokens[0];
-    let operand = tokens[1];
-    let addressing_mode;
-
     // Convenience aliases
     // ex: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
     if (INSTRUCTION_ALIASES[opcode]) opcode = INSTRUCTION_ALIASES[opcode];
 
-    if (operand !== undefined) {
+    let addressing_mode, operand, extra;
 
-      if (operand === 'A') {
-        addressing_mode = ADDR_MODE.ACCUMULATOR;
+    // Parse operand
+    if (rest !== undefined) {
+      // 'operand' is up until space, extra is everything else TODO: support parsing quoted strings with embedded spaces
+      if (rest.indexOf(' ') !== -1) {
+        extra = rest.substr(rest.indexOf(' ') + 1);
+        operand = rest.substr(0, rest.indexOf(' '));
       } else {
-        if (operand.charAt(0) === '#') {
-          addressing_mode = ADDR_MODE.IMMEDIATE;
-          operand = operand.substring(1);
-        } else {
-          addressing_mode = ADDR_MODE.ABSOLUTE;
-        }
-
-        switch(operand.charAt(0)) {
-          case '%': // base 3, trits (%iiiii to %11111)
-            operand = bts2n(operand.substring(1));
-            break;
-          case '$': // base 9, nonary ($imm to $144)
-            operand = bts2n(nonary2bts(operand.substring(1)));
-            break;
-          case '&': // base 27, septemvigesimal (&QZ to &DM)
-            operand = bts2n(sv2bts(operand.substring(1)));
-            break;
-          case "'": // trit-text character
-
-            let unicode = operand.substring(1);
-
-            // escapes for special characters
-            if (unicode.substring(0, 1) === '\\') {
-              switch(unicode.substring(1)) {
-                case '\\':
-                  unicode = '\\';
-                  break;
-                case 'n':
-                  unicode = '\n';
-                  break;
-                case '0':
-                  unicode = '\0';
-                  break;
-                case 's':
-                  unicode = ' ';
-                  break;
-                case 'S':
-                  unicode = ';';
-                  break;
-                default:
-                  throw new Error(`invalid trit-text escape character «${unicode}», in line=${line}`);
-              }
-            }
-
-            operand = ttFromUnicode(unicode);
-            if (operand === null || operand === undefined) {
-              throw new Error(`invalid trit-text character «${unicode}», in line=${line})`);
-            }
-            break;
-
-          default:
-            if (operand.match(/^[-+]?[0-9]+$/)) {
-              // decimal
-              operand = Number.parseInt(operand, 10);
-            } else {
-              if (symbols.has(operand)) {
-                operand = symbols.get(operand);
-              } else {
-                unresolved_symbols.push({
-                  code_address: codeOffset + 1, // write right after opcode
-                  symbol_name: operand,
-                  addressing_mode: addressing_mode,
-                  asm_line: line,
-                });
-                console.log(`saving unresolved symbol ${operand} at ${codeOffset}`);
-                operand = 0;//61; // overwritten in second phase
-                //throw new Error('unresolved symbol reference: '+operand+', in line: '+line);
-              }
-            }
-        }
-
-        validate_operand_range(operand, addressing_mode, line);
+        operand = rest;
       }
+
+      console.log(`parse_operand(${operand}, line=${line})`);
+      const oi = parse_operand(operand, line, symbols, unresolved_symbols, codeOffset);
+      addressing_mode = oi.addressing_mode; // TODO: why can't destructure {a,b} = f()?
+      operand = oi.operand;
     }
 
-    console.log(tokens,operand);
+    console.log(opcode,operand);
 
     if (opcode.charAt(0) === '.') {
       // assembler directives
       opcode = opcode.substring(1);
 
       if (opcode === 'equ') {
-        let name = tokens[2];
-        if (name === undefined) {
-          throw new Error('.equ directive requires name, in line: '+line);
-        }
+        // .equ value name
+        // TODO: better parsing
+        let name = extra;
 
         if (symbols.has(name)) {
           throw new Error('symbol redefinition: '+name+', in line: '+line);
@@ -276,7 +218,7 @@ function assemble(lines) {
   // Resolve unresolved symbols, writing their values in the machine code
   for (let us of unresolved_symbols) {
     if (!symbols.has(us.symbol_name)) {
-      throw new Error(`unresolved symbol ${us.symbol_name}, in line=${us.line}`);
+      throw new Error(`unresolved symbol ${us.symbol_name}, in line=${us.asm_line}`);
     }
 
     const resolved_value = symbols.get(us.symbol_name);
@@ -297,6 +239,90 @@ function assemble(lines) {
   //console.log(output);
   return output;
 }
+
+function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
+  let addressing_mode;
+
+  if (operand === 'A') {
+    addressing_mode = ADDR_MODE.ACCUMULATOR;
+  } else {
+    if (operand.charAt(0) === '#') {
+      addressing_mode = ADDR_MODE.IMMEDIATE;
+      operand = operand.substring(1);
+    } else {
+      addressing_mode = ADDR_MODE.ABSOLUTE;
+    }
+
+    switch(operand.charAt(0)) {
+      case '%': // base 3, trits (%iiiii to %11111)
+        operand = bts2n(operand.substring(1));
+        break;
+      case '$': // base 9, nonary ($imm to $144)
+        operand = bts2n(nonary2bts(operand.substring(1)));
+        break;
+      case '&': // base 27, septemvigesimal (&QZ to &DM)
+        operand = bts2n(sv2bts(operand.substring(1)));
+        break;
+      case "'": // trit-text character
+
+        let unicode = operand.substring(1);
+
+        // escapes for special characters
+        if (unicode.substring(0, 1) === '\\') {
+          switch(unicode.substring(1)) {
+            case '\\':
+              unicode = '\\';
+              break;
+            case 'n':
+              unicode = '\n';
+              break;
+            case '0':
+              unicode = '\0';
+              break;
+            case 's':
+              unicode = ' ';
+              break;
+            case 'S':
+              unicode = ';';
+              break;
+            default:
+              throw new Error(`invalid trit-text escape character «${unicode}», in line=${line}`);
+          }
+        }
+
+        operand = ttFromUnicode(unicode);
+        if (operand === null || operand === undefined) {
+          throw new Error(`invalid trit-text character «${unicode}», in line=${line})`);
+        }
+        break;
+
+      default:
+        if (operand.match(/^[-+]?[0-9]+$/)) {
+          // decimal
+          operand = Number.parseInt(operand, 10);
+        } else {
+          if (symbols.has(operand)) {
+            operand = symbols.get(operand);
+          } else {
+            unresolved_symbols.push({
+              code_address: codeOffset + 1, // write right after opcode
+              symbol_name: operand,
+              addressing_mode: addressing_mode,
+              asm_line: line,
+            });
+            console.log(`saving unresolved symbol ${operand} at ${codeOffset}`);
+            operand = 0;//61; // overwritten in second phase
+            //throw new Error('unresolved symbol reference: '+operand+', in line: '+line);
+          }
+        }
+    }
+
+    validate_operand_range(operand, addressing_mode, line);
+  }
+
+  return {addressing_mode, operand};
+}
+
 
 function validate_operand_range(operand, addressing_mode, line) {
   if (addressing_mode === ADDR_MODE.IMMEDIATE) {

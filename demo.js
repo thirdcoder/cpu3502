@@ -190,14 +190,12 @@ var lines = [
     'LDX #greeting.low',
     'greet:',
     'LDAXY',
-    'CMP #0',
-    'STA chargen',
-    'BEQ greeted',
-    'INX',
-    'INC col',
-    'BRA greet',
+    'STA chargen',    // write character
+    'INX',            // move to next character address in string
+    'INC col',        // move cursor
+    'CMP #0',         // reached null terminator at end of string?
+    'BNE greet',      // if not, loop around
 
-    'greeted:',
     'INC row',
 
 

@@ -6,6 +6,7 @@ const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
 const {get_trit, slice_trits} = require('trit-getset');
 const isInteger = require('is-integer');
+const ttFromUnicode = require('trit-text').fromUnicode;
 
 // assembler
 
@@ -85,7 +86,15 @@ function assemble(lines) {
           case '&': // base 27, septemvigesimal (&QZ to &DM)
             operand = bts2n(sv2bts(operand.substring(1)));
             break;
-          // TODO: ' for trit-text characters
+          case "'": // trit-text character
+            // TODO: some special characters might be unquotable due to earlier parsing
+            // TODO: escape codes, '\n for newline, '\0 for null, '\e for escape, at least
+
+            operand = ttFromUnicode(operand.substring(1));
+            if (operand === null || operand === undefined) {
+              throw new Error(`invalid trit-text character «${tokens[1].substring(2)}», in line=${line})`);
+            }
+            break;
 
           default:
             if (operand.match(/^[-+]?[0-9]+$/)) {

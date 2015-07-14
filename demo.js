@@ -130,7 +130,7 @@ var lines = [
 
     'TAX',
 
-    'LDA #%1111i',    // trit-text 'X'
+    "LDA #'X",
 
     '.equ -3282 chargen',
     '.equ -3283 row',
@@ -206,7 +206,8 @@ var lines = [
     'CLI',  // enable all interrupts
 
     '.equ -10000 cursor_char', // variable
-    'LDA #%11iii',   // trit-text '_'
+    "LDA #'_",               // a suitable cursor character
+    //"LDA #'▒",            // alternative block cursor TODO: use in 'insert' mode?
     'STA cursor_char',
 
     '.equ -3285 timer_freq',

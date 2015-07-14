@@ -212,7 +212,7 @@ class CPU {
     }
 
     console.log('flags:','FHRVSDCIL');
-    console.log('flags:',n2bts(this.flags), `A=${this.accum}, X=${this.index}, Y=${this.yindex}`);
+    console.log('flags:',n2bts(this.flags.value), `A=${this.accum}, X=${this.index}, Y=${this.yindex}`);
   }
 
   step() {

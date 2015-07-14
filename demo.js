@@ -226,6 +226,8 @@ var lines = [
 
     // advance terminal to next line
     'next_line:',
+    'LDA #0',
+    'STA chargen',  // clear cursor
     'INC row',
     'LDA #0',
     'STA col',

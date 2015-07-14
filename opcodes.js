@@ -105,9 +105,9 @@ const XOP = {
 
   BRK: 19,      // 1i01 breakpoint
 
-  HALTP: -38,  // iii1 halt positive
-  HALTZ: -39,  // iii0 halt zero
-  HALTN: -40,  // iiii halt negative
+  HALTP: -38,   // iii1 halt positive
+  HALTZ: -39,   // iii0 halt zero
+  HALTN: -40,   // iiii halt negative
 };
 
 module.exports = {

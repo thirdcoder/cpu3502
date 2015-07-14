@@ -84,6 +84,15 @@ function execute_xop_instruction(cpu, operation) {
     case XOP.SECN:  // C = i
       cpu.set_flag(FLAGS.C, -1);
       break;
+
+    case XOP.SEIN:  // I = i
+      cpu.set_flag(FLAGS.I, -1);
+      break;
+
+    case XOP.SEIP:  // I = 1
+      cpu.set_flag(FLAGS.I, 1);
+      break;
+
   }
 }
 

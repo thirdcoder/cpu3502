@@ -96,6 +96,8 @@ const XOP = {
   CLV: 11,      // 011i clear overflow flag
   SECP: 12,     // 0110 set carry flag positive
   SECN: 13,     // 0111 set carry flag negative
+  SEIP: 14,     // 1iii set interrupt flag positive
+  SEIN: 15,     // 1ii0 set interrupt flag negative
 
   HALTP: -38,  // iii1 halt positive
   HALTZ: -39,  // iii0 halt zero

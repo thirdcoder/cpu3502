@@ -185,20 +185,20 @@ var lines = [
     'LDA #0',
     'STA col',
 
-    /* TODO: write greeting
+    // show greeting
     'LDY #greeting.high',
     'LDX #greeting.low',
     'greet:',
     'LDAXY',
     'CMP #0',
-    'BEQ greeted', // TODO: fix forward relative branch labels
     'STA chargen',
+    'BEQ greeted',
     'INX',
-    'BRFEZ greet',
+    'INC col',
+    'BRA greet',
 
     'greeted:',
     'INC row',
-    */
 
 
     // set input interrupt handler

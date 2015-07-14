@@ -114,6 +114,7 @@ function execute_xop_instruction(cpu, operation) {
     case XOP.LDAXY:{// A = [Y<<5 + X]
       const address = cpu.yindex * 3**TRITS_PER_TRYTE + cpu.index;
       cpu.accum = cpu.memory.read(address);
+      console.log(`LDAXY loaded pointer [${address}] = ${cpu.accum}`);
       cpu.alu.update_flags_from(cpu.accum);
       break;
       }

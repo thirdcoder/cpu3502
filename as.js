@@ -53,6 +53,21 @@ function assemble(lines) {
       set_symbol(label, origin + codeOffset);
       continue;
     }
+
+    // special-cased .text directive for parsing purposes TODO: refactor, for each instruction to ask for operands, instead of always parsing
+    if (line.startsWith('.text "')) {
+      if (!line.endsWith('"')) throw new Error(`.text directive missing terminating double-quote, in line=${line}`);
+      const text = line.substring(7, line.length - 1);
+      for (const char of text) {
+        // TODO: support escape codes, same as character literals below
+        // TODO: and maybe raw digits "foobar",0, with any kind of literals. like '.db', but not data bytes; rather, trytes. ".data"?
+        const tt = ttFromUnicode(char);
+        if (tt === null || tt === undefined) throw new Error(`invalid trit-text character «${char}» in string literal, in line=${line}`);
+        emit(tt);
+      }
+      continue;
+    }
+
     // TODO: comments, ; to end-of-line
 
     let tokens = line.split(/\s+/);

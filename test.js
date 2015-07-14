@@ -426,3 +426,13 @@ test('flags object', (t) => {
 
   t.end();
 });
+
+test('assembler text', (t) => {
+  const machine_code = assembler([
+    '.text "123456789abc"'
+  ]);
+
+  t.deepEqual(machine_code, [1,2,3,4,5,6,7,8,9,42,43,44]);
+
+  t.end();
+});

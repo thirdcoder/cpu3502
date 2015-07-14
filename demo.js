@@ -185,6 +185,15 @@ var lines = [
     'LDA #0',
     'STA col',
 
+    // TODO: write null-terminated string
+    'LDA greeting',
+    'greet:',
+    'STA chargen',
+    // TODO: how to loop with address?
+
+    'INC row',
+
+
     // set input interrupt handler
     '.equ -29524 int_inputL',
     '.equ -29523 int_inputH',
@@ -212,10 +221,15 @@ var lines = [
 
     '.equ -3285 timer_freq',
     'LDA #1', // 100 ms
+    /* cursor blink - disable when want quiescence (noisy) */
     'STA timer_freq', // triggers interrupt immediately.. TODO: probably should delay! or never returns?
+    /* */
 
     'HALTZ',
 
+    'greeting:',
+    '.data "Hello, world! ☺"',
+    'NOP', // 0 TODO: .data 0
 
     'handle_pulse:',
     // blinking cursor

@@ -97,8 +97,8 @@ var lines = [
     'LDA #0',
     'BNE #-1',
     'BEQ #+2',
-    'HALT_N',
-    'HALT_P',
+    'HALTN',
+    'HALTP',
     'LDA #42',
     'STA 0',
 
@@ -170,7 +170,7 @@ var lines = [
     'LDA #handle_input.high',
     'STA int_inputH',
 
-    'HALT_Z',
+    'HALTZ',
 
 
     // advance terminal to next line
@@ -178,13 +178,13 @@ var lines = [
     'INC row',
     'LDA #0',
     'STA col',
-    'HALT_Z',       // TODO: RTI? return from interrupt
+    'HALTZ',       // TODO: RTI? return from interrupt
 
     'prev_line:',
     'DEC row',
     'LDA #44',    // TODO: .equ
     'STA col',
-    'HALT_Z',
+    'HALTZ',
 
     'backspace:',
     'DEC col',
@@ -193,7 +193,7 @@ var lines = [
     'BEQ prev_line',
     'LDA #0',     // null to erase TODO: space?
     'STA chargen',
-    'HALT_Z',
+    'HALTZ',
 
     // interrupt handler:
     'handle_input:',
@@ -207,7 +207,7 @@ var lines = [
     '.equ 46 row_count', // TODO: > instead of =
     'CPX #row_count',
     'BEQ next_line',  // TODO: support unresolved forward references in relative labels, offsets..
-    'HALT_Z',
+    'HALTZ',
 ];
 
 cpu.memory.writeArray(CODE_START_ADDRESS, assembler(lines));

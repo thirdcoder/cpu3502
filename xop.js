@@ -30,15 +30,15 @@ function execute_xop_instruction(cpu, operation) {
       break;
 
     // halts - set H to halt code, set R to 0 to stop running
-    case XOP.HALT_N:  // H=i, R=0
+    case XOP.HALTN:  // H=i, R=0
       cpu.set_flag(FLAGS.H, -1);
       cpu.set_flag(FLAGS.R, 0);
       break;
-    case XOP.HALT_Z:  // H=0, R=0
+    case XOP.HALTZ:  // H=0, R=0
       cpu.set_flag(FLAGS.H, 0);
       cpu.set_flag(FLAGS.R, 0);
       break;
-    case XOP.HALT_P:  // H=1, R=0
+    case XOP.HALTP:  // H=1, R=0
       cpu.set_flag(FLAGS.H, 1);
       cpu.set_flag(FLAGS.R, 0);
       break;

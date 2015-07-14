@@ -97,9 +97,9 @@ const XOP = {
   SECP: 12,     // 0110 set carry flag positive
   SECN: 13,     // 0111 set carry flag negative
 
-  HALT_P: -38,  // iii1 halt positive
-  HALT_Z: -39,  // iii0 halt zero
-  HALT_N: -40,  // iiii halt negative
+  HALTP: -38,  // iii1 halt positive
+  HALTZ: -39,  // iii0 halt zero
+  HALTN: -40,  // iiii halt negative
 };
 
 module.exports = {

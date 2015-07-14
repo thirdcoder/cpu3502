@@ -11,7 +11,7 @@ const {add, inc, dec} = require('./arithmetic');
 test('halts', (t) => {
   const cpu = CPU();
 
-  cpu.memory.write(0, -118); // iii0i HALT_Z
+  cpu.memory.write(0, -118); // iii0i HALTZ
   cpu.run();
   t.end();
 });
@@ -138,13 +138,13 @@ test('assemble/disassemble roundtrip', (t) => {
       'NOP 29524',
       'BRSNZ #-1', //'BNE -1',
       'BRSEZ #+2', //BEQ +2
-      'HALT_N',
-      'HALT_P',
+      'HALTN',
+      'HALTP',
       'LDA #%1iii0', // #42
       'STA 0',
       'PTI A',
       'TAX',
-      'HALT_Z'];
+      'HALTZ'];
 
   const machine_code = assembler(lines); 
 
@@ -274,8 +274,8 @@ test('execute', (t) => {
       'LDA #0',
       'BNE #-1',  // not taken
       'BEQ #+2',  // taken
-      'HALT_N',   // (skipped by above branch)
-      'HALT_P',   // (also skipped)
+      'HALTN',   // (skipped by above branch)
+      'HALTP',   // (also skipped)
       'LDA #42',
       'STA 0',    // [0] = 42
 
@@ -287,7 +287,7 @@ test('execute', (t) => {
       'DEX',
       'DEX',
 
-      'HALT_Z'];
+      'HALTZ'];
 
   const machine_code = assembler(lines);
   cpu.memory.writeArray(0, machine_code);
@@ -312,7 +312,7 @@ test('adc overflow flag', (t) => {
     'LDA #121',
     'SECN',
     'ADC #121',
-    'HALT_Z'
+    'HALTZ'
   ];
 
   const machine_code = assembler(lines);
@@ -337,7 +337,7 @@ test('clear overflow flag', (t) => {
     'ADC #121', // V = 1
     'CLV',      // V = 0
     'SECN',     // C = -1
-    'HALT_Z'
+    'HALTZ'
   ];
 
   const machine_code = assembler(lines);

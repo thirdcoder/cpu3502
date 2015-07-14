@@ -405,3 +405,24 @@ test('interrupts', (t) => {
 
   t.end();
 });
+
+test('flags object', (t) => {
+  const Flags = require('./flags');
+
+  const flags = Flags();
+  t.equal(flags.L, 0);
+
+  flags.L = 1;
+  t.equal(flags.L, 1);
+  t.equal(flags.value, 1);
+
+  flags.L = -1;
+  t.equal(flags.L, -1);
+  t.equal(flags.value, -1);
+
+  flags.F = 1;
+  t.equal(flags.F, 1);        // F.......L
+  t.equal(flags.value, 6560); // 10000000i
+
+  t.end();
+});

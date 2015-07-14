@@ -26,6 +26,8 @@ class CPU {
     this.flags = 0;
 
     this.set_flag(FLAGS.F, -1); // fixed value
+    this.set_flag(FLAGS.I, -1); // by default only allow int 0, non-maskable NMI/start
+
 
     this.alu = new ALU(this);
 
@@ -56,7 +58,29 @@ class CPU {
     return this.memory.readWord(this.memory.minAddress + ((intnum + 1) * 2));
   }
 
+  is_interrupt_allowed(intnum) {
+    switch(this.get_flag(FLAGS.I)) {
+      case -1:
+        // I=-1 allow only nonmaskable NMI interrupt 0 (start) (SEIN) (default)
+        return intnum === 0;
+
+      case 0:
+        // I=0 allow all interrupts (CLI)
+        return true;
+
+      case 1:
+        // I=1 allow interrupts -1 and 0, but mask 1 (SEIP)
+        return intnum !== 1;
+    }
+  }
+
   interrupt(intnum, value) {
+    console.log('interrupt',intnum,value);
+    if (!this.is_interrupt_allowed(intnum)) {
+      console.log(`interrupt ${intnum} masked by I=${this.get_flag(FLAGS.I)}`);
+      return;
+    }
+
     const before = this.state_snapshot();
 
     // Read interrupt vector table at negative-most memory, word addresses pointers:
@@ -68,7 +92,6 @@ class CPU {
     //
     // iiiii iii00 -29520 int +1
     // iiiii iii01 -29519
-    console.log('interrupt',intnum,value);
     const address = this.read_int_vector(intnum);
     console.log('interrupt vector address',address);
 
@@ -85,7 +108,8 @@ class CPU {
     this.pc = address;
     this.run();
 
-    this.state_restore(before);
+    // Restore previous state, except NMI/start interrupt, since it can set flags for other interrupt handlers
+    if (intnum !== 0) this.state_restore(before);
   }
 
   // get a flag trit value given FLAGS.foo
@@ -200,6 +224,9 @@ class CPU {
     } else if (di.family === -1) {
       this.execute_xop_instruction(di.operation);
     }
+
+    console.log('flags:','FHRVSDCIL');
+    console.log('flags:',n2bts(this.flags), `A=${this.accum}, X=${this.index}, Y=${this.yindex}`);
   }
 
   step() {

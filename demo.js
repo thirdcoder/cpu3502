@@ -170,6 +170,8 @@ var lines = [
     'LDA #handle_input.high',
     'STA int_inputH',
 
+    'SEIP', // enable interrupt -1 (keyboard input) TODO: also handle int 1, then can unmask all with CLI
+
     'HALTZ',
 
 

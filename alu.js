@@ -1,7 +1,7 @@
 'use strict';
 
 const {get_trit, set_trit, slice_trits} = require('trit-getset');
-const {OP, FLAGS} = require('./opcodes');
+const {OP} = require('./opcodes');
 const {bts2n, n2bts} = require('balanced-ternary');
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 const {NTI, STI, PTI, FD, RD, TOR, TAND, BUT} = require('tritwise');
@@ -13,7 +13,7 @@ class ALU {
   }
 
   update_flags_from(value) {
-    this.cpu.set_flag(FLAGS.L, get_trit(value, 0)); // L = least significant trit of A
+    this.cpu.flags.L = get_trit(value, 0); // L = least significant trit of A
 
     // set to most significant nonzero trit, or zero
     let sign;
@@ -26,7 +26,7 @@ class ALU {
       if (sign !== 0) break;
     }
     */
-    this.cpu.set_flag(FLAGS.S, sign);
+    this.cpu.flags.S = sign;
   }
 
   execute_alu_instruction(operation, read_arg, write_arg) {
@@ -74,11 +74,11 @@ class ALU {
       case OP.RD:  write_arg( RD(read_arg())); break;
 
       case OP.ADC: {  // A = A+M+C
-        const result = add(this.cpu.accum, read_arg(), this.cpu.get_flag(FLAGS.C));
+        const result = add(this.cpu.accum, read_arg(), this.cpu.flags.C);
 
         this.cpu.accum = result.result;
         this.update_flags_from(this.cpu.accum);
-        this.cpu.set_flag(FLAGS.V, result.overflow);
+        this.cpu.flags.V = result.overflow;
         break;
       }
 

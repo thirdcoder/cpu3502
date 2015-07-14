@@ -5,11 +5,12 @@ const {get_trit, set_trit, slice_trits} = require('trit-getset');
 
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 
-const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
+const {OP, ADDR_MODE, XOP} = require('./opcodes');
 
 const {decode_instruction, decode_operand, disasm1} = require('./instr_decode');
 const ALU = require('./alu');
 const Memory = require('./memory');
+const Flags = require('./flags');
 const execute_xop_instruction = require('./xop');
 
 class CPU {
@@ -23,11 +24,10 @@ class CPU {
     this.index = 0;
     this.yindex = 0;
     this.stackptr = 0;
-    this.flags = 0;
+    this.flags = Flags();
 
-    this.set_flag(FLAGS.F, -1); // fixed value
-    this.set_flag(FLAGS.I, -1); // by default only allow int 0, non-maskable NMI/start
-
+    this.flags.F = -1; // fixed value
+    this.flags.I = -1; // by default only allow int 0, non-maskable NMI/start
 
     this.alu = new ALU(this);
 
@@ -59,7 +59,7 @@ class CPU {
   }
 
   is_interrupt_allowed(intnum) {
-    switch(this.get_flag(FLAGS.I)) {
+    switch(this.flags.I) {
       case -1:
         // I=-1 allow only nonmaskable NMI interrupt 0 (start) (SEIN) (default)
         return intnum === 0;
@@ -77,7 +77,7 @@ class CPU {
   interrupt(intnum, value) {
     console.log('interrupt',intnum,value);
     if (!this.is_interrupt_allowed(intnum)) {
-      console.log(`interrupt ${intnum} masked by I=${this.get_flag(FLAGS.I)}`);
+      console.log(`interrupt ${intnum} masked by I=${this.flags.I}`);
       return;
     }
 
@@ -112,20 +112,6 @@ class CPU {
     if (intnum !== 0) this.state_restore(before);
   }
 
-  // get a flag trit value given FLAGS.foo
-  get_flag(flag) {
-    let flag_index = flag + 4; // -4..4 to 0..8
-    let flag_value = get_trit(this.flags, flag_index);
-
-    return flag_value;
-  }
-
-  set_flag(flag, value) {
-    let flag_index = flag + 4; // -4..4 to 0..8
-
-    this.flags = set_trit(this.flags, flag_index, value);
-  }
-
   execute_alu_instruction(operation, read_arg, write_arg) {
     this.alu.execute_alu_instruction(operation, read_arg, write_arg);
   }
@@ -134,7 +120,7 @@ class CPU {
     console.log(`compare flag=${flag}, direction=${direction}, compare=${compare}`);
 
     // compare (b) trit to compare flag with
-    const flag_value = this.get_flag(flag);
+    const flag_value = this.flags.get_flag(flag);
 
     // direction (c)
     // i less than (flag < trit)
@@ -170,7 +156,7 @@ class CPU {
 
     let decoded_operand = decode_operand(di, this.memory.subarray(this.pc), 0);
 
-    this.pc += decoded_operand.consumed * this.get_flag(FLAGS.R);
+    this.pc += decoded_operand.consumed * this.flags.R;
 
     if ('absolute' in decoded_operand) {
       // absolute, 2-tryte address
@@ -218,7 +204,7 @@ class CPU {
 
       this.execute_alu_instruction(di.operation, read_arg, write_arg);
     } else if (di.family === 1) {
-      const rel_address = this.memory.read(this.pc += this.get_flag(FLAGS.R));
+      const rel_address = this.memory.read(this.pc += this.flags.R);
 
       this.execute_branch_instruction(di.flag, di.compare, di.direction, rel_address);
     } else if (di.family === -1) {
@@ -231,15 +217,15 @@ class CPU {
 
   step() {
     this.execute_next_instruction();
-    this.pc += this.get_flag(FLAGS.R);
+    this.pc += this.flags.R;
   }
 
   run() {
-    this.set_flag(FLAGS.R, 1); // running: 1, program counter increments by; -1 runs backwards, 0 halts
+    this.flags.R = 1; // running: 1, program counter increments by; -1 runs backwards, 0 halts
     do {
       this.step();
-    } while(this.get_flag(FLAGS.R) !== 0);
-    console.log('Halted with status',this.get_flag(FLAGS.H));
+    } while(this.flags.R !== 0);
+    console.log('Halted with status',this.flags.H);
   }
 }
 

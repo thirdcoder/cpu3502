@@ -300,8 +300,8 @@ test('execute', (t) => {
   t.equal(cpu.yindex, 0);
   t.equal(cpu.pc, machine_code.length - 1);
 
-  t.equal(cpu.get_flag(FLAGS.R), 0);
-  t.equal(cpu.get_flag(FLAGS.H), 0);
+  t.equal(cpu.flags.R, 0);
+  t.equal(cpu.flags.H, 0);
 
   t.end();
 });
@@ -325,7 +325,7 @@ test('adc overflow flag', (t) => {
   // 1000i1
   // Vaccum
   t.equal(cpu.accum, -2);
-  t.equal(cpu.get_flag(FLAGS.V), 1);
+  t.equal(cpu.flags.V, 1);
 
   t.end();
 });
@@ -344,8 +344,8 @@ test('clear overflow flag', (t) => {
   cpu.memory.writeArray(0, machine_code);
   cpu.run();
 
-  t.equal(cpu.get_flag(FLAGS.V), 0);
-  t.equal(cpu.get_flag(FLAGS.C), -1);
+  t.equal(cpu.flags.V, 0);
+  t.equal(cpu.flags.C, -1);
 
   t.end();
 });

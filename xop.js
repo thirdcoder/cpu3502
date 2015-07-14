@@ -1,6 +1,6 @@
 'use strict';
 
-const {XOP, FLAGS} = require('./opcodes');
+const {XOP} = require('./opcodes');
 const {add, inc, dec} = require('./arithmetic');
 
 function execute_xop_instruction(cpu, operation) {
@@ -31,16 +31,16 @@ function execute_xop_instruction(cpu, operation) {
 
     // halts - set H to halt code, set R to 0 to stop running
     case XOP.HALTN:  // H=i, R=0
-      cpu.set_flag(FLAGS.H, -1);
-      cpu.set_flag(FLAGS.R, 0);
+      cpu.flags.H = -1;
+      cpu.flags.R = 0;
       break;
     case XOP.HALTZ:  // H=0, R=0
-      cpu.set_flag(FLAGS.H, 0);
-      cpu.set_flag(FLAGS.R, 0);
+      cpu.flags.H = 0;
+      cpu.flags.R = 0;
       break;
     case XOP.HALTP:  // H=1, R=0
-      cpu.set_flag(FLAGS.H, 1);
-      cpu.set_flag(FLAGS.R, 0);
+      cpu.flags.H = 1;
+      cpu.flags.R = 0;
       break;
 
     // arithmetic
@@ -66,31 +66,31 @@ function execute_xop_instruction(cpu, operation) {
 
     // flags
     case XOP.CLC:   // C = 0
-      cpu.set_flag(FLAGS.C, 0);
+      cpu.flags.C = 0;
       break;
 
     case XOP.CLI:   // I = 0
-      cpu.set_flag(FLAGS.I, 0);
+      cpu.flags.I = 0;
       break;
 
     case XOP.CLV:   // V = 0
-      cpu.set_flag(FLAGS.V, 0);
+      cpu.flags.V = 0;
       break;
 
     case XOP.SECP:  // C = 1
-      cpu.set_flag(FLAGS.C, 1);
+      cpu.flags.C = 1;
       break;
 
     case XOP.SECN:  // C = i
-      cpu.set_flag(FLAGS.C, -1);
+      cpu.flags.C = -1;
       break;
 
     case XOP.SEIN:  // I = i
-      cpu.set_flag(FLAGS.I, -1);
+      cpu.flags.I = -1;
       break;
 
     case XOP.SEIP:  // I = 1
-      cpu.set_flag(FLAGS.I, 1);
+      cpu.flags.I = 1;
       break;
 
     // interrupts

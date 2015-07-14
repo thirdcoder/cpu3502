@@ -96,10 +96,7 @@ function assemble(lines) {
         operand = rest;
       }
 
-      console.log(`parse_operand(${operand}, line=${line})`);
-      const oi = parse_operand(operand, line, symbols, unresolved_symbols, codeOffset);
-      addressing_mode = oi.addressing_mode; // TODO: why can't destructure {a,b} = f()?
-      operand = oi.operand;
+      ({addressing_mode, operand} = parse_operand(operand, line, symbols, unresolved_symbols, codeOffset));
     }
 
     console.log(opcode,operand);

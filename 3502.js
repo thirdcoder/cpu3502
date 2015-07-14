@@ -97,7 +97,7 @@ class CPU {
 
     if (address === 0) { // probably wrong
       debugger;
-      throw new Error(`unset interrupt vector for ${intum}`);
+      throw new Error(`unset interrupt vector for ${intnum}`);
     }
 
     // Set accumulator to passed in value, used to send data from I/O

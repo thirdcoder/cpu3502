@@ -93,6 +93,17 @@ function execute_xop_instruction(cpu, operation) {
       cpu.set_flag(FLAGS.I, 1);
       break;
 
+    // interrupts
+    case XOP.INTN:  // int i
+      cpu.interrupt(-1);
+      break;
+
+    case XOP.INTZ:  // int 0
+      cpu.interrupt(0);
+      break;
+
+    case XOP.INTP:  // int 1
+      cpu.interrupt(1);
   }
 }
 

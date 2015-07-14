@@ -369,3 +369,39 @@ test('assemble low/high addresses', (t) => {
 
   t.end();
 });
+
+test('interrupts', (t) => {
+  const cpu = CPU();
+  var lines = [
+    // these interrupts are disabled by default, no effect (masked by I=-1)
+    'INTN',
+    'INTP',
+
+    // set interrupt handler for -1
+    '.equ '+(cpu.memory.minAddress  )+' intN_L',
+    '.equ '+(cpu.memory.minAddress+1)+' intN_H',
+    'LDA #handle_intN.low',
+    'STA intN_L',
+    'LDA #handle_intN.high',
+    'STA intN_H',
+
+    // enable interrupts and execute int -1
+    'CLI',
+    'INTN',
+    'HALTZ',
+
+    // interrupt handler, change memory to detect executed for test
+    'handle_intN:',
+    'LDA #42',
+    'STA 1000',
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.memory.read(1000), 42);
+
+  t.end();
+});

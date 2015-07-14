@@ -99,6 +99,10 @@ const XOP = {
   SEIP: 14,     // 1iii set interrupt flag positive
   SEIN: 15,     // 1ii0 set interrupt flag negative
 
+  INTN: 16,     // 1ii1 interrupt negative
+  INTZ: 17,     // 1i0i interrupt zero
+  INTP: 16,     // 1i00 interrupt positive
+
   HALTP: -38,  // iii1 halt positive
   HALTZ: -39,  // iii0 halt zero
   HALTN: -40,  // iiii halt negative

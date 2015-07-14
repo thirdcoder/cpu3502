@@ -47,7 +47,10 @@ const OP = {
 const ADDR_MODE = {
   ABSOLUTE: -1,
   ACCUMULATOR: 0,
-  IMMEDIATE: 1
+  IMMEDIATE: 1,
+
+  // internal modes only used by assembler, not instruction coding format
+  BRANCH_RELATIVE: 2,
 };
 
 const FLAGS = {

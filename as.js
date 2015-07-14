@@ -84,7 +84,7 @@ function assemble(lines) {
     // ex: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
     if (INSTRUCTION_ALIASES[opcode]) opcode = INSTRUCTION_ALIASES[opcode];
 
-    let addressing_mode, operand, extra, operand_is_unresolved;
+    let addressing_mode, operand, extra, operand_unresolved_at;
 
     // Parse operand
     if (rest !== undefined) {
@@ -96,7 +96,7 @@ function assemble(lines) {
         operand = rest;
       }
 
-      ({addressing_mode, operand, operand_is_unresolved} = parse_operand(operand, line, symbols, unresolved_symbols, codeOffset));
+      ({addressing_mode, operand, operand_unresolved_at} = parse_operand(operand, line, symbols, unresolved_symbols, codeOffset));
     }
 
     console.log(opcode,operand);
@@ -192,12 +192,19 @@ function assemble(lines) {
             break;
 
           case ADDR_MODE.ABSOLUTE:
+            if (operand_unresolved_at !== undefined) {
+              // use current code placeholder to satisfy range check (rel=0
+              operand = codeOffset + origin + 2;
+              // patch relative address from resolved absolute address
+              unresolved_symbols[operand_unresolved_at].addressing_mode = ADDR_MODE.BRANCH_RELATIVE;
+            }
+
             // given absolute address, need to compute relative to current location for instruction encoding
             // -2 to account for size of the branch instruction (opcode+operand) itself
             rel_address = operand - (codeOffset + origin) - 2;
 
             if (rel_address < -121 || rel_address > 121) {
-              throw new Error(`branch instruction to too-far absolute address: operand=${operand}, codeOffset=${codeOffset}, rel_address=${rel_address}, in line=${line}`);
+              throw new Error(`branch instruction to too-far absolute address: operand=${operand} (unresolved? ${operand_unresolved_at}), codeOffset=${codeOffset}, rel_address=${rel_address}, in line=${line}`);
             }
 
             break;
@@ -220,15 +227,22 @@ function assemble(lines) {
 
     const resolved_value = symbols.get(us.symbol_name);
     validate_operand_range(resolved_value, us.addressing_mode, us.line);
-    console.log(`resolved symbol ${us.symbol_name} to ${resolved_value}`);
+    console.log(`resolved symbol ${us.symbol_name} to ${resolved_value} (${JSON.stringify(us)})`);
 
     if (us.addressing_mode === ADDR_MODE.IMMEDIATE) {
       output[us.code_address] = resolved_value;
+    } else if (us.addressing_mode === ADDR_MODE.BRANCH_RELATIVE) {
+      // special case of immediate - stored resolved_value is absolute; convert to relative
+      let rel_address = resolved_value - (us.code_address + origin) + 1; // +1 for instruction
+      if (rel_address < -121 || rel_address > 121) {
+        throw new Error(`branch instruction to too-far absolute address: resolved_value=${resolved_value}, code_address=${us.code_address}, rel_address=${rel_address}, in line=${us.asm_line}`);
+      }
+      output[us.code_address] = rel_address;
     } else if (us.addressing_mode === ADDR_MODE.ABSOLUTE) {
       output[us.code_address] = low_tryte(resolved_value);
       output[us.code_address + 1] = high_tryte(resolved_value);
     } else {
-      throw new Error('unknown addressing mode resolving '+us);
+      throw new Error(`unknown addressing mode ${us.addressing_mode} resolving ${us}`);
     }
   }
 
@@ -239,7 +253,7 @@ function assemble(lines) {
 
 function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
   let addressing_mode;
-  let operand_is_unresolved = false;
+  let operand_unresolved_at = undefined;
 
   if (operand === 'A') {
     addressing_mode = ADDR_MODE.ACCUMULATOR;
@@ -310,7 +324,7 @@ function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
             });
             console.log(`saving unresolved symbol ${operand} at ${codeOffset}`);
             operand = 0;//61; // overwritten in second phase
-            operand_is_unresolved = true;
+            operand_unresolved_at = unresolved_symbols.length - 1; // index in unresolved_symbols
             //throw new Error('unresolved symbol reference: '+operand+', in line: '+line);
           }
         }
@@ -319,7 +333,7 @@ function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
     validate_operand_range(operand, addressing_mode, line);
   }
 
-  return {addressing_mode, operand, operand_is_unresolved};
+  return {addressing_mode, operand, operand_unresolved_at};
 }
 
 

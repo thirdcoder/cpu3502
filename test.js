@@ -482,20 +482,34 @@ test('forward unresolved branch labels origin 0', (t) => {
     'BEQ done',
     'done:',
   ]);
+  console.log(machine_code);
   t.equal(machine_code[0], 1);   // BEQ
   t.equal(machine_code[1], 2); // +2(instruction size)
   t.end();
 });
 
-/*
 test('forward unresolved branch labels origin 100', (t) => {
   const machine_code = assembler([
     '.org 100',
     'BEQ done',
     'done:',
   ]);
+  console.log(machine_code);
   t.equal(machine_code[0], 1);   // BEQ
   t.equal(machine_code[1], 2); // +2(instruction size)
   t.end();
 });
-*/
+
+test('forward unresolved branch labels origin 1000', (t) => {
+  const machine_code = assembler([
+    '.org 1000',
+    'BEQ done',
+    'done:',
+  ]);
+  console.log(machine_code);
+  t.equal(machine_code[0], 1);   // BEQ
+  t.equal(machine_code[1], 2); // +2(instruction size)
+  t.end();
+});
+
+

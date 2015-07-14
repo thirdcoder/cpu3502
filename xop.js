@@ -104,6 +104,11 @@ function execute_xop_instruction(cpu, operation) {
 
     case XOP.INTP:  // int 1
       cpu.interrupt(1);
+      break;
+
+    case XOP.BRK:
+      debugger;
+      break;
   }
 }
 

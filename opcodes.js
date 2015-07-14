@@ -101,7 +101,9 @@ const XOP = {
 
   INTN: 16,     // 1ii1 interrupt negative
   INTZ: 17,     // 1i0i interrupt zero
-  INTP: 16,     // 1i00 interrupt positive
+  INTP: 18,     // 1i00 interrupt positive
+
+  BRK: 19,      // 1i01 breakpoint
 
   HALTP: -38,  // iii1 halt positive
   HALTZ: -39,  // iii0 halt zero

@@ -80,6 +80,7 @@ const INSTRUCTION_ALIASES = {
   BPL: 'BRSEP', // branch if positive = branch if sign equal to positive
   BVC: 'BRVEZ', // branch if overflow clear = branch if overflow equal to zero
   BVS: 'BRVNZ', // branch if overflow set = branch if overflow nonzero
+  BRA: 'BRFEN', // branch always = branch if fixed negative is negative
 };
 
 const XOP = {

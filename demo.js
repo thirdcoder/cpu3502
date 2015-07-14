@@ -205,15 +205,22 @@ var lines = [
 
     'CLI',  // enable all interrupts
 
+    '.equ -10000 cursor_char', // variable
+    'LDA #%11iii',   // trit-text '_'
+    'STA cursor_char',
+
     '.equ -3285 timer_freq',
     'LDA #1', // 100 ms
-    'STA timer_freq',
+    'STA timer_freq', // triggers interrupt immediately.. TODO: probably should delay! or never returns?
 
     'HALTZ',
 
+
     'handle_pulse:',
-    // TODO: blinking cursor
-    'INC chargen',
+    // blinking cursor
+    'LDA cursor_char',
+    'STA chargen',
+    'NEG cursor_char',  // toggle red/green '_'
     'HALTZ',
 
 
@@ -231,6 +238,8 @@ var lines = [
     'HALTZ',
 
     'backspace:',
+    'LDA #0',
+    'STA chargen', // clear cursor
     'DEC col',
     'LDA col',
     'CMP #-1',

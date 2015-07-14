@@ -197,6 +197,8 @@ var lines = [
     'BNE greet',      // if not, loop around
 
     'INC row',
+    'LDA #0',
+    'STA col',
 
 
     // set input interrupt handler

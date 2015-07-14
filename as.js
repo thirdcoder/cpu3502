@@ -84,7 +84,7 @@ function assemble(lines) {
     // ex: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
     if (INSTRUCTION_ALIASES[opcode]) opcode = INSTRUCTION_ALIASES[opcode];
 
-    let addressing_mode, operand, extra;
+    let addressing_mode, operand, extra, operand_is_unresolved;
 
     // Parse operand
     if (rest !== undefined) {
@@ -96,7 +96,7 @@ function assemble(lines) {
         operand = rest;
       }
 
-      ({addressing_mode, operand} = parse_operand(operand, line, symbols, unresolved_symbols, codeOffset));
+      ({addressing_mode, operand, operand_is_unresolved} = parse_operand(operand, line, symbols, unresolved_symbols, codeOffset));
     }
 
     console.log(opcode,operand);
@@ -239,6 +239,7 @@ function assemble(lines) {
 
 function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
   let addressing_mode;
+  let operand_is_unresolved = false;
 
   if (operand === 'A') {
     addressing_mode = ADDR_MODE.ACCUMULATOR;
@@ -309,6 +310,7 @@ function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
             });
             console.log(`saving unresolved symbol ${operand} at ${codeOffset}`);
             operand = 0;//61; // overwritten in second phase
+            operand_is_unresolved = true;
             //throw new Error('unresolved symbol reference: '+operand+', in line: '+line);
           }
         }
@@ -317,7 +319,7 @@ function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
     validate_operand_range(operand, addressing_mode, line);
   }
 
-  return {addressing_mode, operand};
+  return {addressing_mode, operand, operand_is_unresolved};
 }
 
 

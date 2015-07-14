@@ -185,13 +185,20 @@ var lines = [
     'LDA #0',
     'STA col',
 
-    // TODO: write null-terminated string
-    'LDA greeting',
+    /* TODO: write greeting
+    'LDY #greeting.high',
+    'LDX #greeting.low',
     'greet:',
+    'LDAXY',
+    'CMP #0',
+    'BEQ greeted', // TODO: fix forward relative branch labels
     'STA chargen',
-    // TODO: how to loop with address?
+    'INX',
+    'BRFEZ greet',
 
+    'greeted:',
     'INC row',
+    */
 
 
     // set input interrupt handler

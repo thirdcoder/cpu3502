@@ -87,12 +87,35 @@ function assemble(lines) {
             operand = bts2n(sv2bts(operand.substring(1)));
             break;
           case "'": // trit-text character
-            // TODO: some special characters might be unquotable due to earlier parsing
-            // TODO: escape codes, '\n for newline, '\0 for null, '\e for escape, at least
 
-            operand = ttFromUnicode(operand.substring(1));
+            let unicode = operand.substring(1);
+
+            // escapes for special characters
+            if (unicode.substring(0, 1) === '\\') {
+              switch(unicode.substring(1)) {
+                case '\\':
+                  unicode = '\\';
+                  break;
+                case 'n':
+                  unicode = '\n';
+                  break;
+                case '0':
+                  unicode = '\0';
+                  break;
+                case 's':
+                  unicode = ' ';
+                  break;
+                case 'S':
+                  unicode = ';';
+                  break;
+                default:
+                  throw new Error(`invalid trit-text escape character «${unicode}», in line=${line}`);
+              }
+            }
+
+            operand = ttFromUnicode(unicode);
             if (operand === null || operand === undefined) {
-              throw new Error(`invalid trit-text character «${tokens[1].substring(2)}», in line=${line})`);
+              throw new Error(`invalid trit-text character «${unicode}», in line=${line})`);
             }
             break;
 

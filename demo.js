@@ -24,9 +24,11 @@ const CHARGEN_ADDRESS = -3282; // 0i111 11110
 const CURSOR_ROW_ADDRESS = -3283;
 const CURSOR_COL_ADDRESS = -3284;
 
+const TIMER_FREQUENCY_ADDRESS = -3285;
+
 const INT_VECTOR_N_ADDRESS = -29524; const INT_INPUT = -1;
 const INT_VECTOR_Z_ADDRESS = -29522; const INT_START = 0;
-const INT_VECTOR_P_ADDRESS = -29520;
+const INT_VECTOR_P_ADDRESS = -29520; const INT_PULSE = 1;
 
 const CODE_START_ADDRESS = -29518;
 
@@ -40,6 +42,10 @@ const memory = Memory({
     chargen: {
       start: CHARGEN_ADDRESS,
       end: CHARGEN_ADDRESS,
+    },
+    timer: {
+      start: TIMER_FREQUENCY_ADDRESS,
+      end: TIMER_FREQUENCY_ADDRESS,
     },
   }
 });
@@ -82,6 +88,23 @@ memory.map.chargen.write = (address, value) => {
 const cpu = CPU({
   memory: memory
 });
+
+let _timer;
+memory.map.timer.write = (address, value) => {
+  function fire() {
+    let ms = memory.read(TIMER_FREQUENCY_ADDRESS) * 100;
+    if (ms < 100) ms = 100;
+
+    console.log(`TIMER FIRE, next=${ms} ms`);
+    cpu.interrupt(INT_PULSE); // TODO: pass dt, time since previous fire?
+
+    _timer = window.setTimeout(fire, ms);
+  };
+
+  if (_timer === undefined) fire();
+};
+
+
 global.cpu = cpu;
 
 const assembler = require('./as');
@@ -162,7 +185,7 @@ var lines = [
     'LDA #0',
     'STA col',
 
-    // set interrupt handler
+    // set input interrupt handler
     '.equ -29524 int_inputL',
     '.equ -29523 int_inputH',
     'LDA #handle_input.low',
@@ -172,6 +195,25 @@ var lines = [
 
     'SEIP', // enable interrupt -1 (keyboard input) TODO: also handle int 1, then can unmask all with CLI
 
+    // set pulse interrupt handler
+    '.equ -29520 int_pulseL',
+    '.equ -29519 int_pulseH',
+    'LDA #handle_pulse.low',
+    'STA int_pulseL',
+    'LDA #handle_pulse.high',
+    'STA int_pulseH',
+
+    'CLI',  // enable all interrupts
+
+    '.equ -3285 timer_freq',
+    'LDA #1', // 100 ms
+    'STA timer_freq',
+
+    'HALTZ',
+
+    'handle_pulse:',
+    // TODO: blinking cursor
+    'INC chargen',
     'HALTZ',
 
 

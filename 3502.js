@@ -2,6 +2,7 @@
 
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {get_trit, set_trit, slice_trits} = require('trit-getset');
+const ttToUnicode = require('trit-text').toUnicode;
 
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 
@@ -212,7 +213,7 @@ class CPU {
     }
 
     console.log('flags:','FHRVSDCIL');
-    console.log('flags:',n2bts(this.flags.value), `A=${this.accum}, X=${this.index}, Y=${this.yindex}`);
+    console.log('flags:',n2bts(this.flags.value), `A=${this.accum}(${ttToUnicode(this.accum)}), X=${this.index}, Y=${this.yindex}`);
   }
 
   step() {

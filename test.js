@@ -513,3 +513,41 @@ test('forward unresolved branch labels origin 1000', (t) => {
 });
 
 
+test('trit shifts', (t) => {
+  const cpu = CPU();
+  var lines = [
+    'LDA #%001i1',
+    'SECN',       // C=i
+    'SHR A',
+    'BRDNP fail', // expect D=1, shifted out from lst
+    'BRLNN fail', // and L=i, new lst
+    'CMP #%i001i',// shifted in carry trit C=i to mst
+    'BNE fail',
+
+    'LDA #%00iii',
+    'SEDP',       // D=1
+    'SHL A',
+    'BRCNZ fail', // expect C=0 shifted out from mst
+    'CMP #%0iii1',// shifted in D from left
+    'BNE fail',
+
+    'LDA #%00iii',
+    'CLD',        // shift in zero from left
+    'SHL A',// Z
+    'CMP #%0iii0',
+    'BNE fail',
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});

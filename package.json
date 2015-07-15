@@ -33,6 +33,7 @@
     "nonary": "*",
     "trit-getset": "*",
     "trit-text": "*",
+    "trit-shift": "*",
     "tritwise": "*"
   },
   "devDependencies": {

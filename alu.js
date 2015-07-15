@@ -6,6 +6,7 @@ const {bts2n, n2bts} = require('balanced-ternary');
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 const {NTI, STI, PTI, FD, RD, TOR, TAND, BUT} = require('tritwise');
 const {add, inc, dec} = require('./arithmetic');
+const {lst, shl, shr} = require('trit-shift');
 
 class ALU {
   constructor(cpu) {
@@ -13,7 +14,7 @@ class ALU {
   }
 
   update_flags_from(value) {
-    this.cpu.flags.L = get_trit(value, 0); // L = least significant trit of A
+    this.cpu.flags.L = lst(value); // L = least significant trit of A (also get_trit(value, 0))
 
     // set to most significant nonzero trit, or zero
     let sign;
@@ -103,6 +104,20 @@ class ALU {
         this.update_flags_from(this.cpu.yindex - read_arg());
         break;
 
+      // shifts
+      case OP.SHL: { // C <-- arg <-- D     M = M<<<1 + D
+        let value = read_arg();
+        this.update_flags_from(write_arg(shl(value, this.cpu.flags.D)));
+        this.cpu.flags.C = get_trit(value, TRITS_PER_TRYTE - 1);  // shifted-out trit, from left
+        break;
+      }
+
+      case OP.SHR: { // C --> arg --> D     M = (C <<< 5) + M>>>1
+        let value = read_arg();
+        this.update_flags_from(write_arg(shr(value, TRITS_PER_TRYTE, this.cpu.flags.C)));
+        this.cpu.flags.D = lst(value);  // shifted-out trit, from right
+        break;
+      }
 
       default:
         throw new Error('unimplemented alu instruction: '+operation);

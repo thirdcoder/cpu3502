@@ -86,13 +86,26 @@ function execute_xop_instruction(cpu, operation) {
       cpu.flags.C = -1;
       break;
 
-    case XOP.SEIN:  // I = i
+    case XOP.SEDN:  // I = i
       cpu.flags.I = -1;
       break;
 
-    case XOP.SEIP:  // I = 1
+    case XOP.SEDP:  // I = 1
       cpu.flags.I = 1;
       break;
+
+    case XOP.CLD:   // D = 0
+      cpu.flags.D = 0;
+      break;
+
+    case XOP.SEIN:  // D = i
+      cpu.flags.D = -1;
+      break;
+
+    case XOP.SEIP:  // D = 1
+      cpu.flags.D = 1;
+      break;
+
 
     // interrupts
     case XOP.INTN:  // int i

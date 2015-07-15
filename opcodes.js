@@ -2,10 +2,10 @@
 
 const OP = {
   // shifts
-  SHL: -13, // iii shift left (like ASL arithmetic shift left) = multiplication by power of three
+  SHL: -13, // iii shift left (like ASL, arithmetic shift left) = multiply by three + D
   ROL: -12, // ii0 rotate left
   ROR: -11, // ii1 rotate right
-  LSR: -10, // i0i shift right (logical) = division by by power of three
+  SHR: -10, // i0i shift right = division by by power of three
 
   // indexing
   STX: -9, // i00 store X
@@ -111,6 +111,10 @@ const XOP = {
 
   LDAXY: 20,    // 1i1i load into accumulator absolute from Y<<5 + X
   STAXY: 21,    // 1i10 store accumulator absolut to Y<<5 + X
+
+  CLD: 22,      // 1i11 clear data flag
+  SEDP: 23,     // 10ii set data flag positive
+  SEDN: 24,     // 10i0 set data flag negative
 
   HALTP: -38,   // iii1 halt positive
   HALTZ: -39,   // iii0 halt zero

@@ -158,6 +158,11 @@ function execute_xop_instruction(cpu, operation) {
       // TODO: check overflow
       break;
 
+    case XOP.PLA:
+      --cpu.stackptr;
+      cpu.accum = cpu.memory.read(cpu.stackptr);
+      break;
+
     default:
       throw new Error(`unimplemented xop opcode: ${operation}`);
   }

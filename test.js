@@ -591,6 +591,10 @@ test('stack', (t) => {
     'TXYS',          // set stack pointer
     'LDA #33',
     'PHA',
+
+    'INC A',
+    'PLA',
+    'STA -99',
     'HALTZ',
   ];
 
@@ -603,6 +607,7 @@ test('stack', (t) => {
 
   t.equal(cpu.memory.read(100), 33);
   t.equal(cpu.memory.read(101), 0);
+  t.equal(cpu.memory.read(-99), 33);
 
   t.end();
 

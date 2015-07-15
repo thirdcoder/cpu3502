@@ -24,13 +24,13 @@ function assemble(lines) {
   // TODO: port to run on cpu (self-hosting)
   let output = [];
 
-  let codeOffset = 0;
+  let code_offset = 0;
   let origin = 0;
 
   let emit = function(tryte) {
     console.log('emit',n2bts(tryte));
     output.push(tryte);
-    ++codeOffset;
+    ++code_offset;
   }
 
   let symbols = new Map();
@@ -50,7 +50,7 @@ function assemble(lines) {
       if (symbols.has(label)) {
         throw new Error(`label symbol redefinition: ${label}, in line=${line}`);
       }
-      set_symbol(label, origin + codeOffset);
+      set_symbol(label, origin + code_offset);
       continue;
     }
 
@@ -96,7 +96,7 @@ function assemble(lines) {
         operand = rest;
       }
 
-      ({addressing_mode, operand, operand_unresolved_at} = parse_operand(operand, line, symbols, unresolved_symbols, codeOffset));
+      ({addressing_mode, operand, operand_unresolved_at} = parse_operand(operand, line, symbols, unresolved_symbols, code_offset));
     }
 
     console.log(opcode,operand);
@@ -194,17 +194,17 @@ function assemble(lines) {
           case ADDR_MODE.ABSOLUTE:
             if (operand_unresolved_at !== undefined) {
               // use current code placeholder to satisfy range check (rel=0
-              operand = codeOffset + origin + 2;
+              operand = code_offset + origin + 2;
               // patch relative address from resolved absolute address
               unresolved_symbols[operand_unresolved_at].addressing_mode = ADDR_MODE.BRANCH_RELATIVE;
             }
 
             // given absolute address, need to compute relative to current location for instruction encoding
             // -2 to account for size of the branch instruction (opcode+operand) itself
-            rel_address = operand - (codeOffset + origin) - 2;
+            rel_address = operand - (code_offset + origin) - 2;
 
             if (rel_address < -121 || rel_address > 121) {
-              throw new Error(`branch instruction to too-far absolute address: operand=${operand} (unresolved? ${operand_unresolved_at}), codeOffset=${codeOffset}, rel_address=${rel_address}, in line=${line}`);
+              throw new Error(`branch instruction to too-far absolute address: operand=${operand} (unresolved? ${operand_unresolved_at}), code_offset=${code_offset}, rel_address=${rel_address}, in line=${line}`);
             }
 
             break;
@@ -253,7 +253,7 @@ function assemble(lines) {
   return output;
 }
 
-function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
+function parse_operand(operand, line, symbols, unresolved_symbols, code_offset) {
   let addressing_mode;
   let operand_unresolved_at = undefined;
 
@@ -319,12 +319,12 @@ function parse_operand(operand, line, symbols, unresolved_symbols, codeOffset) {
             operand = symbols.get(operand);
           } else {
             unresolved_symbols.push({
-              code_address: codeOffset + 1, // write right after opcode
+              code_address: code_offset + 1, // write right after opcode
               symbol_name: operand,
               addressing_mode: addressing_mode,
               asm_line: line,
             });
-            console.log(`saving unresolved symbol ${operand} at ${codeOffset}`);
+            console.log(`saving unresolved symbol ${operand} at ${code_offset}`);
             operand = 0;//61; // overwritten in second phase
             operand_unresolved_at = unresolved_symbols.length - 1; // index in unresolved_symbols
             //throw new Error('unresolved symbol reference: '+operand+', in line: '+line);

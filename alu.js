@@ -6,7 +6,8 @@ const {bts2n, n2bts} = require('balanced-ternary');
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 const {NTI, STI, PTI, FD, RD, TOR, TAND, BUT} = require('tritwise');
 const {add, inc, dec} = require('./arithmetic');
-const {lst, shl, shr} = require('trit-shift');
+const {shl, shr} = require('trit-shift');
+const lst = require('lst');
 
 class ALU {
   constructor(cpu) {

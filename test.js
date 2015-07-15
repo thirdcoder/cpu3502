@@ -264,7 +264,7 @@ test('assembly branch out-of-range', (t) => {
 
 test('execute', (t) => {
   const cpu = CPU();
-  var lines = [
+  let lines = [
       'LDA #$ijk',
       'LDA #%ii1i0',
       'LDA #&QF',
@@ -308,7 +308,7 @@ test('execute', (t) => {
 
 test('adc overflow flag', (t) => {
   const cpu = CPU();
-  var lines = [
+  let lines = [
     'LDA #121',
     'SECN',
     'ADC #121',
@@ -332,7 +332,7 @@ test('adc overflow flag', (t) => {
 
 test('clear overflow flag', (t) => {
   const cpu = CPU();
-  var lines = [
+  let lines = [
     'LDA #121',
     'ADC #121', // V = 1
     'CLV',      // V = 0
@@ -372,7 +372,7 @@ test('assemble low/high addresses', (t) => {
 
 test('interrupts', (t) => {
   const cpu = CPU();
-  var lines = [
+  let lines = [
     // these interrupts are disabled by default, no effect (masked by I=-1)
     'INTN',
     'INTP',
@@ -439,7 +439,7 @@ test('assembler data', (t) => {
 
 test('load pointer LDAXY', (t) => {
   const cpu = CPU();
-  var lines = [
+  let lines = [
     'LDY #%11111',  // upper address
     'LDX #%iiiii',  // lower address
     'LDAXY',
@@ -458,7 +458,7 @@ test('load pointer LDAXY', (t) => {
 
 test('store pointer STAXY', (t) => {
   const cpu = CPU();
-  var lines = [
+  let lines = [
     'LDY #%11111',  // upper address
     'LDX #%iiiii',  // lower address
     'LDA #33',
@@ -515,7 +515,7 @@ test('forward unresolved branch labels origin 1000', (t) => {
 
 test('trit shifts', (t) => {
   const cpu = CPU();
-  var lines = [
+  let lines = [
     'LDA #%001i1',
     'SECN',       // C=i
     'SHR A',
@@ -554,7 +554,7 @@ test('trit shifts', (t) => {
 
 test('branch always, forward reference', (t) => {
   const cpu = CPU();
-  var lines = [
+  let lines = [
     'BRA end',
     'HALTN',  // if halts here (H=i), didn't take branch
 

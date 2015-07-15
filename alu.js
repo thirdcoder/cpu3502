@@ -22,7 +22,7 @@ class ALU {
     else if (value === 0) sign = 0;
     else sign = 1;
     /*
-    for (var i = TRITS_PER_TRYTE; i; --i) {
+    for (let i = TRITS_PER_TRYTE; i; --i) {
       sign = get_trit(value, i);
       if (sign !== 0) break;
     }

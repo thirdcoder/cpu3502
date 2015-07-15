@@ -72,8 +72,8 @@ memory.map.video.write = (address, value) => {
 memory.map.chargen.write = (address, value) => {
   console.log('chargen',value);
 
-  var row = memory.read(CURSOR_ROW_ADDRESS);
-  var col = memory.read(CURSOR_COL_ADDRESS);
+  let row = memory.read(CURSOR_ROW_ADDRESS);
+  let col = memory.read(CURSOR_COL_ADDRESS);
 
   // wrap-around if row/col out of terminal range
   row %= term.rowCount; if (row < 0) row += term.rowCount;
@@ -109,7 +109,7 @@ global.cpu = cpu;
 
 const assembler = require('./as');
 
-var lines = [
+let lines = [
     '.org '+CODE_START_ADDRESS,
     'LDA #$ijk',
     'LDA #%ii1i0',

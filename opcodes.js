@@ -55,11 +55,11 @@ const ADDR_MODE = {
 
 const FLAGS = {
   // flag (aa) 9 trits
-  L: -4, // -4 ii L least significant trit of A (if 0, divisible by 3)
+  L: -4, // -4 ii L least significant trit of last value (if 0, divisible by 3)
   I: -3, // -3 i0 I interrupts masked
-  C: -2, // -2 i1 C carry
-  D: -1, // -1 0i D dead zero
-  S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)
+  C: -2, // -2 i1 C carry trit
+  D: -1, // -1 0i D data trit, shift in
+  S:  0, //  0 00 S sign, set to first nonzero trit of last value (i=negative, 1=positive, or 0 if 0)
   V:  1, // +1 01 V overflow/underflow
   U:  2, // +2 1i U unused for now
   H:  3, // +3 10 H halt code

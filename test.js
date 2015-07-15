@@ -235,7 +235,7 @@ test('assembly labels', (t) => {
   ]);
   console.log(machine_code);
   t.equal(machine_code[0], 10); // BNE
-  t.equal(machine_code[1], 2);  // +2 relative address, after 2-byte instruction
+  t.equal(machine_code[1], 0);  // +0 relative address, after 2-byte instruction
 
   t.end();
 });
@@ -486,7 +486,7 @@ test('forward unresolved branch labels origin 0', (t) => {
   ]);
   console.log(machine_code);
   t.equal(machine_code[0], 1);   // BEQ
-  t.equal(machine_code[1], 2); // +2(instruction size)
+  t.equal(machine_code[1], 0); // +0
   t.end();
 });
 
@@ -498,7 +498,7 @@ test('forward unresolved branch labels origin 100', (t) => {
   ]);
   console.log(machine_code);
   t.equal(machine_code[0], 1);   // BEQ
-  t.equal(machine_code[1], 2); // +2(instruction size)
+  t.equal(machine_code[1], 0); // +0
   t.end();
 });
 
@@ -510,7 +510,7 @@ test('forward unresolved branch labels origin 1000', (t) => {
   ]);
   console.log(machine_code);
   t.equal(machine_code[0], 1);   // BEQ
-  t.equal(machine_code[1], 2); // +2(instruction size)
+  t.equal(machine_code[1], 0); // +0
   t.end();
 });
 
@@ -554,8 +554,7 @@ test('trit shifts', (t) => {
   t.end();
 });
 
-/* TODO: fix failure, jumps too far!
-test('branch always', (t) => {
+test('branch always, forward reference', (t) => {
   const cpu = CPU();
   var lines = [
     'BRA end',
@@ -570,6 +569,14 @@ test('branch always', (t) => {
 
   const machine_code = assembler(lines);
 
+  console.log(machine_code);
+  t.equal(machine_code[0], 118); // BRA
+  t.equal(machine_code[1], 1);   // +1 relative address (also tested 'forward unresolved branch labels')
+  t.equal(machine_code[2], -121);// HALTN
+  t.equal(machine_code[3], -118);// HALTZ
+  t.equal(machine_code[4], 0);   // NOP A
+  t.equal(machine_code[5], -115);// HALTP
+
   cpu.memory.writeArray(0, machine_code);
   cpu.run();
 
@@ -577,4 +584,3 @@ test('branch always', (t) => {
 
   t.end();
 });
-*/

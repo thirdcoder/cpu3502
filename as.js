@@ -233,7 +233,7 @@ function assemble(lines) {
       output[us.code_address] = resolved_value;
     } else if (us.addressing_mode === ADDR_MODE.BRANCH_RELATIVE) {
       // special case of immediate - stored resolved_value is absolute; convert to relative
-      let rel_address = resolved_value - (us.code_address + origin) + 1; // +1 for instruction
+      let rel_address = resolved_value - (us.code_address + origin) - 1; // -1 for instruction
       if (rel_address < -121 || rel_address > 121) {
         throw new Error(`branch instruction to too-far absolute address: resolved_value=${resolved_value}, code_address=${us.code_address}, rel_address=${rel_address}, in line=${us.asm_line}`);
       }

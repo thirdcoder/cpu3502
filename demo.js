@@ -118,10 +118,6 @@ var lines = [
     'NOP #-121',
     'NOP 29524',
     'LDA #0',
-    'BNE #-1',
-    'BEQ #+2',
-    'HALTN',
-    'HALTP',
     'LDA #42',
     'STA 0',
 

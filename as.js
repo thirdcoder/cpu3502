@@ -6,7 +6,6 @@ const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
 const {get_trit} = require('trit-getset');
 const {high_tryte, low_tryte} = require('./word');
-const isInteger = require('is-integer');
 const ttFromUnicode = require('trit-text').fromUnicode;
 
 // assembler
@@ -133,7 +132,7 @@ function assemble(lines) {
 
       switch(addressing_mode) {
         case ADDR_MODE.IMMEDIATE:
-          if (!isInteger(operand)) {
+          if (!Number.isInteger(operand)) {
             throw new Error('opcode '+opcode+' (immediate) requires operand: '+operand+', in line: '+line);
           }
 
@@ -141,7 +140,7 @@ function assemble(lines) {
           break;
 
         case ADDR_MODE.ABSOLUTE:
-          if (!isInteger(operand)) {
+          if (!Number.isInteger(operand)) {
             throw new Error('opcode '+opcode+' (absolute) requires operand: '+operand+', in line: '+line);
           }
 

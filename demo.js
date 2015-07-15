@@ -4,7 +4,6 @@ const CPU = require('./3502');
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 const {get_trit, set_trit, slice_trits} = require('trit-getset');
 const Triterm = require('tritmapped-terminal');
-const isInteger = require('is-integer');
 
 // 4 trits in each dimension, xxxx and yyyy
 const VIDEO_TRYTE_COUNT = 4;
@@ -56,7 +55,7 @@ const term = Triterm({
   addressTryteSize: VIDEO_TRYTE_COUNT,
   tritmap: memory.subarray(memory.map.video.start, memory.map.video.end),
   handleInput: (tt, ev) => {
-    if (isInteger(tt)) {
+    if (Number.isInteger(tt)) {
       cpu.interrupt(INT_INPUT, tt);
     }
   },

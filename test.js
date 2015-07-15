@@ -582,3 +582,27 @@ test('branch always, forward reference', (t) => {
 
   t.end();
 });
+
+test('stack', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDX #100',
+    'TXS',          // set stack pointer
+    'LDA #33',
+    'PHA',
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.memory.read(100), 33);
+  t.equal(cpu.memory.read(101), 0);
+
+  t.end();
+
+});

@@ -30,6 +30,17 @@ function execute_xop_instruction(cpu, operation) {
       cpu.alu.update_flags_from(cpu.accum);
       break;
 
+    case XOP.TSX: // X = S
+      cpu.index = cpu.stackptr;
+      cpu.alu.update_flags_from(cpu.index);
+      break;
+
+    case XOP.TXS: // S = X
+      // TODO: include Y for upper tryte?
+      cpu.stackptr = cpu.index;
+      // no flags affected
+      break;
+
     // halts - set H to halt code, set R to 0 to stop running
     case XOP.HALTN:  // H=i, R=0
       cpu.flags.H = -1;
@@ -124,6 +135,7 @@ function execute_xop_instruction(cpu, operation) {
       debugger;
       break;
 
+    // pointer loads
     case XOP.LDAXY:{// A = [Y<<5 + X]
       const address = cpu.yindex * 3**TRITS_PER_TRYTE + cpu.index;
       cpu.accum = cpu.memory.read(address);
@@ -137,6 +149,13 @@ function execute_xop_instruction(cpu, operation) {
       cpu.accum = cpu.memory.write(address, cpu.accum);
       break;
     }
+
+    // stack
+    case XOP.PHA:
+      cpu.memory.write(cpu.stackptr, cpu.accum);
+      ++cpu.stackptr;
+      // TODO: check overflow
+      break;
 
     default:
       throw new Error(`unimplemented xop opcode: ${operation}`);

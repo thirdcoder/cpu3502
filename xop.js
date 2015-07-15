@@ -137,6 +137,9 @@ function execute_xop_instruction(cpu, operation) {
       cpu.accum = cpu.memory.write(address, cpu.accum);
       break;
     }
+
+    default:
+      throw new Error(`unimplemented xop opcode: ${operation}`);
   }
 }
 

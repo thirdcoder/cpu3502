@@ -116,6 +116,16 @@ const XOP = {
   SEDP: 23,     // 10ii set data flag positive
   SEDN: 24,     // 10i0 set data flag negative
 
+  PHA: 25,      // 10i1 push accumulator to stack
+  PHP: 26,      // 100i push processor flags to stack
+  PLA: 27,      // 1000 pull accumulator from stack
+  PLP: 28,      // 1001 pull processor flags from stack
+  RTI: 29,      // 101i return from interrupt
+  RTS: 30,      // 1010 return from subroutine
+  TSX: 31,      // 1011 transfer index to stack pointer
+  TXS: 32,      // 11ii transfer stack pointer to index
+  JSR: 33,      // 11i0 jump to subroutine
+
   HALTP: -38,   // iii1 halt positive
   HALTZ: -39,   // iii0 halt zero
   HALTN: -40,   // iiii halt negative

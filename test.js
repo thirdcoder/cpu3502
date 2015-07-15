@@ -586,8 +586,9 @@ test('branch always, forward reference', (t) => {
 test('stack', (t) => {
   const cpu = CPU();
   let lines = [
+    'LDY #0',
     'LDX #100',
-    'TXS',          // set stack pointer
+    'TXYS',          // set stack pointer
     'LDA #33',
     'PHA',
     'HALTZ',

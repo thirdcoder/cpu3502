@@ -122,8 +122,8 @@ const XOP = {
   PLP: 28,      // 1001 pull processor flags from stack
   RTI: 29,      // 101i return from interrupt
   RTS: 30,      // 1010 return from subroutine
-  TSX: 31,      // 1011 transfer stack pointer to index
-  TXS: 32,      // 11ii transfer index to stack pointer
+  TSXY: 31,     // 1011 transfer stack pointer to index and yindex
+  TXYS: 32,     // 11ii transfer index and yindex to stack pointer
   JSR: 33,      // 11i0 jump to subroutine
 
   HALTP: -38,   // iii1 halt positive

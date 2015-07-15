@@ -4,7 +4,8 @@ const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
-const {get_trit, slice_trits} = require('trit-getset');
+const {get_trit} = require('trit-getset');
+const {high_tryte, low_tryte} = require('./word');
 const isInteger = require('is-integer');
 const ttFromUnicode = require('trit-text').fromUnicode;
 
@@ -350,14 +351,6 @@ function validate_operand_range(operand, addressing_mode, line) {
       throw new Error('absolute operand out of 10-trit range: '+operand+', in line: '+line);
     }
   }
-}
-
-function low_tryte(n) {
-  return slice_trits(n, 0, 5);
-}
-
-function high_tryte(n) {
-  return slice_trits(n, 5, 10);
 }
 
 module.exports = assemble;

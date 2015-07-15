@@ -3,6 +3,7 @@
 const {XOP} = require('./opcodes');
 const {add, inc, dec} = require('./arithmetic');
 const {TRITS_PER_TRYTE} = require('./arch');
+const {low_tryte, high_tryte, trytes2word} = require('./word');
 
 function execute_xop_instruction(cpu, operation) {
   console.log('misc', operation);
@@ -30,14 +31,14 @@ function execute_xop_instruction(cpu, operation) {
       cpu.alu.update_flags_from(cpu.accum);
       break;
 
-    case XOP.TSX: // X = S
-      cpu.index = cpu.stackptr;
+    case XOP.TSXY: // X,Y = S
+      cpu.index = low_tryte(cpu.stackptr);
+      cpu.yindex = high_tryte(cpu.stackptr);
       cpu.alu.update_flags_from(cpu.index);
       break;
 
-    case XOP.TXS: // S = X
-      // TODO: include Y for upper tryte?
-      cpu.stackptr = cpu.index;
+    case XOP.TXYS: // S = X<<5 | Y
+      cpu.stackptr = trytes2word(cpu.yindex, cpu.index);
       // no flags affected
       break;
 

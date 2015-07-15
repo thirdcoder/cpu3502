@@ -607,3 +607,10 @@ test('stack', (t) => {
   t.end();
 
 });
+
+test('bad assembler instruction', (t) => {
+  t.throws(() => {
+    assembler(['foo']);
+  });
+  t.end();
+});

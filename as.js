@@ -217,6 +217,8 @@ function assemble(lines) {
         emit(tryte);
         emit(rel_address);
       }
+    } else {
+      throw new Error(`unrecognized opcode: ${opcode}, in line=${line}`);
     }
   }
 

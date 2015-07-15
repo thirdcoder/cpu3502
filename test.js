@@ -262,7 +262,6 @@ test('assembly branch out-of-range', (t) => {
   t.end();
 });
 
-/* TODO: needs to be updated, has wrong literal relative branches
 test('execute', (t) => {
   const cpu = CPU();
   var lines = [
@@ -306,7 +305,6 @@ test('execute', (t) => {
 
   t.end();
 });
-*/
 
 test('adc overflow flag', (t) => {
   const cpu = CPU();

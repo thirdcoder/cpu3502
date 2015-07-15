@@ -27,9 +27,9 @@ class Flags {
   get D() { return this.get_flag(FLAGS.D); }
   get S() { return this.get_flag(FLAGS.S); }
   get V() { return this.get_flag(FLAGS.V); }
-  get R() { return this.get_flag(FLAGS.R); }
+  get U() { return this.get_flag(FLAGS.U); }
   get H() { return this.get_flag(FLAGS.H); }
-  get F() { return this.get_flag(FLAGS.F); }
+  get R() { return this.get_flag(FLAGS.R); }
 
   set L(x) { this.set_flag(FLAGS.L, x); }
   set I(x) { this.set_flag(FLAGS.I, x); }
@@ -37,9 +37,9 @@ class Flags {
   set D(x) { this.set_flag(FLAGS.D, x); }
   set S(x) { this.set_flag(FLAGS.S, x); }
   set V(x) { this.set_flag(FLAGS.V, x); }
-  set R(x) { this.set_flag(FLAGS.R, x); }
+  set U(x) { this.set_flag(FLAGS.U, x); }
   set H(x) { this.set_flag(FLAGS.H, x); }
-  set F(x) { this.set_flag(FLAGS.F, x); }
+  set R(x) { this.set_flag(FLAGS.R, x); }
 };
 
 module.exports = (opts) => new Flags(opts);

@@ -420,8 +420,8 @@ test('flags object', (t) => {
   t.equal(flags.L, -1);
   t.equal(flags.value, -1);
 
-  flags.F = 1;
-  t.equal(flags.F, 1);        // F.......L
+  flags.R = 1;
+  t.equal(flags.R, 1);        // R.......L
   t.equal(flags.value, 6560); // 10000000i
 
   t.end();

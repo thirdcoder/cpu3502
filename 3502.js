@@ -27,7 +27,6 @@ class CPU {
     this.stackptr = 0;
     this.flags = Flags();
 
-    this.flags.F = -1; // fixed value
     this.flags.I = -1; // by default only allow int 0, non-maskable NMI/start
 
     this.alu = new ALU(this);
@@ -212,7 +211,7 @@ class CPU {
       this.execute_xop_instruction(di.operation);
     }
 
-    console.log('flags:','FHRVSDCIL');
+    console.log('flags:','RHUVSDCIL');
     console.log('flags:',n2bts(this.flags.value), `A=${this.accum}(${ttToUnicode(this.accum)}), X=${this.index}, Y=${this.yindex}`);
   }
 

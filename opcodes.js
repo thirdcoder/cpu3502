@@ -61,9 +61,9 @@ const FLAGS = {
   D: -1, // -1 0i D dead zero
   S:  0, //  0 00 S sign, set to first nonzero trit of A (i=negative, 1=positive, or 0 if 0)
   V:  1, // +1 01 V overflow/underflow
-  R:  2, // +2 1i R running, 1 when executing forward, i backwards, 0 halted
+  U:  2, // +2 1i U unused for now
   H:  3, // +3 10 H halt code
-  F:  4, // +4 11 F fixed to -1
+  R:  4, // +4 11 R running, 1 when executing forward, i backwards, 0 halted
 };
 
 const INSTRUCTION_ALIASES = {
@@ -80,7 +80,7 @@ const INSTRUCTION_ALIASES = {
   BPL: 'BRSEP', // branch if positive = branch if sign equal to positive
   BVC: 'BRVEZ', // branch if overflow clear = branch if overflow equal to zero
   BVS: 'BRVNZ', // branch if overflow set = branch if overflow nonzero
-  BRA: 'BRFEN', // branch always = branch if fixed negative is negative
+  BRA: 'BRRNZ', // branch always = branch if running is not zero
 };
 
 const XOP = {

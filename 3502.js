@@ -177,7 +177,7 @@ class CPU {
       console.log('immediate',decoded_operand.immediate);
 
       read_arg = () => { return decoded_operand.immediate; };
-      write_arg = () => { throw new Error('cannot write to immediate: '+decoded_operandimmediate); };
+      write_arg = () => { throw new Error('cannot write to immediate: '+decoded_operand.immediate); };
     }
 
     return [read_arg, write_arg];

@@ -117,6 +117,10 @@ function assemble(lines) {
     } else if (OP[opcode] !== undefined) {
       // alu
 
+      if (rest === undefined) {
+        throw new Error(`alu opcode ${opcode} requires operand, in line=${line}`);
+      }
+
       ({addressing_mode, operand, operand_unresolved_at} = parse_operand(rest, line, symbols, unresolved_symbols, code_offset));
       let opcode_value = OP[opcode]; // aaab0 3-trits
 

@@ -621,19 +621,18 @@ test('bad assembler instruction', (t) => {
   t.end();
 });
 
-/* TODO
 test('stack flags', (t) => {
   const cpu = CPU();
   let lines = [
     'LDY #0',
     'LDX #100',
-    'TXYS',          // set stack pointer
-    'LDA #33',
-    'PHP',
+    'TXYS',         // set stack pointer
+    'PHP',          // push processor flags
 
-    'INC A',
     'PLA',
-    'STA -99',
+    'STA 111',
+    'PLA',
+    'STA 110',
     'HALTZ',
   ];
 
@@ -644,12 +643,11 @@ test('stack flags', (t) => {
   cpu.memory.writeArray(0, machine_code);
   cpu.run();
 
-  t.equal(cpu.memory.read(-99), cpu.flags.value);
+  t.equal(cpu.memory.readWord(110), 6640);
 
   t.end();
 
 });
-*/
 
 test('stack object', (t) => {
   const memory = Memory({tryteCount:9});

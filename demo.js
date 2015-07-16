@@ -113,9 +113,9 @@ let lines = [
     'LDA #$ijk',
     'LDA #%ii1i0',
     'LDA #&QF',
-    'NOP A',
-    'NOP #-121',
-    'NOP 29524',
+    'NOP',
+    'NOP',
+    'NOP',
     'LDA #0',
     'LDA #42',
     'STA 0',
@@ -231,7 +231,7 @@ let lines = [
 
     'greeting:',
     '.data "Hello, world! ☺"',
-    'NOP A', // 0 TODO: .data 0
+    'NOP', // 0 TODO: .data 0
 
     'handle_pulse:',
     // blinking cursor

@@ -37,8 +37,9 @@ class ALU {
     // addressing mode
 
     switch(operation) {
-      case OP.NOP:
-        console.log('nop');
+      case OP.DNOP:
+        console.log('debug nop');
+        debugger; // break for debugging in JavaScript debugger
         break;
 
       case OP.STA:  // M = A

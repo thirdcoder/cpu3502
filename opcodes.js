@@ -22,7 +22,7 @@ const OP = {
 
   // increment/no-op/decrement
   DEC: -1, // 00i decrement
-  NOP: 0,  // 000 no operation
+  DNOP: 0, // 000 debug no operation
   INC: 1,  // 001 increment
 
   CPX: 2,  // 01i compare X
@@ -107,7 +107,7 @@ const XOP = {
   INTZ: 17,     // 1i0i interrupt zero
   INTP: 18,     // 1i00 interrupt positive
 
-  BRK: 19,      // 1i01 breakpoint
+  NOP: 19,      // 1i01 no operation
 
   LDAXY: 20,    // 1i1i load into accumulator absolute from Y<<5 + X
   STAXY: 21,    // 1i10 store accumulator absolut to Y<<5 + X

@@ -132,8 +132,7 @@ function execute_xop_instruction(cpu, operation) {
       cpu.interrupt(1);
       break;
 
-    case XOP.BRK:
-      debugger;
+    case XOP.NOP:
       break;
 
     // pointer loads

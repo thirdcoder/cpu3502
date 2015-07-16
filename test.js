@@ -134,9 +134,9 @@ test('assemble/disassemble roundtrip', (t) => {
   // only test canonical forms
   let lines = [
       'LDA #%ii1i0',
-      'NOP A',
-      'NOP #%iiiii', // -121',
-      'NOP 29524',
+      'DNOP A',
+      'DNOP #%iiiii', // -121',
+      'DNOP 29524',
       'BRSNZ #-1', //'BNE -1',
       'BRSEZ #+2', //BEQ +2
       'HALTN',
@@ -218,14 +218,14 @@ test('assembly labels', (t) => {
 
 
   machine_code = assembler([
-    'NOP A',
-    'NOP A',
+    'DNOP A',
+    'DNOP A',
     'foo1:',
     'BNE foo1'
     ]);
 
-  t.equal(machine_code[0], 0);  // 0: NOP A
-  t.equal(machine_code[1], 0);  // 0: NOP A
+  t.equal(machine_code[0], 0);  // 0: DNOP A
+  t.equal(machine_code[1], 0);  // 0: DNOP A
   t.equal(machine_code[2], 10); // 1: BNE
   t.equal(machine_code[3], -2); // 2: relative label
 
@@ -269,9 +269,9 @@ test('execute', (t) => {
       'LDA #$ijk',
       'LDA #%ii1i0',
       'LDA #&QF',
-      'NOP A',
-      'NOP #-121',
-      'NOP 29524',
+      'DNOP A',
+      'DNOP #-121',
+      'DNOP 29524',
       'LDA #0',
       'BNE #-1',  // not taken
       'BEQ #+2',  // taken
@@ -354,10 +354,10 @@ test('clear overflow flag', (t) => {
 test('assemble low/high addresses', (t) => {
   let lines = [];
   for (let i = 0; i < 121; ++i)
-    lines.push('NOP A');
+    lines.push('DNOP A');
 
   lines = lines.concat([
-    'NOP A',
+    'DNOP A',
     'end:',
     'LDA #end.low',
     'LDA #end.high',
@@ -562,7 +562,7 @@ test('branch always, forward reference', (t) => {
     'end:',
     'HALTZ',
 
-    'NOP A',  // nop sled
+    'DNOP A',  // nop sled
     'HALTP',  // if halts here (H=1), branched to wrong address
   ];
 
@@ -573,7 +573,7 @@ test('branch always, forward reference', (t) => {
   t.equal(machine_code[1], 1);   // +1 relative address (also tested 'forward unresolved branch labels')
   t.equal(machine_code[2], -121);// HALTN
   t.equal(machine_code[3], -118);// HALTZ
-  t.equal(machine_code[4], 0);   // NOP A
+  t.equal(machine_code[4], 0);   // DNOP A
   t.equal(machine_code[5], -115);// HALTP
 
   cpu.memory.writeArray(0, machine_code);

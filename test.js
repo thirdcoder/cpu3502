@@ -3,6 +3,7 @@
 const test = require('tape');
 const CPU = require('./3502');
 const Memory = require('./memory');
+const Stack = require('./stack');
 const assembler = require('./as');
 const {decode_instruction, disasm1, disasm} = require('./instr_decode');
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
@@ -649,3 +650,32 @@ test('stack flags', (t) => {
 
 });
 */
+
+test('stack object', (t) => {
+  const memory = Memory({tryteCount:9});
+  const stack = Stack(memory);
+  stack.stackptr = 0;
+
+  stack.push(33);
+  t.equal(memory.read(0), 33);
+
+  stack.push(66);
+  t.equal(memory.read(1), 66);
+
+  t.equal(stack.pull(), 66);
+  t.equal(stack.pull(), 33);
+
+  t.equal(stack.stackptr, 0);
+
+
+  stack.pushWord(9999);
+  t.equal(stack.pullWord(), 9999);
+  t.equal(stack.stackptr, 0);
+
+  stack.pushWord(29282);
+  console.log(memory._array);
+  t.equal(stack.pull(), 121);
+  t.equal(stack.pull(), -121);
+
+  t.end();
+});

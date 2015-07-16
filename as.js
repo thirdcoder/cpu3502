@@ -86,29 +86,22 @@ function assemble(lines) {
 
     let addressing_mode, operand, extra, operand_unresolved_at;
 
-    // Parse operand
-    if (rest !== undefined) {
-      // 'operand' is up until space, extra is everything else TODO: support parsing quoted strings with embedded spaces
-      if (rest.indexOf(' ') !== -1) {
-        extra = rest.substr(rest.indexOf(' ') + 1);
-        operand = rest.substr(0, rest.indexOf(' '));
-      } else {
-        operand = rest;
-      }
-
-      ({addressing_mode, operand, operand_unresolved_at} = parse_operand(operand, line, symbols, unresolved_symbols, code_offset));
-    }
-
-    console.log(opcode,operand);
-
     if (opcode.charAt(0) === '.') {
       // assembler directives
       opcode = opcode.substring(1);
 
       if (opcode === 'equ') {
         // .equ value name
-        // TODO: better parsing
-        let name = extra;
+        // TODO: reverse
+        let name;
+        if (rest.indexOf(' ') !== -1) {
+          name = rest.substr(rest.indexOf(' ') + 1);
+          operand = rest.substr(0, rest.indexOf(' '));
+        } else {
+          operand = rest;
+        }
+
+        ({addressing_mode, operand, operand_unresolved_at} = parse_operand(operand, line, symbols, unresolved_symbols, code_offset));
 
         if (symbols.has(name)) {
           throw new Error('symbol redefinition: '+name+', in line: '+line);
@@ -117,11 +110,15 @@ function assemble(lines) {
         set_symbol(name, operand);
         console.log(`assigned symbol ${name} to ${operand}`);
       } else if (opcode === 'org') {
+        ({addressing_mode, operand, operand_unresolved_at} = parse_operand(rest, line, symbols, unresolved_symbols, code_offset));
+
         if (operand === undefined) throw new Error('.org directive requires operand, in line: '+line);
         origin = operand;
       }
     } else if (OP[opcode] !== undefined) {
       // alu
+
+      ({addressing_mode, operand, operand_unresolved_at} = parse_operand(rest, line, symbols, unresolved_symbols, code_offset));
       let opcode_value = OP[opcode]; // aaab0 3-trits
 
       let tryte = opcode_value * Math.pow(3,2) +
@@ -155,6 +152,8 @@ function assemble(lines) {
       let tryte = opcode_value * Math.pow(3,1) + (-1);
       emit(tryte);
     } else if (opcode.charAt(0) === 'B') {
+      ({addressing_mode, operand, operand_unresolved_at} = parse_operand(rest, line, symbols, unresolved_symbols, code_offset));
+
       if (opcode.charAt(1) === 'R' && opcode.length === 5) { // BR opcodes
         let flag = opcode.charAt(2);
         let direction = opcode.charAt(3);

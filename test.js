@@ -618,6 +618,11 @@ test('bad assembler instruction', (t) => {
   t.throws(() => {
     assembler(['foo']);
   });
+
+  t.throws(() => {
+    assembler(['PHP unexpectedoperand']);
+  });
+
   t.end();
 });
 

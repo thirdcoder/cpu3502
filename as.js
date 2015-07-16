@@ -150,6 +150,10 @@ function assemble(lines) {
           break;
       }
     } else if (XOP[opcode] !== undefined) {
+      if (rest !== undefined) {
+        throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
+      }
+
       let opcode_value = XOP[opcode]; // aaaai 4-trits
 
       let tryte = opcode_value * Math.pow(3,1) + (-1);

@@ -63,21 +63,6 @@ function assemble(lines) {
       opcode = line;
     }
 
-
-    // special-cased .data directive for parsing purposes TODO: refactor, for each instruction to ask for operands, instead of always parsing
-    if (line.startsWith('.data "')) { // only string literals for now, TODO
-      if (!line.endsWith('"')) throw new Error(`.text directive missing terminating double-quote, in line=${line}`);
-      const text = line.substring(7, line.length - 1);
-      for (const char of text) {
-        // TODO: support escape codes, same as character literals below
-        // TODO: and maybe raw digits "foobar",0, with any kind of literals. like '.db', but not data bytes; rather, trytes. it's all .data
-        const tt = ttFromUnicode(char);
-        if (tt === null || tt === undefined) throw new Error(`invalid trit-text character «${char}» in string literal, in line=${line}`);
-        emit(tt);
-      }
-      continue;
-    }
-
     // TODO: comments, ; to end-of-line
 
     // Convenience aliases
@@ -114,6 +99,20 @@ function assemble(lines) {
 
         if (operand === undefined) throw new Error('.org directive requires operand, in line: '+line);
         origin = operand;
+      } else if (opcode === 'data') {
+        // only string literals for now, TODO
+        if (!rest.startsWith('"') || !rest.endsWith('"')) throw new Error(`.text directive requires double-quoted string, in line=${line}`);
+        const text = rest.substring(1, rest.length - 1);
+        for (const char of text) {
+          // TODO: support escape codes, same as character literals below
+          // TODO: and maybe raw digits "foobar",0, with any kind of literals. like '.db', but not data bytes; rather, trytes. it's all .data
+          const tt = ttFromUnicode(char);
+          if (tt === null || tt === undefined) throw new Error(`invalid trit-text character «${char}» in string literal, in line=${line}`);
+          emit(tt);
+        }
+        continue;
+      } else {
+        throw new Error(`unrecognized assembler directive ${opcode}, in line=${line}`);
       }
     } else if (OP[opcode] !== undefined) {
       // alu

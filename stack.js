@@ -1,5 +1,7 @@
 'use strict';
 
+const {high_tryte, low_tryte, trytes2word} = require('./word');
+
 class Stack {
   constructor(memory) {
     this.memory = memory;
@@ -17,7 +19,18 @@ class Stack {
     return this.memory.read(this.stackptr);
   }
 
-  // TODO: push/pull words
+
+  pushWord(word) {
+    this.push(low_tryte(word));
+    this.push(high_tryte(word));
+  }
+
+  pullWord() {
+    const high = this.pull();
+    const low = this.pull();
+
+    return trytes2word(high, low);
+  }
 }
 
 module.exports = (memory) => new Stack(memory);

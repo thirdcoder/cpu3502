@@ -152,12 +152,20 @@ function execute_xop_instruction(cpu, operation) {
     }
 
     // stack
-    case XOP.PHA:
+    case XOP.PHA:   // push A
       cpu.stack.push(cpu.accum);
       break;
 
-    case XOP.PLA:
+    case XOP.PLA:   // pull A
       cpu.accum = cpu.stack.pull();
+      break;
+
+    case XOP.PHP:   // push processor flags
+      cpu.stack.pushWord(cpu.flags.value);
+      break;
+
+    case XOP.PLP:   // pull processor flags
+      cpu.flags.value = cpu.stack.pullWord();
       break;
 
     default:

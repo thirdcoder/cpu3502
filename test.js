@@ -619,3 +619,33 @@ test('bad assembler instruction', (t) => {
   });
   t.end();
 });
+
+/* TODO
+test('stack flags', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDY #0',
+    'LDX #100',
+    'TXYS',          // set stack pointer
+    'LDA #33',
+    'PHP',
+
+    'INC A',
+    'PLA',
+    'STA -99',
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.memory.read(-99), cpu.flags.value);
+
+  t.end();
+
+});
+*/

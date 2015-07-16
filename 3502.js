@@ -27,10 +27,9 @@ class CPU {
     this.yindex = 0;
     this.flags = Flags();
     this.stack = Stack(this.memory);
+    this.alu = ALU(this);
 
     this.flags.I = -1; // by default only allow int 0, non-maskable NMI/start
-
-    this.alu = new ALU(this);
 
     console.log('initial flags=',n2bts(this.flags));
   }

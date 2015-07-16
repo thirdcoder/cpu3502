@@ -128,4 +128,4 @@ class ALU {
   }
 }
 
-module.exports = ALU;
+module.exports = (cpu) => new ALU(cpu);

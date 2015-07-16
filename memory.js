@@ -91,8 +91,11 @@ class Memory {
 
   // Get a subarray view of memory starting at address, to end
   subarray(address, end) {
-    if (end !== undefined) end += this.bal2unbal;
-    return this._array.subarray(address + this.bal2unbal, end);
+    if (end !== undefined) {
+      return this._array.subarray(address + this.bal2unbal, end + this.bal2unbal);
+    } else {
+      return this._array.subarray(address + this.bal2unbal);
+    }
   }
 
   // TODO: write individual trits, tritmapped-canvas

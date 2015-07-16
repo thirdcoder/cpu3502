@@ -32,13 +32,13 @@ function execute_xop_instruction(cpu, operation) {
       break;
 
     case XOP.TSXY: // X,Y = S
-      cpu.index = low_tryte(cpu.stackptr);
-      cpu.yindex = high_tryte(cpu.stackptr);
+      cpu.index = low_tryte(cpu.stack.stackptr);
+      cpu.yindex = high_tryte(cpu.stack.stackptr);
       cpu.alu.update_flags_from(cpu.index);
       break;
 
     case XOP.TXYS: // S = X<<5 | Y
-      cpu.stackptr = trytes2word(cpu.yindex, cpu.index);
+      cpu.stack.stackptr = trytes2word(cpu.yindex, cpu.index);
       // no flags affected
       break;
 
@@ -153,14 +153,11 @@ function execute_xop_instruction(cpu, operation) {
 
     // stack
     case XOP.PHA:
-      cpu.memory.write(cpu.stackptr, cpu.accum);
-      ++cpu.stackptr;
-      // TODO: check overflow
+      cpu.stack.push(cpu.accum);
       break;
 
     case XOP.PLA:
-      --cpu.stackptr;
-      cpu.accum = cpu.memory.read(cpu.stackptr);
+      cpu.accum = cpu.stack.pull();
       break;
 
     default:

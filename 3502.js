@@ -13,6 +13,7 @@ const ALU = require('./alu');
 const Memory = require('./memory');
 const Flags = require('./flags');
 const execute_xop_instruction = require('./xop');
+const Stack = require('./stack');
 
 class CPU {
   constructor(opts={}) {
@@ -24,8 +25,8 @@ class CPU {
     this.accum = 0;
     this.index = 0;
     this.yindex = 0;
-    this.stackptr = 0;
     this.flags = Flags();
+    this.stack = Stack(this.memory);
 
     this.flags.I = -1; // by default only allow int 0, non-maskable NMI/start
 
@@ -40,7 +41,7 @@ class CPU {
       accum: this.accum,
       index: this.index,
       yindex: this.yindex,
-      stackptr: this.stackptr,
+      stackptr: this.stack.stackptr,
       flags: this.flags
     };
   }
@@ -50,7 +51,7 @@ class CPU {
     this.accum = state.accum;
     this.index = state.index;
     this.yindex = state.yindex;
-    this.stackptr = state.stackptr;
+    this.stack.stackptr = state.stackptr;
     this.flags = state.flags;
   }
 

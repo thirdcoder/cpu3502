@@ -9,8 +9,8 @@ const Triterm = require('tritmapped-terminal');
 const VIDEO_TRYTE_COUNT = 4;
 
 // '00xxx xyyyy' address -> 'xxxxx' tritmap value
-const T_TO_VIDEO_TRYTE_COUNT = 3**VIDEO_TRYTE_COUNT;
-const VIDEO_ADDRESS_SIZE = (T_TO_VIDEO_TRYTE_COUNT * TRITS_PER_TRYTE)**TRYTES_PER_WORD / TRITS_PER_TRYTE;
+const T_TO_VIDEO_TRYTE_COUNT = Math.pow(3,VIDEO_TRYTE_COUNT);
+const VIDEO_ADDRESS_SIZE = Math.pow((T_TO_VIDEO_TRYTE_COUNT * TRITS_PER_TRYTE), TRYTES_PER_WORD) / TRITS_PER_TRYTE;
 
 const Memory = require('./memory');
 

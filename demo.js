@@ -1,7 +1,7 @@
 'use strict';
 
 const CPU = require('./3502');
-const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
+const {TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, T_TO_TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 const {get_trit, set_trit, slice_trits} = require('trit-getset');
 const Triterm = require('tritmapped-terminal');
 
@@ -9,11 +9,12 @@ const Triterm = require('tritmapped-terminal');
 const VIDEO_TRYTE_COUNT = 4;
 
 // '00xxx xyyyy' address -> 'xxxxx' tritmap value
-const VIDEO_ADDRESS_SIZE = (3**VIDEO_TRYTE_COUNT * TRITS_PER_TRYTE)**TRYTES_PER_WORD / TRITS_PER_TRYTE;
+const T_TO_VIDEO_TRYTE_COUNT = 3**VIDEO_TRYTE_COUNT;
+const VIDEO_ADDRESS_SIZE = (T_TO_VIDEO_TRYTE_COUNT * TRITS_PER_TRYTE)**TRYTES_PER_WORD / TRITS_PER_TRYTE;
 
 const Memory = require('./memory');
 
-const MAX_ADDRESS = (3**TRITS_PER_WORD - 1) / 2;
+const MAX_ADDRESS = (T_TO_TRITS_PER_WORD - 1) / 2;
 const MIN_ADDRESS = -MAX_ADDRESS;
 
 const VIDEO_ADDRESS_OFFSET = MAX_ADDRESS - VIDEO_ADDRESS_SIZE; // -3281

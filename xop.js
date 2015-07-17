@@ -2,7 +2,7 @@
 
 const {XOP} = require('./opcodes');
 const {add, inc, dec} = require('./arithmetic');
-const {TRITS_PER_TRYTE} = require('./arch');
+const {TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
 const {low_tryte, high_tryte, trytes2word} = require('./word');
 
 function execute_xop_instruction(cpu, operation) {
@@ -137,7 +137,7 @@ function execute_xop_instruction(cpu, operation) {
 
     // pointer loads
     case XOP.LDAXY:{// A = [Y<<5 + X]
-      const address = cpu.yindex * 3**TRITS_PER_TRYTE + cpu.index;
+      const address = cpu.yindex * T_TO_TRITS_PER_TRYTE + cpu.index;
       cpu.accum = cpu.memory.read(address);
       console.log(`LDAXY loaded pointer [${address}] = ${cpu.accum}`);
       cpu.alu.update_flags_from(cpu.accum);
@@ -145,7 +145,7 @@ function execute_xop_instruction(cpu, operation) {
       }
 
     case XOP.STAXY:{// [Y<<5 + X] = A
-      const address = cpu.yindex * 3**TRITS_PER_TRYTE + cpu.index;
+      const address = cpu.yindex * T_TO_TRITS_PER_TRYTE + cpu.index;
       cpu.accum = cpu.memory.write(address, cpu.accum);
       break;
     }

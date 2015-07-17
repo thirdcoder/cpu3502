@@ -1,6 +1,6 @@
 'use strict';
 
-const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE} = require('./arch');
+const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
 const {OP, ADDR_MODE, FLAGS, XOP} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
 const invertKv = require('invert-kv');
@@ -42,7 +42,7 @@ function decode_operand(di, machine_code, offset=0) {
     // absolute, 2-tryte address
     case ADDR_MODE.ABSOLUTE:
       let absolute = machine_code[offset + 1];
-      absolute += 3**TRITS_PER_TRYTE * machine_code[offset + 2]; // TODO: endian?
+      absolute += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2]; // TODO: endian?
 
       return {absolute, consumed:2};
 

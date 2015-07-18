@@ -272,8 +272,8 @@ class Assembler {
     }
   }
 
-  parse_literal(operand, addressing_mode) {
-    let operand_value, operand_unresolved_at;
+  parse_literal(operand) {
+    let operand_value;
 
     switch(operand.charAt(0)) {
       case '%': // base 3, trits (%iiiii to %11111)
@@ -323,23 +323,11 @@ class Assembler {
           // decimal
           operand_value = Number.parseInt(operand, 10);
         } else {
-          if (this.symbols.has(operand)) {
-            operand_value = this.symbols.get(operand);
-          } else {
-            this.unresolved_symbols.push({
-              code_address: this.code_offset + 1, // write right after opcode
-              symbol_name: operand,
-              addressing_mode: addressing_mode,
-              asm_line: this.current_line,
-            });
-            console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
-            operand_value = 0;//61; // overwritten in second phase
-            operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
-            //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);
-          }
+          // not a literal!
+          return undefined;
         }
       }
-    return {operand_value, operand_unresolved_at};
+    return operand_value;
   }
 
   parse_operand(operand) {
@@ -357,7 +345,26 @@ class Assembler {
         addressing_mode = ADDR_MODE.ABSOLUTE;
       }
 
-      ({operand_value, operand_unresolved_at} = this.parse_literal(operand, addressing_mode));
+      operand_value = this.parse_literal(operand);
+
+      if (operand_value === undefined) {
+        // symbol
+        if (this.symbols.has(operand)) {
+          operand_value = this.symbols.get(operand);
+        } else {
+          this.unresolved_symbols.push({
+            code_address: this.code_offset + 1, // write right after opcode
+            symbol_name: operand,
+            addressing_mode: addressing_mode,
+            asm_line: this.current_line,
+          });
+          console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
+          operand_value = 0;//61; // overwritten in second phase
+          operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
+          //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);
+        }
+
+      }
 
       this.validate_operand_range(operand_value, addressing_mode);
     }

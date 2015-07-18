@@ -150,44 +150,55 @@ class CPU {
 
     this.pc += decoded_operand.consumed * this.flags.R;
 
-    if ('absolute' in decoded_operand) {
-      // absolute, 2-tryte address
-      console.log('absolute',decoded_operand.absolute);
+    switch(decoded_operand.addressing_mode) {
+      case ADDR_MODE.ABSOLUTE:
+        // absolute, 2-tryte address
+        console.log('absolute',decoded_operand.value);
 
-      read_arg = () => { return this.memory.read(decoded_operand.absolute); };
-      write_arg = (x) => { return this.memory.write(decoded_operand.absolute, x); };
-      address_of_arg = () => { return decoded_operand.absolute; };
+        read_arg = () => { return this.memory.read(decoded_operand.value); };
+        write_arg = (x) => { return this.memory.write(decoded_operand.value, x); };
+        address_of_arg = () => { return decoded_operand.value; };
 
-    } else if ('accumulator' in decoded_operand) {
-      // accumulator, register, no arguments
-      read_arg = () => { return this.accum; };
-      write_arg = (x) => { return (this.accum = x); };
-      address_of_arg = () => { throw new Error(`cannot take address of accumulator, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); };
+        break;
 
-      console.log('accum');
+      case ADDR_MODE.ACCUMULATOR:
+        // accumulator, register, no arguments
+        read_arg = () => { return this.accum; };
+        write_arg = (x) => { return (this.accum = x); };
+        address_of_arg = () => { throw new Error(`cannot take address of accumulator, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); };
 
-    } else if ('immediate' in decoded_operand) {
-      // immediate, 1-tryte literal
-      console.log('immediate',decoded_operand.immediate);
+        console.log('accum');
 
-      read_arg = () => { return decoded_operand.immediate; };
-      write_arg = () => { throw new Error(`cannot write to immediate: ${decoded_operand.immediate}, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); };
-      address_of_arg = () => { throw new Error(`cannot take address of immediate operand, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); }; // actually, maybe can (code_offset)
-    } else if ('indirect_indexed' in decoded_operand) {
-      console.log('indirect_indexed',decoded_operand.indirect_indexed);
+        break;
 
-      address_of_arg = () => {
-        // (indirect),Y
-        let ptr = this.memory.readWord(decoded_operand.indirect_indexed);
-        ptr += this.yindex;
-        return ptr;
-      };
+      case ADDR_MODE.IMMEDIATE:
+        // immediate, 1-tryte literal
+        console.log('immediate',decoded_operand.value);
 
-      read_arg = () => { return this.memory.read(address_of_arg()); };
-      write_arg = (x) => { return this.memory.write(address_of_arg(), x); }
+        read_arg = () => { return decoded_operand.value; };
+        write_arg = () => { throw new Error(`cannot write to immediate: ${decoded_operand.value}, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); };
+        address_of_arg = () => { throw new Error(`cannot take address of immediate operand, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); }; // actually, maybe can (code_offset)
 
-    } else {
-      read_arg = write_arg = address_of_arg = () => { throw new Error(`unimplemented addressing mode, in decoded=operand${JSON.stringify(di)}`); }
+        break;
+
+      case ADDR_MODE.INDIRECT_INDEXED_Y:
+        console.log('indirect_indexed',decoded_operand.value);
+
+        address_of_arg = () => {
+          // (indirect),Y
+          let ptr = this.memory.readWord(decoded_operand.value);
+          ptr += this.yindex;
+          return ptr;
+        };
+
+        read_arg = () => { return this.memory.read(address_of_arg()); };
+        write_arg = (x) => { return this.memory.write(address_of_arg(), x); }
+
+        break;
+
+      default:
+        read_arg = write_arg = address_of_arg = () => { throw new Error(`unimplemented addressing mode, in decoded=operand${JSON.stringify(di)}`); }
+
     }
 
     return {read_arg, write_arg, address_of_arg};

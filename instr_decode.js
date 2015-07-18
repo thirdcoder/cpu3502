@@ -43,50 +43,60 @@ function decode_instruction(opcode) {
 
 // Read operands from a decoded instruction start at machine_code[offset] (offset=opcode)
 function decode_operand(di, machine_code, offset=0) {
-  switch(di.addressing_mode) {
-    // absolute, 2-tryte address
-    case ADDR_MODE.ABSOLUTE:
-      let absolute = machine_code[offset + 1];
-      absolute += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2];
-      return {absolute, consumed:2};
+  const addressing_mode = di.addressing_mode;
+  let consumed = 0;
+  let value;
 
-    // (indirect),Y indexed
+  switch(di.addressing_mode) {
+    // 2-tryte operands
     case ADDR_MODE.INDIRECT_INDEXED_Y:
-      let indirect_indexed  = machine_code[offset + 1];
-      indirect_indexed += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2];
-      return {indirect_indexed, consumed:2};
+    case ADDR_MODE.INDEXED_X_INDIRECT:
+    case ADDR_MODE.ABSOLUTE:
+    case ADDR_MODE.ABSOLUTE_X:
+    case ADDR_MODE.ABSOLUTE_Y:
+      value = machine_code[offset + 1];
+      value += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2];
+      consumed = 2;
+      break;
 
     // accumulator, register, no arguments
     case ADDR_MODE.ACCUMULATOR:
-      return {accumulator:true, consumed:0};
+      consumed = 0;
+      break;
 
     // immediate, 1-tryte literal
     case ADDR_MODE.IMMEDIATE:
-      let immediate = machine_code[offset + 1];
-      return {immediate, consumed:1};
-
+      value = machine_code[offset + 1];
+      consumed = 1;
+      break;
   }
 
-  // TODO: XOPs might have custom operands
-
-  // No operands
-  return {consumed:0};
+  return {addressing_mode, value, consumed};
 }
 
 function stringify_operand(decoded_operand) {
   let operand;
 
-  if ('absolute' in decoded_operand) {
-    operand = decoded_operand.absolute.toString(); // decimal address
-    //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
-  } else if ('accumulator' in decoded_operand) {
-    operand = 'A';
-  } else if ('immediate' in decoded_operand) {
-    operand = '#' + '%' + n2bts(decoded_operand.immediate); // TODO: again, what base?
-  } else if ('indirect_indexed' in decoded_operand) {
-    operand = '(' + decoded_operand.indirect_indexed.toString() + '),Y';
-  } else {
-    operand = undefined;
+  switch(decoded_operand.addressing_mode) {
+    case ADDR_MODE.ABSOLUTE:
+      operand = decoded_operand.value.toString(); // decimal address
+      //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
+      break;
+
+    case ADDR_MODE.ACCUMULATOR:
+      operand = 'A';
+      break;
+
+    case ADDR_MODE.IMMEDIATE:
+      operand = '#' + '%' + n2bts(decoded_operand.value); // TODO: again, what base?
+      break;
+
+    case ADDR_MODE.INDIRECT_INDEXED_Y:
+      operand = '(' + decoded_operand.value.toString() + '),Y';
+      break;
+
+    default:
+      operand = undefined;
   }
 
   return operand;

@@ -182,10 +182,9 @@ let lines = [
     'STA col',
 
     // show greeting
-    'LDY #greeting.high',
-    'LDX #greeting.low',
+    'LDX #0',
     'greet:',
-    'LDAXY',
+    'LDA greeting,X',
     'STA chargen',    // write character
     'INX',            // move to next character address in string
     'INC col',        // move cursor

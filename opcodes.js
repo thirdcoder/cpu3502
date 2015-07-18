@@ -152,6 +152,10 @@ const OP_ADDR_MODE_TO_XOP = {
   }
 };
 
+const XOP_TO_ADDR_MODE_OP = {
+  LDA_IIY: [OP.LDA, ADDR_MODE.INDIRECT_INDEXED],
+}
+
 module.exports = {
   OP,
   ADDR_MODE,
@@ -160,4 +164,5 @@ module.exports = {
   XOP,
   XOP_REQUIRES_OPERAND,
   OP_ADDR_MODE_TO_XOP,
+  XOP_TO_ADDR_MODE_OP,
 };

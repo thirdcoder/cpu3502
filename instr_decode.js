@@ -1,7 +1,7 @@
 'use strict';
 
 const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
-const {OP, ADDR_MODE, FLAGS, XOP, XOP_REQUIRES_OPERAND} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, XOP, XOP_REQUIRES_OPERAND, XOP_TO_ADDR_MODE_OP} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
 const invertKv = require('invert-kv');
 const {n2bts}  = require('balanced-ternary');
@@ -47,9 +47,14 @@ function decode_operand(di, machine_code, offset=0) {
     // absolute, 2-tryte address
     case ADDR_MODE.ABSOLUTE:
       let absolute = machine_code[offset + 1];
-      absolute += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2]; // TODO: endian?
-
+      absolute += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2];
       return {absolute, consumed:2};
+
+    // (indirect),Y indexed
+    case ADDR_MODE.INDIRECT_INDEXED:
+      let indirect_indexed  = machine_code[offset + 1];
+      indirect_indexed += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2];
+      return {indirect_indexed, consumed:2};
 
     // accumulator, register, no arguments
     case ADDR_MODE.ACCUMULATOR:
@@ -59,6 +64,7 @@ function decode_operand(di, machine_code, offset=0) {
     case ADDR_MODE.IMMEDIATE:
       let immediate = machine_code[offset + 1];
       return {immediate, consumed:1};
+
   }
 
   // TODO: XOPs might have custom operands
@@ -71,14 +77,16 @@ function stringify_operand(decoded_operand) {
   let operand;
 
   if ('absolute' in decoded_operand) {
-      operand = decoded_operand.absolute.toString(); // decimal address
-      //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
+    operand = decoded_operand.absolute.toString(); // decimal address
+    //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
   } else if ('accumulator' in decoded_operand) {
-      operand = 'A';
+    operand = 'A';
   } else if ('immediate' in decoded_operand) {
-      operand = '#' + '%' + n2bts(decoded_operand.immediate); // TODO: again, what base?
+    operand = '#' + '%' + n2bts(decoded_operand.immediate); // TODO: again, what base?
+  } else if ('indirect_indexed' in decoded_operand) {
+    operand = '(' + decoded_operand.indirect_indexed.toString() + '),Y';
   } else {
-    operand = '???';
+    operand = undefined;
   }
 
   return operand;
@@ -97,9 +105,7 @@ function disasm1(machine_code, offset=0) {
     // note: some duplication with cpu read_alu_operand TODO: factor out
     // TODO: handle reading beyond end
     let decoded_operand = decode_operand(di, machine_code, offset);
-
     operand = stringify_operand(decoded_operand);
-
     consumed += decoded_operand.consumed;
   } else if (di.family === 1) {
     opcode = 'BR';
@@ -124,6 +130,15 @@ function disasm1(machine_code, offset=0) {
   } else if (di.family === -1) {
     opcode = invertKv(XOP)[di.operation];
     // TODO: undefined opcodes
+
+    let decoded_operand = decode_operand(di, machine_code, offset);
+    operand = stringify_operand(decoded_operand);
+    consumed += decoded_operand.consumed;
+
+    if (XOP_TO_ADDR_MODE_OP[opcode] !== undefined) {
+      // some extended opcodes can disassemble to alu special addressing modes
+      opcode = invertKv(OP)[XOP_TO_ADDR_MODE_OP[opcode][1]];
+    }
   }
 
   let asm;

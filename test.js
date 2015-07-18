@@ -145,6 +145,7 @@ test('assemble/disassemble roundtrip', (t) => {
       'STA 0',
       'PTI A',
       'TAX',
+      'LDA (29282),Y',
       'HALTZ'];
 
   const machine_code = assembler(lines); 

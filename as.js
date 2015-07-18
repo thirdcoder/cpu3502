@@ -132,7 +132,7 @@ class Assembler {
         this.origin = operand_value;
       } else if (opcode === 'data') {
         // only string literals for now, TODO
-        if (!rest.startsWith('"') || !rest.endsWith('"')) throw new Error(`.text directive requires double-quoted string, in line=${line}`);
+        if (!rest.startsWith('"') || !rest.endsWith('"')) throw new Error(`.data directive requires double-quoted string, in line=${line}`);
         const text = rest.substring(1, rest.length - 1);
         for (const char of text) {
           // TODO: support escape codes, same as character literals below

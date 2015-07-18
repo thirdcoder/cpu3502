@@ -801,3 +801,49 @@ test('jump to subroutine', (t) => {
 
   t.end();
 });
+
+test('subroutine multiple returns', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA #10',
+    'STA -90',
+    'JSR sub2',
+    'STA -91',
+    'JSR sub2',
+    'STA -92',
+    'JSR sub2',
+    'STA -93',
+    'JSR sub2',
+    'STA -94',
+    'JSR sub2',
+    'STA -95',
+    'JSR sub2',
+    'STA -96',
+
+    'HALTZ',
+
+    // subtract two from accumulator
+    'sub2:',
+    'DEC A',
+    'DEC A',
+    'RTS',
+
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+  t.equal(cpu.memory.read(-90), 10);
+  t.equal(cpu.memory.read(-91), 10 - 2);
+  t.equal(cpu.memory.read(-92), 10 - 2 - 2);
+  t.equal(cpu.memory.read(-93), 10 - 2 - 2 - 2);
+  t.equal(cpu.memory.read(-94), 10 - 2 - 2 - 2 - 2);
+  t.equal(cpu.memory.read(-95), 10 - 2 - 2 - 2 - 2 - 2);
+  t.equal(cpu.memory.read(-96), 10 - 2 - 2 - 2 - 2 - 2 - 2);
+
+  t.end();
+
+});

@@ -112,10 +112,6 @@ class CPU {
     if (intnum !== 0) this.state_restore(before);
   }
 
-  execute_alu_instruction(operation, read_arg, write_arg) {
-    this.alu.execute_alu_instruction(operation, read_arg, write_arg);
-  }
-
   execute_branch_instruction(flag, compare, direction, rel_address) {
     console.log(`compare flag=${flag}, direction=${direction}, compare=${compare}`);
 
@@ -198,7 +194,7 @@ class CPU {
       let read_arg, write_arg;
       [read_arg, write_arg] = this.read_alu_operand(di);
 
-      this.execute_alu_instruction(di.operation, read_arg, write_arg);
+      this.alu.execute_alu_instruction(di.operation, read_arg, write_arg);
     } else if (di.family === 1) {
       const rel_address = this.memory.read(this.pc += this.flags.R);
 

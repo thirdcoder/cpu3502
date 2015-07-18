@@ -244,8 +244,6 @@ let lines = [
 
     // advance terminal to next line
     'next_line:',
-    'LDA #0',
-    'STA chargen',  // clear cursor
     'INC row',
     'LDA #0',
     'STA col',
@@ -277,7 +275,7 @@ let lines = [
     'STA chargen',
     'INC col',
     'LDX col',
-    '.equ 46 row_count', // TODO: > instead of =
+    '.equ 45 row_count',
     'CPX #row_count',
     'BEQ next_line',  // TODO: support unresolved forward references in relative labels, offsets..
 

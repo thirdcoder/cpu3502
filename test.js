@@ -877,3 +877,17 @@ test('word assembler directive label', (t) => {
 
   t.end();
 });
+
+test('tryte assembler directive', (t) => {
+  let lines = [
+    '.tryte 33',
+    '.tryte 66',
+  ];
+
+  const machine_code = assembler(lines);
+  t.equal(machine_code.length, 2);
+  t.equal(machine_code[0], 33);
+  t.equal(machine_code[1], 66);
+
+  t.end();
+});

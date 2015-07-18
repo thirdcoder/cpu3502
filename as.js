@@ -135,8 +135,15 @@ class Assembler {
         ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest, 0)); // 'opcode' size is 0
 
         if (operand_value === undefined) throw new Error('.word directive requires operand, in line: '+line);
+        this.validate_operand_range(operand_value, ADDR_MODE.ABSOLUTE);
         this.emit(low_tryte(operand_value));
         this.emit(high_tryte(operand_value));
+      } else if (opcode === 'tryte') {
+        ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest, 0)); // 'opcode' size is 0
+
+        if (operand_value === undefined) throw new Error('.tryte directive requires operand, in line: '+line);
+        this.validate_operand_range(operand_value, ADDR_MODE.IMMEDIATE);
+        this.emit(operand_value);
       } else if (opcode === 'data') {
         // only string literals for now, TODO
         if (!rest.startsWith('"') || !rest.endsWith('"')) throw new Error(`.data directive requires double-quoted string, in line=${line}`);

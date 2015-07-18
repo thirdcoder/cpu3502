@@ -679,15 +679,15 @@ test('assembler addresing modes', (t) => {
   t.equal(a.parse_operand('(21333),Y').addressing_mode, ADDR_MODE.INDIRECT_INDEXED_Y);
   t.equal(a.parse_operand('(21333),Y').operand_value, 21333);
 
-  t.doesNotThrow(() => { assembler(['LDA #13']); });
-  t.doesNotThrow(() => { assembler(['LDA 21333']); });
+  t.doesNotThrow(() => { assembler(['DNOP #13']); });
+  t.doesNotThrow(() => { assembler(['DNOP 21333']); });
 
   // unsupported for now
-  t.throws(() => { assembler(['LDX 21333,X']); });
-  t.throws(() => { assembler(['LDX 21333,Y']); });
-  t.throws(() => { assembler(['LDX (21333)']); });
-  t.throws(() => { assembler(['LDX (21333,X)']); });
-  t.throws(() => { assembler(['LDX (21333),Y']); });
+  t.throws(() => { assembler(['DNOP 21333,X']); });
+  t.throws(() => { assembler(['DNOP 21333,Y']); });
+  t.throws(() => { assembler(['DNOP (21333)']); });
+  t.throws(() => { assembler(['DNOP (21333,X)']); });
+  t.throws(() => { assembler(['DNOP (21333),Y']); });
 
   t.end();
 });
@@ -997,6 +997,61 @@ test('absolute indexed write', (t) => {
   t.equal(cpu.memory.read(3), 33);
   t.equal(cpu.memory.read(4), 66);
   t.equal(cpu.memory.read(5), 99);
+
+  t.end();
+});
+
+test('indexed index', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'start:',
+
+    'LDY #-1',
+    'LDX foo,Y',
+    'CPX #33',
+    'BNE fail',
+
+    'LDX #-1',
+    'LDY foo,X',
+    'CPY #33',
+    'BNE fail',
+
+
+    'LDY #-1',
+    'LDX #99',
+    'STX start,Y',
+
+    'LDX #-2',
+    'LDY #88',
+    'STY start,X',
+
+    'BRA pass',
+
+
+    'before_foo:',
+    '.tryte 33',
+
+    'foo:',
+    '.tryte 66',
+
+    'after_foo:',
+    '.tryte 0',
+
+    'pass:',
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+  t.equal(cpu.memory.read(-1), 99);
+  t.equal(cpu.memory.read(-2), 88);
 
   t.end();
 });

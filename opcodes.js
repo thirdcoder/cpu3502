@@ -136,11 +136,16 @@ const XOP = {
   HALTP: -38,   // iii1 halt positive
 
   LDA_IIY: -37, // ii0i load accumulator from (indirect),Y indexed
-  LDA_ABX: -36, // ii00 load accumulator absolute,x
-  LDA_ABY: -35, // ii01 load accumulator absolute,y
+  LDA_ABX: -36, // ii00 load accumulator from absolute,X
+  LDA_ABY: -35, // ii01 load accumulator from absolute,Y
   STA_IIY: -34, // ii1i store accumulator to (indirect),Y indexed
-  STA_ABX: -33, // ii10 store accumulator absolute,x
-  STA_ABY: -32, // ii11 store accumulator absolute,y
+  STA_ABX: -33, // ii10 store accumulator to absolute,X
+  STA_ABY: -32, // ii11 store accumulator to absolute,Y
+
+  LDX_ABY: -31, // i0ii load index from absolute,Y
+  LDY_ABX: -30, // i0i0 load yindex from absolute,X
+  STX_ABY: -29, // i0i1 store index to absolute,Y
+  STY_ABX: -28, // i00i store yindex to absolute,X
 };
 
 // most XOPs do not have operands, but some do (vs alu OP, which always does), irregular
@@ -153,6 +158,10 @@ const XOP_REQUIRES_OPERAND = {
   STA_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
   STA_ABX: ADDR_MODE.ABSOLUTE_X,
   STA_ABY: ADDR_MODE.ABSOLUTE_Y,
+  LDX_ABY: ADDR_MODE.ABSOLUTE_Y,
+  LDY_ABX: ADDR_MODE.ABSOLUTE_X,
+  STX_ABY: ADDR_MODE.ABSOLUTE_Y,
+  STY_ABX: ADDR_MODE.ABSOLUTE_X,
 };
 
 const OP_ADDR_MODE_TO_XOP = {
@@ -165,7 +174,19 @@ const OP_ADDR_MODE_TO_XOP = {
     [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.STA_IIY,
     [ADDR_MODE.ABSOLUTE_X]: XOP.STA_ABX,
     [ADDR_MODE.ABSOLUTE_Y]: XOP.STA_ABY,
-  }
+  },
+  LDX: {
+    [ADDR_MODE.ABSOLUTE_Y]: XOP.LDX_ABY,
+  },
+  LDY: {
+    [ADDR_MODE.ABSOLUTE_X]: XOP.LDY_ABX,
+  },
+  STX: {
+    [ADDR_MODE.ABSOLUTE_Y]: XOP.STX_ABY,
+  },
+  STY: {
+    [ADDR_MODE.ABSOLUTE_X]: XOP.STY_ABX,
+  },
 };
 
 const XOP_TO_ADDR_MODE_OP = {
@@ -175,6 +196,10 @@ const XOP_TO_ADDR_MODE_OP = {
   [XOP.STA_IIY]: [OP.STA, ADDR_MODE.INDIRECT_INDEXED_Y],
   [XOP.STA_ABX]: [OP.STA, ADDR_MODE.ABSOLUTE_X],
   [XOP.STA_ABY]: [OP.STA, ADDR_MODE.ABSOLUTE_Y],
+  [XOP.LDX_ABY]: [OP.LDX, ADDR_MODE.ABSOLUTE_Y],
+  [XOP.LDY_ABX]: [OP.LDY, ADDR_MODE.ABSOLUTE_X],
+  [XOP.STX_ABY]: [OP.STX, ADDR_MODE.ABSOLUTE_Y],
+  [XOP.STY_ABX]: [OP.STY, ADDR_MODE.ABSOLUTE_X],
 }
 
 module.exports = {

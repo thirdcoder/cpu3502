@@ -72,7 +72,7 @@ class Assembler {
     // ex: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
     if (INSTRUCTION_ALIASES[opcode]) opcode = INSTRUCTION_ALIASES[opcode];
 
-    let addressing_mode, operand, extra, operand_unresolved_at, operand_value;
+    let addressing_mode, extra, operand_unresolved_at, operand_value;
 
     if (opcode.charAt(0) === '.') {
       // assembler directives
@@ -82,6 +82,7 @@ class Assembler {
         // .equ value name
         // TODO: reverse
         let name;
+        let operand;
         if (rest.indexOf(' ') !== -1) {
           name = rest.substr(rest.indexOf(' ') + 1);
           operand = rest.substr(0, rest.indexOf(' '));

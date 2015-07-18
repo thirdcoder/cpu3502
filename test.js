@@ -911,11 +911,11 @@ test('assemble load indirect indexed', (t) => {
   const machine_code = assembler(lines);
   t.equal(machine_code.length, 6);
   console.log(machine_code);
-  t.equal(machine_code[0], 104);  // LDA_IIY
+  t.equal(machine_code[0], -112);  // LDA_IIY
   t.equal(machine_code[1], -121);
   t.equal(machine_code[2], 121);
 
-  t.equal(machine_code[3], 104);  // LDA_IIY
+  t.equal(machine_code[3], -112);  // LDA_IIY
   t.equal(machine_code[4], -121);
   t.equal(machine_code[5], 121);
 

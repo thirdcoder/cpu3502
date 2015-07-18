@@ -133,6 +133,8 @@ const XOP = {
   JMP: 34,      // 11i1 jump
 
   LDA_IIY: 35,  // 110i load accumulator from (indirect),Y indexed
+  LDA_ABX: 36,  // 1100 load accumulator absolute,x
+  LDA_ABY: 37,  // 1101 load accumulator absolute,y
 
   HALTP: -38,   // iii1 halt positive
   HALTZ: -39,   // iii0 halt zero
@@ -144,16 +146,22 @@ const XOP_REQUIRES_OPERAND = {
   JMP: ADDR_MODE.ABSOLUTE,
   JSR: ADDR_MODE.ABSOLUTE,
   LDA_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
+  LDA_ABX: ADDR_MODE.ABSOLUTE_X,
+  LDA_ABY: ADDR_MODE.ABSOLUTE_Y,
 };
 
 const OP_ADDR_MODE_TO_XOP = {
   LDA: {
-    [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.LDA_IIY
+    [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.LDA_IIY,
+    [ADDR_MODE.ABSOLUTE_X]: XOP.LDA_ABX,
+    [ADDR_MODE.ABSOLUTE_Y]: XOP.LDA_ABY,
   }
 };
 
 const XOP_TO_ADDR_MODE_OP = {
   [XOP.LDA_IIY]: [OP.LDA, ADDR_MODE.INDIRECT_INDEXED_Y],
+  [XOP.LDA_ABX]: [OP.LDA, ADDR_MODE.ABSOLUTE_X],
+  [XOP.LDA_ABY]: [OP.LDA, ADDR_MODE.ABSOLUTE_Y],
 }
 
 module.exports = {

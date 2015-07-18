@@ -104,7 +104,7 @@ function stringify_operand(decoded_operand) {
       break;
 
     case ADDR_MODE.ABSOLUTE_Y:
-      operand = decoded_operand.value.toString() + ',X';
+      operand = decoded_operand.value.toString() + ',Y';
       break;
 
     case ADDR_MODE.INDIRECT:
@@ -163,7 +163,7 @@ function disasm1(machine_code, offset=0) {
 
     if (XOP_TO_ADDR_MODE_OP[di.operation] !== undefined) {
       // some extended opcodes can disassemble to alu special addressing modes
-      opcode = invertKv(OP)[XOP_TO_ADDR_MODE_OP[di.operation][1]];
+      opcode = invertKv(OP)[XOP_TO_ADDR_MODE_OP[di.operation][0]];
     }
   }
 

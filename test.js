@@ -146,6 +146,8 @@ test('assemble/disassemble roundtrip', (t) => {
       'PTI A',
       'TAX',
       'LDA (29282),Y',
+      'LDA 29282,X',
+      'LDA 29282,Y',
       'HALTZ'];
 
   const machine_code = assembler(lines); 
@@ -158,7 +160,7 @@ test('assemble/disassemble roundtrip', (t) => {
     const before = lines[i];
     const after = dis[i];
 
-    t.equal(before, after);
+    t.equal(after, before);
   }
   t.end();
 });
@@ -954,6 +956,42 @@ test('execute load indirect indexed', (t) => {
   t.equal(cpu.memory.read(-1), 33);
   t.equal(cpu.memory.read(-2), 66);
   t.equal(cpu.memory.read(-3), 99);
+
+  t.end();
+});
+
+test('absolute indexed', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA table,Y',
+    'STA -1',
+
+    'INY',
+    'LDA table,Y',
+    'STA -2',
+
+    'INY',
+    'LDA table,Y',
+    'STA -3',
+
+    'HALTZ',
+
+
+    'table:',
+    '.tryte 33',
+    '.tryte 66',
+    '.tryte 99',
+  ];
+
+  const machine_code = assembler(lines);
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.memory.read(-1), 33);
+  t.equal(cpu.memory.read(-2), 66);
+  t.equal(cpu.memory.read(-3), 99);
+
 
   t.end();
 });

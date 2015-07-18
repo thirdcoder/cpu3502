@@ -156,15 +156,34 @@ class CPU {
         console.log('absolute',decoded_operand.value);
 
         read_arg = () => { return this.memory.read(decoded_operand.value); };
-        write_arg = (x) => { return this.memory.write(decoded_operand.value, x); };
+        write_arg = (value) => { return this.memory.write(decoded_operand.value, value); };
         address_of_arg = () => { return decoded_operand.value; };
 
         break;
 
+      case ADDR_MODE.ABSOLUTE_X:
+        console.log('absolute,x',decoded_operand.value);
+
+        read_arg = () => { return this.memory.read(decoded_operand.value + this.index); };
+        write_arg = (value) => { return this.memory.write(decoded_operand.value + this.index, value); };
+        address_of_arg = () => { return decoded_operand.value + this.index; };
+
+        break;
+
+      case ADDR_MODE.ABSOLUTE_Y:
+        console.log('absolute,y',decoded_operand.value);
+
+        read_arg = () => { return this.memory.read(decoded_operand.value + this.yindex); };
+        write_arg = (value) => { return this.memory.write(decoded_operand.value + this.yindex, value); };
+        address_of_arg = () => { return decoded_operand.value + this.yindex; };
+
+        break;
+
+
       case ADDR_MODE.ACCUMULATOR:
         // accumulator, register, no arguments
         read_arg = () => { return this.accum; };
-        write_arg = (x) => { return (this.accum = x); };
+        write_arg = (value) => { return (this.accum = value); };
         address_of_arg = () => { throw new Error(`cannot take address of accumulator, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); };
 
         console.log('accum');
@@ -192,12 +211,12 @@ class CPU {
         };
 
         read_arg = () => { return this.memory.read(address_of_arg()); };
-        write_arg = (x) => { return this.memory.write(address_of_arg(), x); }
+        write_arg = (value) => { return this.memory.write(address_of_arg(), value); }
 
         break;
 
       default:
-        read_arg = write_arg = address_of_arg = () => { throw new Error(`unimplemented addressing mode, in decoded=operand${JSON.stringify(di)}`); }
+        read_arg = write_arg = address_of_arg = () => { throw new Error(`unimplemented addressing mode ${decoded_operand.addressing_mode}, in decoded=operand${JSON.stringify(di)}`); }
 
     }
 

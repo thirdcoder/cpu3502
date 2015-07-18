@@ -682,3 +682,14 @@ test('stack object', (t) => {
 
   t.end();
 });
+
+test('assembler symbol redefinition', (t) => {
+  t.throws(() => {
+    assembler([
+      '.equ 1 foo',
+      '.equ 2 foo']);
+  });
+
+  t.end();
+});
+

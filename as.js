@@ -31,7 +31,9 @@ class Assembler {
   }
 
   add_symbol(name, value) {
-    // TODO: error on duplicate symbol definitions
+    if (this.symbols.has(name)) {
+      throw new Error(`symbol redefinition: ${name}, in line=${this.current_line}`); // TODO: store and log original symbol location
+    }
 
     this.symbols.set(name, value);
     // also add low and high trytes (5-trit), useful for immediate mode, registers
@@ -51,9 +53,6 @@ class Assembler {
     if (line.endsWith(':')) {
       // labels TODO: support other instructions on line
       const label = line.substring(0, line.length - 1);
-      if (this.symbols.has(label)) {
-        throw new Error(`label symbol redefinition: ${label}, in line=${line}`);
-      }
       this.add_symbol(label, this.origin + this.code_offset);
       return;
     }
@@ -91,10 +90,6 @@ class Assembler {
         }
 
         ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(operand));
-
-        if (this.symbols.has(name)) {
-          throw new Error('symbol redefinition: '+name+', in line: '+line);
-        }
 
         this.add_symbol(name, operand);
         console.log(`assigned symbol ${name} to ${operand}`);

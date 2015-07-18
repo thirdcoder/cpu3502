@@ -167,6 +167,14 @@ let lines = [
 
     'TXA',  // X->A, 5
 
+    // setup stack, since default 0 overlaps with memory-mapped screen output
+    /* TODO
+    '.equ -10000 stack',
+    'LDY #stack.high',
+    'LDX #stack.low',
+    'TXYS',
+    */
+
     // loop 6..19
     'loop:',
     'INC A',
@@ -274,6 +282,16 @@ let lines = [
     'BEQ next_line',
     'CMP #0',
     'BEQ backspace',
+
+    // append character to line buffer, and null terminate
+    'LDY line_buffer_offset',
+    'STA line_buffer,Y',
+    'INC line_buffer_offset',
+    'INY',
+    'LDX #0',
+    'STX line_buffer,Y',
+
+    // write to screen
     'STA chargen',
     'INC col',
     'LDX col',
@@ -283,6 +301,13 @@ let lines = [
 
     'handled_input:',
     'RTI',
+
+
+    'line_buffer_offset:',
+    '.tryte 0',
+
+    'line_buffer:',
+    '.tryte 0',
 ];
 
 cpu.memory.writeArray(CODE_START_ADDRESS, assembler(lines));

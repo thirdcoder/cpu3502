@@ -249,13 +249,13 @@ let lines = [
     'INC row',
     'LDA #0',
     'STA col',
-    'HALTZ',       // TODO: RTI? return from interrupt
+    'JMP handled_input',
 
     'prev_line:',
     'DEC row',
     'LDA #44',    // TODO: .equ
     'STA col',
-    'HALTZ',
+    'JMP handled_input',
 
     'backspace:',
     'LDA #0',
@@ -266,7 +266,7 @@ let lines = [
     'BEQ prev_line',
     'LDA #0',     // null to erase TODO: space?
     'STA chargen',
-    'HALTZ',
+    'JMP handled_input',
 
     // interrupt handler:
     'handle_input:',
@@ -280,7 +280,9 @@ let lines = [
     '.equ 46 row_count', // TODO: > instead of =
     'CPX #row_count',
     'BEQ next_line',  // TODO: support unresolved forward references in relative labels, offsets..
-    'HALTZ',
+
+    'handled_input:',
+    'RTI',
 ];
 
 cpu.memory.writeArray(CODE_START_ADDRESS, assembler(lines));

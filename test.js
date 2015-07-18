@@ -730,6 +730,7 @@ test('no-operation and debug nop', (t) => {
 
   const machine_code = assembler(lines);
   cpu.memory.writeArray(0, machine_code);
+  cpu.dnop_throws_enabled = true;
   t.throws(() => {
     cpu.run();
   });

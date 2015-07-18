@@ -89,15 +89,6 @@ const INSTRUCTION_ALIASES = {
 };
 
 const XOP = {
-  HALTN: -40,   // iiii halt negative
-  HALTZ: -39,   // iii0 halt zero
-  HALTP: -38,   // iii1 halt positive
-
-  LDA_IIY: -37, // ii0i load accumulator from (indirect),Y indexed
-  LDA_ABX: -36, // ii00 load accumulator absolute,x
-  LDA_ABY: -35, // ii01 load accumulator absolute,y
-
-
   TAX: 1,       // 0001 transfer accumulator to index
   TAY: 2,       // 001i transfer accumulator to yindex
   TXA: 3,       // 0010 transfer index to accumulator
@@ -140,7 +131,13 @@ const XOP = {
   JSR: 33,      // 11i0 jump to subroutine
   JMP: 34,      // 11i1 jump
 
+  HALTN: -40,   // iiii halt negative
+  HALTZ: -39,   // iii0 halt zero
+  HALTP: -38,   // iii1 halt positive
 
+  LDA_IIY: -37, // ii0i load accumulator from (indirect),Y indexed
+  LDA_ABX: -36, // ii00 load accumulator absolute,x
+  LDA_ABY: -35, // ii01 load accumulator absolute,y
 };
 
 // most XOPs do not have operands, but some do (vs alu OP, which always does), irregular

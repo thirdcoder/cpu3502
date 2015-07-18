@@ -51,7 +51,7 @@ function decode_operand(di, machine_code, offset=0) {
       return {absolute, consumed:2};
 
     // (indirect),Y indexed
-    case ADDR_MODE.INDIRECT_INDEXED:
+    case ADDR_MODE.INDIRECT_INDEXED_Y:
       let indirect_indexed  = machine_code[offset + 1];
       indirect_indexed += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2];
       return {indirect_indexed, consumed:2};

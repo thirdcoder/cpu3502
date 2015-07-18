@@ -64,8 +64,8 @@ class Assembler {
       case ADDR_MODE.ABSOLUTE:
       case ADDR_MODE.ABSOLUTE_X:
       case ADDR_MODE.ABSOLUTE_Y:
-      case ADDR_MODE.INDEXED_INDIRECT:
-      case ADDR_MODE.INDIRECT_INDEXED:
+      case ADDR_MODE.INDEXED_X_INDIRECT:
+      case ADDR_MODE.INDIRECT_INDEXED_Y:
         if (!Number.isInteger(operand_value)) {
           throw new Error(`opcode (2-tryte) requires operand: ${operand_value}, in line: ${this.current_line}`);
         }
@@ -323,7 +323,7 @@ class Assembler {
           throw new Error(`branch instruction to too-far absolute address: resolved_value=${resolved_value}, code_address=${us.code_address}, rel_address=${rel_address}, in line=${us.asm_line}`);
         }
         this.output[us.code_address] = rel_address;
-      } else if ([ADDR_MODE.ABSOLUTE, ADDR_MODE.ABSOLUTE_X, ADDR_MODE.ABSOLUTE_Y, ADDR_MODE.INDIRECT_INDEXED].indexOf(us.addressing_mode) !== -1) {
+      } else if ([ADDR_MODE.ABSOLUTE, ADDR_MODE.ABSOLUTE_X, ADDR_MODE.ABSOLUTE_Y, ADDR_MODE.INDIRECT_INDEXED_Y].indexOf(us.addressing_mode) !== -1) {
         this.output[us.code_address] = low_tryte(resolved_value);
         this.output[us.code_address + 1] = high_tryte(resolved_value);
       } else {
@@ -425,13 +425,13 @@ class Assembler {
         operand = operand.substring(1);
       } else if (operand.charAt(0) === '(') {
         if (operand.endsWith(',X)')) {
-          addressing_mode = ADDR_MODE.INDEXED_INDIRECT;
+          addressing_mode = ADDR_MODE.INDEXED_X_INDIRECT;
           operand = operand.substring(1, operand.length - ',X)'.length);
         } else if (operand.endsWith(')')) {
           addressing_mode = ADDR_MODE.INDIRECT;
           operand = operand.substring(1, operand.length - ')'.length);
         } else if (operand.endsWith('),Y')) {
-          addressing_mode = ADDR_MODE.INDIRECT_INDEXED;
+          addressing_mode = ADDR_MODE.INDIRECT_INDEXED_Y;
           operand = operand.substring(1, operand.length - '),Y'.length);
         } else {
           throw new Error(`invalid indirect operand parsing ${operand}, in line=${this.current_line}`);

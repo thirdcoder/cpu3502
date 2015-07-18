@@ -711,9 +711,9 @@ test('assembler addresing modes', (t) => {
 
   t.equal(a.parse_operand('(21333)').addressing_mode, ADDR_MODE.INDIRECT);
   t.equal(a.parse_operand('(21333)').operand_value, 21333);
-  t.equal(a.parse_operand('(21333,X)').addressing_mode, ADDR_MODE.INDEXED_INDIRECT);
+  t.equal(a.parse_operand('(21333,X)').addressing_mode, ADDR_MODE.INDEXED_X_INDIRECT);
   t.equal(a.parse_operand('(21333,X)').operand_value, 21333);
-  t.equal(a.parse_operand('(21333),Y').addressing_mode, ADDR_MODE.INDIRECT_INDEXED);
+  t.equal(a.parse_operand('(21333),Y').addressing_mode, ADDR_MODE.INDIRECT_INDEXED_Y);
   t.equal(a.parse_operand('(21333),Y').operand_value, 21333);
 
   t.doesNotThrow(() => { assembler(['LDA #13']); });

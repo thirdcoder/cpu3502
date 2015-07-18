@@ -67,6 +67,23 @@ function decode_operand(di, machine_code, offset=0) {
   return {consumed:0};
 }
 
+function stringify_operand(decoded_operand) {
+  let operand;
+
+  if ('absolute' in decoded_operand) {
+      operand = decoded_operand.absolute.toString(); // decimal address
+      //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
+  } else if ('accumulator' in decoded_operand) {
+      operand = 'A';
+  } else if ('immediate' in decoded_operand) {
+      operand = '#' + '%' + n2bts(decoded_operand.immediate); // TODO: again, what base?
+  } else {
+    operand = '???';
+  }
+
+  return operand;
+}
+
 // Disassemble one instruction in machine_code
 function disasm1(machine_code, offset=0) {
   let di = decode_instruction(machine_code[offset]);
@@ -81,14 +98,8 @@ function disasm1(machine_code, offset=0) {
     // TODO: handle reading beyond end
     let decoded_operand = decode_operand(di, machine_code, offset);
 
-    if ('absolute' in decoded_operand) {
-        operand = decoded_operand.absolute.toString(); // decimal address
-        //operand = '%' + n2bts(absolute); // base 3 trits TODO: what base to defalt to? 3, 9, 27, 10??
-    } else if ('accumulator' in decoded_operand) {
-        operand = 'A';
-    } else if ('immediate' in decoded_operand) {
-        operand = '#' + '%' + n2bts(decoded_operand.immediate); // TODO: again, what base?
-    }
+    operand = stringify_operand(decoded_operand);
+
     consumed += decoded_operand.consumed;
   } else if (di.family === 1) {
     opcode = 'BR';

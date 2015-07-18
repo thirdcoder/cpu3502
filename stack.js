@@ -11,12 +11,14 @@ class Stack {
   push(value) {
     this.memory.write(this.stackptr, value);
     ++this.stackptr;
-    // TODO: check overflow
+    console.log(`pushed to stack ${value}, stackptr=${this.stackptr}`);
   }
 
   pull() {
     --this.stackptr;
-    return this.memory.read(this.stackptr);
+    const value = this.memory.read(this.stackptr);
+    console.log(`pulled from stack ${value}, stackptr=${this.stackptr}`);
+    return value;
   }
 
 

@@ -141,6 +141,7 @@ const XOP = {
 // most XOPs do not have operands, but some do (vs alu OP, which always does), irregular
 const XOP_REQUIRES_OPERAND = {
   JMP: ADDR_MODE.ABSOLUTE,
+  JSR: ADDR_MODE.ABSOLUTE,
 };
 
 module.exports = {

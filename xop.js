@@ -169,10 +169,29 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
 
     // jump
     case XOP.JMP:
-      cpu.pc = address_of_arg()
+      cpu.pc = address_of_arg();
       --cpu.pc; // undo next-instruction increment
       console.log(`jumped to ${cpu.pc}`);
       break;
+
+    case XOP.JSR: {
+      const callsite = cpu.pc;
+      cpu.stack.pushWord(callsite);
+
+      cpu.pc = address_of_arg();
+      --cpu.pc;
+      console.log(`jumped to subroutine ${cpu.pc}, from callsite ${callsite}`);
+      break;
+    }
+
+    case XOP.RTS: {
+      const callsite = cpu.stack.pullWord();
+
+      console.log(`returning to subroutine callsite ${callsite}`);
+
+      cpu.pc = callsite;
+      break;
+    }
 
     default:
       throw new Error(`unimplemented xop opcode: ${operation}`);

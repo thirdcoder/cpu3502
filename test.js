@@ -771,5 +771,33 @@ test('no-operation and debug nop', (t) => {
   });
 
   t.end();
+});
 
+test('jump to subroutine', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'NOP',
+    'NOP',
+    'NOP',
+
+    'JSR subroutine',
+    'DEC -99',        // subtract to 33 - 1 = 32, verify returned
+    'HALTZ',
+
+    'subroutine:',
+    'LDA #33',
+    'STA -99',
+    'RTS',
+
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+  t.equal(cpu.memory.read(-99), 32);
+
+  t.end();
 });

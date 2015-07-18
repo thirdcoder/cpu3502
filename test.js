@@ -875,6 +875,10 @@ test('word assembler directive label', (t) => {
   t.equal(machine_code[1], 3);    // .word foo
   t.equal(machine_code[2], 0);    // .word foo
 
+  t.throws(() => {
+    assembler(['.word 99999999']);
+  });
+
   t.end();
 });
 
@@ -888,6 +892,10 @@ test('tryte assembler directive', (t) => {
   t.equal(machine_code.length, 2);
   t.equal(machine_code[0], 33);
   t.equal(machine_code[1], 66);
+
+  t.throws(() => { assembler(['.tryte 122']); });
+  t.throws(() => { assembler(['.tryte -122']); });
+
 
   t.end();
 });

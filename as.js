@@ -72,7 +72,7 @@ class Assembler {
     // ex: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
     if (INSTRUCTION_ALIASES[opcode]) opcode = INSTRUCTION_ALIASES[opcode];
 
-    let addressing_mode, operand, extra, operand_unresolved_at;
+    let addressing_mode, operand, extra, operand_unresolved_at, operand_value;
 
     if (opcode.charAt(0) === '.') {
       // assembler directives
@@ -89,15 +89,15 @@ class Assembler {
           operand = rest;
         }
 
-        ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(operand));
+        ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(operand));
 
-        this.add_symbol(name, operand);
+        this.add_symbol(name, operand_value);
         console.log(`assigned symbol ${name} to ${operand}`);
       } else if (opcode === 'org') {
-        ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest));
+        ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
 
-        if (operand === undefined) throw new Error('.org directive requires operand, in line: '+line);
-        this.origin = operand;
+        if (operand_value === undefined) throw new Error('.org directive requires operand, in line: '+line);
+        this.origin = operand_value;
       } else if (opcode === 'data') {
         // only string literals for now, TODO
         if (!rest.startsWith('"') || !rest.endsWith('"')) throw new Error(`.text directive requires double-quoted string, in line=${line}`);
@@ -120,7 +120,7 @@ class Assembler {
         throw new Error(`alu opcode ${opcode} requires operand, in line=${line}`);
       }
 
-      ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest));
+      ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
       let opcode_value = OP[opcode]; // aaab0 3-trits
 
       let tryte = opcode_value * Math.pow(3,2) +
@@ -131,21 +131,21 @@ class Assembler {
 
       switch(addressing_mode) {
         case ADDR_MODE.IMMEDIATE:
-          if (!Number.isInteger(operand)) {
-            throw new Error('opcode '+opcode+' (immediate) requires operand: '+operand+', in line: '+line);
+          if (!Number.isInteger(operand_value)) {
+            throw new Error(`opcode ${opcode} (immediate) requires operand: ${operand_value}, in line: ${line}`);
           }
 
-          this.emit(operand);
+          this.emit(operand_value);
           break;
 
         case ADDR_MODE.ABSOLUTE:
-          if (!Number.isInteger(operand)) {
-            throw new Error('opcode '+opcode+' (absolute) requires operand: '+operand+', in line: '+line);
+          if (!Number.isInteger(operand_value)) {
+            throw new Error(`opcode ${opcode} (absolute) requires operand: ${operand}, in line: ${line}`);
           }
 
           // TODO: endian?
-          this.emit(low_tryte(operand));
-          this.emit(high_tryte(operand));
+          this.emit(low_tryte(operand_value));
+          this.emit(high_tryte(operand_value));
           break;
       }
     } else if (XOP[opcode] !== undefined) {
@@ -158,7 +158,7 @@ class Assembler {
       let tryte = opcode_value * Math.pow(3,1) + (-1);
       this.emit(tryte);
     } else if (opcode.charAt(0) === 'B') {
-      ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest));
+      ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
 
       if (opcode.charAt(1) === 'R' && opcode.length === 5) { // BR opcodes
         let flag = opcode.charAt(2);
@@ -193,23 +193,23 @@ class Assembler {
         switch(addressing_mode) {
           case ADDR_MODE.IMMEDIATE:
             // 'immediate mode' branch instructions, BEQ #+2, means encode relative offset directly
-            rel_address = operand;
+            rel_address = operand_value;
             break;
 
           case ADDR_MODE.ABSOLUTE:
             if (operand_unresolved_at !== undefined) {
               // use current code placeholder to satisfy range check (rel=0
-              operand = this.code_offset + this.origin + 2;
+              operand_value = this.code_offset + this.origin + 2;
               // patch relative address from resolved absolute address
               this.unresolved_symbols[operand_unresolved_at].addressing_mode = ADDR_MODE.BRANCH_RELATIVE;
             }
 
             // given absolute address, need to compute relative to current location for instruction encoding
             // -2 to account for size of the branch instruction (opcode+operand) itself
-            rel_address = operand - (this.code_offset + this.origin) - 2;
+            rel_address = operand_value - (this.code_offset + this.origin) - 2;
 
             if (rel_address < -121 || rel_address > 121) {
-              throw new Error(`branch instruction to too-far absolute address: operand=${operand} (unresolved? ${operand_unresolved_at}), code_offset=${this.code_offset}, rel_address=${rel_address}, in line=${line}`);
+              throw new Error(`branch instruction to too-far absolute address: operand_value=${operand_value} (unresolved? ${operand_unresolved_at}), code_offset=${this.code_offset}, rel_address=${rel_address}, in line=${line}`);
             }
 
             break;
@@ -274,6 +274,7 @@ class Assembler {
   parse_operand(operand) {
     let addressing_mode;
     let operand_unresolved_at = undefined;
+    let operand_value;
 
     if (operand === 'A') {
       addressing_mode = ADDR_MODE.ACCUMULATOR;
@@ -287,13 +288,13 @@ class Assembler {
 
       switch(operand.charAt(0)) {
         case '%': // base 3, trits (%iiiii to %11111)
-          operand = bts2n(operand.substring(1));
+          operand_value = bts2n(operand.substring(1));
           break;
         case '$': // base 9, nonary ($imm to $144)
-          operand = bts2n(nonary2bts(operand.substring(1)));
+          operand_value = bts2n(nonary2bts(operand.substring(1)));
           break;
         case '&': // base 27, septemvigesimal (&QZ to &DM)
-          operand = bts2n(sv2bts(operand.substring(1)));
+          operand_value = bts2n(sv2bts(operand.substring(1)));
           break;
         case "'": // trit-text character
 
@@ -322,8 +323,8 @@ class Assembler {
             }
           }
 
-          operand = ttFromUnicode(unicode);
-          if (operand === null || operand === undefined) {
+          operand_value = ttFromUnicode(unicode);
+          if (operand_value === null || operand_value === undefined) {
             throw new Error(`invalid trit-text character «${unicode}», in line=${this.current_line})`);
           }
           break;
@@ -331,10 +332,10 @@ class Assembler {
         default:
           if (operand.match(/^[-+]?[0-9]+$/)) {
             // decimal
-            operand = Number.parseInt(operand, 10);
+            operand_value = Number.parseInt(operand, 10);
           } else {
             if (this.symbols.has(operand)) {
-              operand = this.symbols.get(operand);
+              operand_value = this.symbols.get(operand);
             } else {
               this.unresolved_symbols.push({
                 code_address: this.code_offset + 1, // write right after opcode
@@ -343,17 +344,17 @@ class Assembler {
                 asm_line: this.current_line,
               });
               console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
-              operand = 0;//61; // overwritten in second phase
+              operand_value = 0;//61; // overwritten in second phase
               operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
               //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);
             }
           }
       }
 
-      this.validate_operand_range(operand, addressing_mode);
+      this.validate_operand_range(operand_value, addressing_mode);
     }
 
-    return {addressing_mode, operand, operand_unresolved_at};
+    return {addressing_mode, operand_value, operand_unresolved_at};
   }
 
   validate_operand_range(operand, addressing_mode) {

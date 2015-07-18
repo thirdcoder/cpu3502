@@ -198,6 +198,14 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       // TODO: pull from stack, right now just halts, due to interrupt() calling cpu.run()
       break;
 
+
+    // extended alu addressing modes TODO: move to alu.js? same exact code!
+    case XOP.LDA_IIY:
+      cpu.accum = read_arg();
+      cpu.alu.update_flags_from(cpu.accum);
+      break;
+
+
     default:
       throw new Error(`unimplemented xop opcode: ${operation}`);
   }

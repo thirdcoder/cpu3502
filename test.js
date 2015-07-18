@@ -917,6 +917,43 @@ test('assemble load indirect indexed', (t) => {
   t.equal(machine_code[4], -121);
   t.equal(machine_code[5], 121);
 
+  t.end();
+});
+
+test('execute load indirect indexed', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA (table_ptr),Y',
+    'STA -1',
+
+    'INY',
+    'LDA (table_ptr),Y',
+    'STA -2',
+
+    'INY',
+    'LDA (table_ptr),Y',
+    'STA -3',
+
+    'HALTZ',
+
+
+    'table_ptr:',
+    '.word table',
+
+    'table:',
+    '.tryte 33',
+    '.tryte 66',
+    '.tryte 99',
+  ];
+
+  const machine_code = assembler(lines);
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.memory.read(-1), 33);
+  t.equal(cpu.memory.read(-2), 66);
+  t.equal(cpu.memory.read(-3), 99);
 
   t.end();
 });

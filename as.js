@@ -323,7 +323,7 @@ class Assembler {
           throw new Error(`branch instruction to too-far absolute address: resolved_value=${resolved_value}, code_address=${us.code_address}, rel_address=${rel_address}, in line=${us.asm_line}`);
         }
         this.output[us.code_address] = rel_address;
-      } else if (us.addressing_mode === ADDR_MODE.ABSOLUTE) {
+      } else if ([ADDR_MODE.ABSOLUTE, ADDR_MODE.ABSOLUTE_X, ADDR_MODE.ABSOLUTE_Y, ADDR_MODE.INDIRECT_INDEXED].indexOf(us.addressing_mode) !== -1) {
         this.output[us.code_address] = low_tryte(resolved_value);
         this.output[us.code_address + 1] = high_tryte(resolved_value);
       } else {

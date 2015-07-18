@@ -173,6 +173,21 @@ class CPU {
       read_arg = () => { return decoded_operand.immediate; };
       write_arg = () => { throw new Error(`cannot write to immediate: ${decoded_operand.immediate}, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); };
       address_of_arg = () => { throw new Error(`cannot take address of immediate operand, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); }; // actually, maybe can (code_offset)
+    } else if ('indirect_indexed' in decoded_operand) {
+      console.log('indirect_indexed',decoded_operand.indirect_indexed);
+
+      address_of_arg = () => {
+        // (indirect),Y
+        let ptr = this.memory.readWord(decoded_operand.indirect_indexed);
+        ptr += this.yindex;
+        return ptr;
+      };
+
+      read_arg = () => { return this.memory.read(address_of_arg()); };
+      write_arg = (x) => { return this.memory.write(address_of_arg(), x); }
+
+    } else {
+      read_arg = write_arg = address_of_arg = () => { throw new Error(`unimplemented addressing mode, in decoded=operand${JSON.stringify(di)}`); }
     }
 
     return {read_arg, write_arg, address_of_arg};

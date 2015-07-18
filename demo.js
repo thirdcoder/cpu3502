@@ -232,7 +232,7 @@ let lines = [
 
     'greeting:',
     '.data "Hello, world! ☺"',
-    'NOP', // 0 TODO: .data 0
+    'DNOP A', // 0 TODO: .data 0
 
     'handle_pulse:',
     // blinking cursor

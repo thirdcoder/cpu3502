@@ -9,6 +9,7 @@ const {high_tryte, low_tryte} = require('./word');
 const ttFromUnicode = require('trit-text').fromUnicode;
 
 // assembler
+// TODO: port to run on cpu (self-hosting)
 
 // syntax
 // opcode operands
@@ -23,6 +24,9 @@ class Assembler {
   constructor() {
     this.symbols = new Map();
     this.unresolved_symbols = [];
+    this.code_offset = 0;
+    this.origin = 0;
+    this.output = [];
   }
 
   add_symbol(name, value) {
@@ -34,18 +38,17 @@ class Assembler {
     this.symbols.set(`${name}.high`, high_tryte(value));
   }
 
+  emit(tryte) {
+    console.log('emit',n2bts(tryte));
+    this.output.push(tryte);
+    ++this.code_offset;
+  }
+
   assemble(lines) {
-    // TODO: port to run on cpu (self-hosting)
-    let output = [];
+    this.output = []; // TODO: allow appending?
 
-    let code_offset = 0;
-    let origin = 0;
-
-    let emit = function(tryte) {
-      console.log('emit',n2bts(tryte));
-      output.push(tryte);
-      ++code_offset;
-    }
+    this.code_offset = 0;
+    this.origin = 0;
 
     for (let line of lines) {
       if (line.endsWith(':')) {
@@ -54,7 +57,7 @@ class Assembler {
         if (this.symbols.has(label)) {
           throw new Error(`label symbol redefinition: ${label}, in line=${line}`);
         }
-        this.add_symbol(label, origin + code_offset);
+        this.add_symbol(label, this.origin + this.code_offset);
         continue;
       }
 
@@ -90,7 +93,7 @@ class Assembler {
             operand = rest;
           }
 
-          ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(operand, line, code_offset));
+          ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(operand, line));
 
           if (this.symbols.has(name)) {
             throw new Error('symbol redefinition: '+name+', in line: '+line);
@@ -99,10 +102,10 @@ class Assembler {
           this.add_symbol(name, operand);
           console.log(`assigned symbol ${name} to ${operand}`);
         } else if (opcode === 'org') {
-          ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest, line, code_offset));
+          ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest, line));
 
           if (operand === undefined) throw new Error('.org directive requires operand, in line: '+line);
-          origin = operand;
+          this.origin = operand;
         } else if (opcode === 'data') {
           // only string literals for now, TODO
           if (!rest.startsWith('"') || !rest.endsWith('"')) throw new Error(`.text directive requires double-quoted string, in line=${line}`);
@@ -112,7 +115,7 @@ class Assembler {
             // TODO: and maybe raw digits "foobar",0, with any kind of literals. like '.db', but not data bytes; rather, trytes. it's all .data
             const tt = ttFromUnicode(char);
             if (tt === null || tt === undefined) throw new Error(`invalid trit-text character «${char}» in string literal, in line=${line}`);
-            emit(tt);
+            this.emit(tt);
           }
           continue;
         } else {
@@ -125,14 +128,14 @@ class Assembler {
           throw new Error(`alu opcode ${opcode} requires operand, in line=${line}`);
         }
 
-        ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest, line, code_offset));
+        ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest, line));
         let opcode_value = OP[opcode]; // aaab0 3-trits
 
         let tryte = opcode_value * Math.pow(3,2) +
           addressing_mode * Math.pow(3,1) +
           0;
 
-        emit(tryte);
+        this.emit(tryte);
 
         switch(addressing_mode) {
           case ADDR_MODE.IMMEDIATE:
@@ -140,7 +143,7 @@ class Assembler {
               throw new Error('opcode '+opcode+' (immediate) requires operand: '+operand+', in line: '+line);
             }
 
-            emit(operand);
+            this.emit(operand);
             break;
 
           case ADDR_MODE.ABSOLUTE:
@@ -149,8 +152,8 @@ class Assembler {
             }
 
             // TODO: endian?
-            emit(low_tryte(operand));
-            emit(high_tryte(operand));
+            this.emit(low_tryte(operand));
+            this.emit(high_tryte(operand));
             break;
         }
       } else if (XOP[opcode] !== undefined) {
@@ -161,9 +164,9 @@ class Assembler {
         let opcode_value = XOP[opcode]; // aaaai 4-trits
 
         let tryte = opcode_value * Math.pow(3,1) + (-1);
-        emit(tryte);
+        this.emit(tryte);
       } else if (opcode.charAt(0) === 'B') {
-        ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest, line, code_offset));
+        ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest, line));
 
         if (opcode.charAt(1) === 'R' && opcode.length === 5) { // BR opcodes
           let flag = opcode.charAt(2);
@@ -204,17 +207,17 @@ class Assembler {
             case ADDR_MODE.ABSOLUTE:
               if (operand_unresolved_at !== undefined) {
                 // use current code placeholder to satisfy range check (rel=0
-                operand = code_offset + origin + 2;
+                operand = this.code_offset + this.origin + 2;
                 // patch relative address from resolved absolute address
                 this.unresolved_symbols[operand_unresolved_at].addressing_mode = ADDR_MODE.BRANCH_RELATIVE;
               }
 
               // given absolute address, need to compute relative to current location for instruction encoding
               // -2 to account for size of the branch instruction (opcode+operand) itself
-              rel_address = operand - (code_offset + origin) - 2;
+              rel_address = operand - (this.code_offset + this.origin) - 2;
 
               if (rel_address < -121 || rel_address > 121) {
-                throw new Error(`branch instruction to too-far absolute address: operand=${operand} (unresolved? ${operand_unresolved_at}), code_offset=${code_offset}, rel_address=${rel_address}, in line=${line}`);
+                throw new Error(`branch instruction to too-far absolute address: operand=${operand} (unresolved? ${operand_unresolved_at}), code_offset=${this.code_offset}, rel_address=${rel_address}, in line=${line}`);
               }
 
               break;
@@ -223,8 +226,8 @@ class Assembler {
               throw new Error('invalid addressing mode for branch instruction: '+addressing_mode+', in line='+line);
           }
 
-          emit(tryte);
-          emit(rel_address);
+          this.emit(tryte);
+          this.emit(rel_address);
         }
       } else {
         throw new Error(`unrecognized opcode: ${opcode}, in line=${line}`);
@@ -242,28 +245,28 @@ class Assembler {
       console.log(`resolved symbol ${us.symbol_name} to ${resolved_value} (${JSON.stringify(us)})`);
 
       if (us.addressing_mode === ADDR_MODE.IMMEDIATE) {
-        output[us.code_address] = resolved_value;
+        this.output[us.code_address] = resolved_value;
       } else if (us.addressing_mode === ADDR_MODE.BRANCH_RELATIVE) {
         // special case of immediate - stored resolved_value is absolute; convert to relative
-        let rel_address = resolved_value - (us.code_address + origin) - 1; // -1 for instruction
+        let rel_address = resolved_value - (us.code_address + this.origin) - 1; // -1 for instruction
         if (rel_address < -121 || rel_address > 121) {
           throw new Error(`branch instruction to too-far absolute address: resolved_value=${resolved_value}, code_address=${us.code_address}, rel_address=${rel_address}, in line=${us.asm_line}`);
         }
-        output[us.code_address] = rel_address;
+        this.output[us.code_address] = rel_address;
       } else if (us.addressing_mode === ADDR_MODE.ABSOLUTE) {
-        output[us.code_address] = low_tryte(resolved_value);
-        output[us.code_address + 1] = high_tryte(resolved_value);
+        this.output[us.code_address] = low_tryte(resolved_value);
+        this.output[us.code_address + 1] = high_tryte(resolved_value);
       } else {
         throw new Error(`unknown addressing mode ${us.addressing_mode} resolving ${us}`);
       }
     }
 
-    console.log('assembled '+lines.length+' lines into '+output.length+' trytes');
+    console.log('assembled '+lines.length+' lines into '+this.output.length+' trytes');
     //console.log(output);
-    return output;
+    return this.output;
   }
 
-  parse_operand(operand, line, code_offset) {
+  parse_operand(operand, line) {
     let addressing_mode;
     let operand_unresolved_at = undefined;
 
@@ -329,12 +332,12 @@ class Assembler {
               operand = this.symbols.get(operand);
             } else {
               this.unresolved_symbols.push({
-                code_address: code_offset + 1, // write right after opcode
+                code_address: this.code_offset + 1, // write right after opcode
                 symbol_name: operand,
                 addressing_mode: addressing_mode,
                 asm_line: line,
               });
-              console.log(`saving unresolved symbol ${operand} at ${code_offset}`);
+              console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
               operand = 0;//61; // overwritten in second phase
               operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
               //throw new Error('unresolved symbol reference: '+operand+', in line: '+line);

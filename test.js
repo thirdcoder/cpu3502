@@ -693,3 +693,27 @@ test('assembler symbol redefinition', (t) => {
   t.end();
 });
 
+test('assembler addresing modes', (t) => {
+  const a = new assembler.Assembler;
+
+  t.equal(a.parse_operand('A').addressing_mode, ADDR_MODE.ACCUMULATOR);
+  t.equal(a.parse_operand('#13').addressing_mode, ADDR_MODE.IMMEDIATE);
+  t.equal(a.parse_operand('#13').operand_value, 13);
+  t.equal(a.parse_operand('#%111').operand_value, 13);
+  t.equal(a.parse_operand('21333').addressing_mode, ADDR_MODE.ABSOLUTE);
+  t.equal(a.parse_operand('21333').operand_value, 21333);
+
+  t.equal(a.parse_operand('21333,X').addressing_mode, ADDR_MODE.ABSOLUTE_X);
+  t.equal(a.parse_operand('21333,X').operand_value, 21333);
+  t.equal(a.parse_operand('21333,Y').addressing_mode, ADDR_MODE.ABSOLUTE_Y);
+  t.equal(a.parse_operand('21333,Y').operand_value, 21333);
+
+  t.equal(a.parse_operand('(21333)').addressing_mode, ADDR_MODE.INDIRECT);
+  t.equal(a.parse_operand('(21333)').operand_value, 21333);
+  t.equal(a.parse_operand('(21333,X)').addressing_mode, ADDR_MODE.INDEXED_INDIRECT);
+  t.equal(a.parse_operand('(21333,X)').operand_value, 21333);
+  t.equal(a.parse_operand('(21333),Y').addressing_mode, ADDR_MODE.INDIRECT_INDEXED);
+  t.equal(a.parse_operand('(21333),Y').operand_value, 21333);
+
+  t.end();
+});

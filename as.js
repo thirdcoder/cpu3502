@@ -131,6 +131,10 @@ class Assembler {
       this.emit(tryte);
 
       switch(addressing_mode) {
+        case ADDR_MODE.ACCUMULATOR:
+          // nothing to emit
+          break;
+
         case ADDR_MODE.IMMEDIATE:
           if (!Number.isInteger(operand_value)) {
             throw new Error(`opcode ${opcode} (immediate) requires operand: ${operand_value}, in line: ${line}`);
@@ -141,13 +145,17 @@ class Assembler {
 
         case ADDR_MODE.ABSOLUTE:
           if (!Number.isInteger(operand_value)) {
-            throw new Error(`opcode ${opcode} (absolute) requires operand: ${operand}, in line: ${line}`);
+            throw new Error(`opcode ${opcode} (absolute) requires operand: ${operand_value}, in line: ${line}`);
           }
 
           // TODO: endian?
           this.emit(low_tryte(operand_value));
           this.emit(high_tryte(operand_value));
           break;
+
+        default:
+          // TODO: more addressing modes
+          throw new Error(`opcode ${opcode} unsupported addressing mode ${addressing_mode} for operand ${operand_value}, in line: ${line}`);
       }
     } else if (XOP[opcode] !== undefined) {
       if (rest !== undefined) {
@@ -363,8 +371,29 @@ class Assembler {
       if (operand.charAt(0) === '#') {
         addressing_mode = ADDR_MODE.IMMEDIATE;
         operand = operand.substring(1);
+      } else if (operand.charAt(0) === '(') {
+        if (operand.endsWith(',X)')) {
+          addressing_mode = ADDR_MODE.INDEXED_INDIRECT;
+          operand = operand.substring(1, operand.length - ',X)'.length);
+        } else if (operand.endsWith(')')) {
+          addressing_mode = ADDR_MODE.INDIRECT;
+          operand = operand.substring(1, operand.length - ')'.length);
+        } else if (operand.endsWith('),Y')) {
+          addressing_mode = ADDR_MODE.INDIRECT_INDEXED;
+          operand = operand.substring(1, operand.length - '),Y'.length);
+        } else {
+          throw new Error(`invalid indirect operand parsing ${operand}, in line=${this.current_line}`);
+        }
       } else {
-        addressing_mode = ADDR_MODE.ABSOLUTE;
+        if (operand.endsWith(',X')) {
+          addressing_mode = ADDR_MODE.ABSOLUTE_X;
+          operand = operand.substring(0, operand.length - ',X'.length);
+        } else if (operand.endsWith(',Y')) {
+          addressing_mode = ADDR_MODE.ABSOLUTE_Y;
+          operand = operand.substring(0, operand.length - ',Y'.length);
+        } else {
+          addressing_mode = ADDR_MODE.ABSOLUTE;
+        }
       }
 
       operand_value = this.parse_literal(operand);
@@ -398,5 +427,6 @@ class Assembler {
 function assemble(lines) {
   return new Assembler().assemble(lines);
 }
+assemble.Assembler = Assembler;
 
 module.exports = assemble;

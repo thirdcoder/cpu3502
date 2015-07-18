@@ -51,6 +51,11 @@ const ADDR_MODE = {
 
   // internal modes only used by assembler, not instruction coding format
   BRANCH_RELATIVE: 2,
+  INDIRECT: 3,
+  INDEXED_INDIRECT: 4,
+  INDIRECT_INDEXED: 5,
+  ABSOLUTE_X: 6,
+  ABSOLUTE_Y: 7,
 };
 
 const FLAGS = {

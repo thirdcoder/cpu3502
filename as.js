@@ -272,6 +272,76 @@ class Assembler {
     }
   }
 
+  parse_literal(operand, addressing_mode) {
+    let operand_value, operand_unresolved_at;
+
+    switch(operand.charAt(0)) {
+      case '%': // base 3, trits (%iiiii to %11111)
+        operand_value = bts2n(operand.substring(1));
+        break;
+      case '$': // base 9, nonary ($imm to $144)
+        operand_value = bts2n(nonary2bts(operand.substring(1)));
+        break;
+      case '&': // base 27, septemvigesimal (&QZ to &DM)
+        operand_value = bts2n(sv2bts(operand.substring(1)));
+        break;
+      case "'": // trit-text character
+
+        let unicode = operand.substring(1);
+
+        // escapes for special characters
+        if (unicode.substring(0, 1) === '\\') {
+          switch(unicode.substring(1)) {
+            case '\\':
+              unicode = '\\';
+              break;
+            case 'n':
+              unicode = '\n';
+              break;
+            case '0':
+              unicode = '\0';
+              break;
+            case 's':
+              unicode = ' ';
+              break;
+            case 'S':
+              unicode = ';';
+              break;
+            default:
+              throw new Error(`invalid trit-text escape character «${unicode}», in line=${this.current_line}`);
+          }
+        }
+
+        operand_value = ttFromUnicode(unicode);
+        if (operand_value === null || operand_value === undefined) {
+          throw new Error(`invalid trit-text character «${unicode}», in line=${this.current_line})`);
+        }
+        break;
+
+      default:
+        if (operand.match(/^[-+]?[0-9]+$/)) {
+          // decimal
+          operand_value = Number.parseInt(operand, 10);
+        } else {
+          if (this.symbols.has(operand)) {
+            operand_value = this.symbols.get(operand);
+          } else {
+            this.unresolved_symbols.push({
+              code_address: this.code_offset + 1, // write right after opcode
+              symbol_name: operand,
+              addressing_mode: addressing_mode,
+              asm_line: this.current_line,
+            });
+            console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
+            operand_value = 0;//61; // overwritten in second phase
+            operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
+            //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);
+          }
+        }
+      }
+    return {operand_value, operand_unresolved_at};
+  }
+
   parse_operand(operand) {
     let addressing_mode;
     let operand_unresolved_at = undefined;
@@ -287,70 +357,7 @@ class Assembler {
         addressing_mode = ADDR_MODE.ABSOLUTE;
       }
 
-      switch(operand.charAt(0)) {
-        case '%': // base 3, trits (%iiiii to %11111)
-          operand_value = bts2n(operand.substring(1));
-          break;
-        case '$': // base 9, nonary ($imm to $144)
-          operand_value = bts2n(nonary2bts(operand.substring(1)));
-          break;
-        case '&': // base 27, septemvigesimal (&QZ to &DM)
-          operand_value = bts2n(sv2bts(operand.substring(1)));
-          break;
-        case "'": // trit-text character
-
-          let unicode = operand.substring(1);
-
-          // escapes for special characters
-          if (unicode.substring(0, 1) === '\\') {
-            switch(unicode.substring(1)) {
-              case '\\':
-                unicode = '\\';
-                break;
-              case 'n':
-                unicode = '\n';
-                break;
-              case '0':
-                unicode = '\0';
-                break;
-              case 's':
-                unicode = ' ';
-                break;
-              case 'S':
-                unicode = ';';
-                break;
-              default:
-                throw new Error(`invalid trit-text escape character «${unicode}», in line=${this.current_line}`);
-            }
-          }
-
-          operand_value = ttFromUnicode(unicode);
-          if (operand_value === null || operand_value === undefined) {
-            throw new Error(`invalid trit-text character «${unicode}», in line=${this.current_line})`);
-          }
-          break;
-
-        default:
-          if (operand.match(/^[-+]?[0-9]+$/)) {
-            // decimal
-            operand_value = Number.parseInt(operand, 10);
-          } else {
-            if (this.symbols.has(operand)) {
-              operand_value = this.symbols.get(operand);
-            } else {
-              this.unresolved_symbols.push({
-                code_address: this.code_offset + 1, // write right after opcode
-                symbol_name: operand,
-                addressing_mode: addressing_mode,
-                asm_line: this.current_line,
-              });
-              console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
-              operand_value = 0;//61; // overwritten in second phase
-              operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
-              //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);
-            }
-          }
-      }
+      ({operand_value, operand_unresolved_at} = this.parse_literal(operand, addressing_mode));
 
       this.validate_operand_range(operand_value, addressing_mode);
     }

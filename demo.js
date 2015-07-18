@@ -239,7 +239,7 @@ let lines = [
     'LDA cursor_char',
     'STA chargen',
     'NEG cursor_char',  // toggle red/green '_'
-    'HALTZ',
+    'RTI',              // return from interrupt
 
 
     // advance terminal to next line

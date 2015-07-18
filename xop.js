@@ -168,13 +168,13 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       break;
 
     // jump
-    case XOP.JMP:
+    case XOP.JMP:   // pc = absolute
       cpu.pc = address_of_arg();
       --cpu.pc; // undo next-instruction increment
       console.log(`jumped to ${cpu.pc}`);
       break;
 
-    case XOP.JSR: {
+    case XOP.JSR: { // push pc; pc = absolute
       const callsite = cpu.pc;
       cpu.stack.pushWord(callsite);
 
@@ -184,7 +184,7 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       break;
     }
 
-    case XOP.RTS: {
+    case XOP.RTS: { // pull pc
       const callsite = cpu.stack.pullWord();
 
       console.log(`returning to subroutine callsite ${callsite}`);
@@ -192,6 +192,11 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       cpu.pc = callsite;
       break;
     }
+
+    case XOP.RTI:   // return from interrupt
+      cpu.flags.R = 0;
+      // TODO: pull from stack, right now just halts, due to interrupt() calling cpu.run()
+      break;
 
     default:
       throw new Error(`unimplemented xop opcode: ${operation}`);

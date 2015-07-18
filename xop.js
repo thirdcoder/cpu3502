@@ -5,7 +5,7 @@ const {add, inc, dec} = require('./arithmetic');
 const {TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
 const {low_tryte, high_tryte, trytes2word} = require('./word');
 
-function execute_xop_instruction(cpu, operation, read_arg, write_arg) {
+function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of_arg) {
   console.log('misc', operation);
 
   switch(operation) {
@@ -169,7 +169,7 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg) {
 
     // jump
     case XOP.JMP:
-      cpu.pc = read_arg()
+      cpu.pc = address_of_arg()
       --cpu.pc; // undo next-instruction increment
       console.log(`jumped to ${cpu.pc}`);
       break;

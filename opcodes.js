@@ -140,8 +140,7 @@ const XOP = {
 
 // most XOPs do not have operands, but some do (vs alu OP, which always does), irregular
 const XOP_REQUIRES_OPERAND = {
-  // TODO: change to 2-byte 'immediate', not really 'absolute' since doesn't read? rethink
-  JMP: ADDR_MODE.IMMEDIATE,
+  JMP: ADDR_MODE.ABSOLUTE,
 };
 
 module.exports = {

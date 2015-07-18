@@ -144,7 +144,7 @@ class CPU {
 
   // Read instruction operand from decoded instruction, return read/write accessors
   read_alu_operand(di) {
-    let read_arg, write_arg;
+    let read_arg, write_arg, address_of_arg;
 
     let decoded_operand = decode_operand(di, this.memory.subarray(this.pc), 0);
 
@@ -156,11 +156,13 @@ class CPU {
 
       read_arg = () => { return this.memory.read(decoded_operand.absolute); };
       write_arg = (x) => { return this.memory.write(decoded_operand.absolute, x); };
+      address_of_arg = () => { return decoded_operand.absolute; };
 
     } else if ('accumulator' in decoded_operand) {
       // accumulator, register, no arguments
       read_arg = () => { return this.accum; };
       write_arg = (x) => { return (this.accum = x); };
+      address_of_arg = () => { throw new Error(`cannot take address of accumulator, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); };
 
       console.log('accum');
 
@@ -169,10 +171,11 @@ class CPU {
       console.log('immediate',decoded_operand.immediate);
 
       read_arg = () => { return decoded_operand.immediate; };
-      write_arg = () => { throw new Error('cannot write to immediate: '+decoded_operand.immediate); };
+      write_arg = () => { throw new Error(`cannot write to immediate: ${decoded_operand.immediate}, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); };
+      address_of_arg = () => { throw new Error(`cannot take address of immediate operand, in instruction ${JSON.stringify(di)} at pc=${this.pc}`); }; // actually, maybe can (code_offset)
     }
 
-    return [read_arg, write_arg];
+    return {read_arg, write_arg, address_of_arg};
   }
 
   execute_next_instruction() {
@@ -191,8 +194,7 @@ class CPU {
     const di = decode_instruction(opcode);
 
     if (di.family === 0) {
-      let read_arg, write_arg;
-      [read_arg, write_arg] = this.read_alu_operand(di);
+      let {read_arg, write_arg, address_of_arg} = this.read_alu_operand(di);
 
       this.alu.execute_alu_instruction(di.operation, read_arg, write_arg);
     } else if (di.family === 1) {
@@ -200,10 +202,9 @@ class CPU {
 
       this.execute_branch_instruction(di.flag, di.compare, di.direction, rel_address);
     } else if (di.family === -1) {
-      let read_arg, write_arg;
-      [read_arg, write_arg] = this.read_alu_operand(di);
+      let {read_arg, write_arg, address_of_arg} = this.read_alu_operand(di);
 
-      execute_xop_instruction(this, di.operation, read_arg, write_arg);
+      execute_xop_instruction(this, di.operation, read_arg, write_arg, address_of_arg);
     }
 
     console.log('flags:','RHUVSDCIL');

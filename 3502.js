@@ -28,7 +28,7 @@ class CPU {
     this.flags = Flags();
     this.stack = Stack(this.memory);
     this.alu = ALU(this);
-    this.dnop_throws_enabled = false;
+    this.dnop_throws_enabled = true;
 
     this.flags.I = -1; // by default only allow int 0, non-maskable NMI/start
 

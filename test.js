@@ -847,3 +847,33 @@ test('subroutine multiple returns', (t) => {
   t.end();
 
 });
+
+test('word assembler directive', (t) => {
+  let lines = [
+    '.word -29282',
+  ];
+
+  const machine_code = assembler(lines);
+  t.equal(machine_code.length, 2);
+  t.equal(machine_code[0], 121);  // little endian
+  t.equal(machine_code[1], -121);
+
+  t.end();
+});
+
+/* TODO
+test('word assembler directive label', (t) => {
+  let lines = [
+    '.org 29282',
+    '.word foo',
+    'foo:',
+  ];
+
+  const machine_code = assembler(lines);
+  console.log(machine_code);
+  t.equal(machine_code[0], 121);
+  t.equal(machine_code[1], -121);
+
+  t.end();
+});
+*/

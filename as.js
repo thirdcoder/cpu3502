@@ -130,6 +130,12 @@ class Assembler {
 
         if (operand_value === undefined) throw new Error('.org directive requires operand, in line: '+line);
         this.origin = operand_value;
+      } else if (opcode === 'word') {
+        ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
+
+        if (operand_value === undefined) throw new Error('.word directive requires operand, in line: '+line);
+        this.emit(low_tryte(operand_value));
+        this.emit(high_tryte(operand_value));
       } else if (opcode === 'data') {
         // only string literals for now, TODO
         if (!rest.startsWith('"') || !rest.endsWith('"')) throw new Error(`.data directive requires double-quoted string, in line=${line}`);

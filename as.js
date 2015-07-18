@@ -25,6 +25,15 @@ class Assembler {
     this.unresolved_symbols = [];
   }
 
+  add_symbol(name, value) {
+    // TODO: error on duplicate symbol definitions
+
+    this.symbols.set(name, value);
+    // also add low and high trytes (5-trit), useful for immediate mode, registers
+    this.symbols.set(`${name}.low`, low_tryte(value));
+    this.symbols.set(`${name}.high`, high_tryte(value));
+  }
+
   assemble(lines) {
     // TODO: port to run on cpu (self-hosting)
     let output = [];
@@ -38,13 +47,6 @@ class Assembler {
       ++code_offset;
     }
 
-    const set_symbol = (name, value) => {
-      this.symbols.set(name, value);
-      // also add low and high trytes (5-trit), useful for immediate mode, registers
-      this.symbols.set(`${name}.low`, low_tryte(value));
-      this.symbols.set(`${name}.high`, high_tryte(value));
-    }
-
     for (let line of lines) {
       if (line.endsWith(':')) {
         // labels TODO: support other instructions on line
@@ -52,7 +54,7 @@ class Assembler {
         if (this.symbols.has(label)) {
           throw new Error(`label symbol redefinition: ${label}, in line=${line}`);
         }
-        set_symbol(label, origin + code_offset);
+        this.add_symbol(label, origin + code_offset);
         continue;
       }
 
@@ -94,7 +96,7 @@ class Assembler {
             throw new Error('symbol redefinition: '+name+', in line: '+line);
           }
 
-          set_symbol(name, operand);
+          this.add_symbol(name, operand);
           console.log(`assigned symbol ${name} to ${operand}`);
         } else if (opcode === 'org') {
           ({addressing_mode, operand, operand_unresolved_at} = this.parse_operand(rest, line, code_offset));

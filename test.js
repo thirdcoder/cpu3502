@@ -861,19 +861,19 @@ test('word assembler directive', (t) => {
   t.end();
 });
 
-/* TODO
 test('word assembler directive label', (t) => {
   let lines = [
-    '.org 29282',
+    'NOP',
     '.word foo',
     'foo:',
   ];
 
   const machine_code = assembler(lines);
   console.log(machine_code);
-  t.equal(machine_code[0], 121);
-  t.equal(machine_code[1], -121);
+  t.equal(machine_code.length, 3);
+  t.equal(machine_code[0], 56);   // NOP
+  t.equal(machine_code[1], 3);    // .word foo
+  t.equal(machine_code[2], 0);    // .word foo
 
   t.end();
 });
-*/

@@ -127,11 +127,12 @@ class Assembler {
         console.log(`assigned symbol ${name} to ${operand}`);
       } else if (opcode === 'org') {
         ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
+        // TODO: do not allow unresolved symbols in .org?
 
         if (operand_value === undefined) throw new Error('.org directive requires operand, in line: '+line);
         this.origin = operand_value;
       } else if (opcode === 'word') {
-        ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
+        ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest, 0)); // 'opcode' size is 0
 
         if (operand_value === undefined) throw new Error('.word directive requires operand, in line: '+line);
         this.emit(low_tryte(operand_value));
@@ -358,14 +359,14 @@ class Assembler {
   }
 
   // Lookup a symbol from the symbol table and return value, or add as pending unresolved
-  get_symbol(operand, addressing_mode) {
+  get_symbol(operand, addressing_mode, opcode_size) {
     let operand_value, operand_unresolved_at;
 
     if (this.symbols.has(operand)) {
       operand_value = this.symbols.get(operand);
     } else {
       this.unresolved_symbols.push({
-        code_address: this.code_offset + 1, // write right after opcode
+        code_address: this.code_offset + opcode_size, // write right after opcode
         symbol_name: operand,
         addressing_mode: addressing_mode,
         asm_line: this.current_line,
@@ -379,7 +380,7 @@ class Assembler {
     return {operand_value, operand_unresolved_at};
   }
 
-  parse_operand(operand) {
+  parse_operand(operand, opcode_size=1) {
     let addressing_mode;
     let operand_unresolved_at = undefined;
     let operand_value;
@@ -418,7 +419,7 @@ class Assembler {
       operand_value = this.parse_literal(operand);
 
       if (operand_value === undefined) {
-        ({operand_value, operand_unresolved_at} = this.get_symbol(operand, addressing_mode));
+        ({operand_value, operand_unresolved_at} = this.get_symbol(operand, addressing_mode, opcode_size));
       }
 
       this.validate_operand_range(operand_value, addressing_mode);

@@ -165,7 +165,6 @@ class Assembler {
       let opcode_value = XOP[opcode]; // aaaai 4-trits
 
       let tryte = opcode_value * Math.pow(3,1) + (-1);
-      this.emit(tryte);
 
       if (XOP_REQUIRES_OPERAND[opcode]) {
         if (rest === undefined) {
@@ -173,12 +172,13 @@ class Assembler {
         }
 
         ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
-        this.emit_operand(operand_value, addressing_mode);
       } else {
         if (rest !== undefined) {
           throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
         }
       }
+      this.emit(tryte);
+      if (XOP_REQUIRES_OPERAND[opcode]) this.emit_operand(operand_value, addressing_mode);
     } else if (opcode.charAt(0) === 'B') {
       ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
 
@@ -365,7 +365,7 @@ class Assembler {
         asm_line: this.current_line,
       });
       console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
-      operand_value = 0;//61; // overwritten in second phase
+      operand_value = 0;//61; // overwritten in second phase TODO: placebo?
       operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
       //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);
     }

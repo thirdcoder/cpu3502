@@ -731,8 +731,7 @@ test('assembler addresing modes', (t) => {
 test('jump instruction', (t) => {
   const cpu = CPU();
   let lines = [
-    //'JMP over', //TODO: fix endian
-    'JMP 4',
+    'JMP over',
     'HALTN',
 
     'over:',

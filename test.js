@@ -719,11 +719,11 @@ test('assembler addresing modes', (t) => {
   t.doesNotThrow(() => { assembler(['LDA 21333']); });
 
   // unsupported for now
-  t.throws(() => { assembler(['LDA 21333,X']); });
-  t.throws(() => { assembler(['LDA 21333,Y']); });
-  t.throws(() => { assembler(['LDA (21333)']); });
-  t.throws(() => { assembler(['LDA (21333,X)']); });
-  t.throws(() => { assembler(['LDA (21333),Y']); });
+  t.throws(() => { assembler(['LDX 21333,X']); });
+  t.throws(() => { assembler(['LDX 21333,Y']); });
+  t.throws(() => { assembler(['LDX (21333)']); });
+  t.throws(() => { assembler(['LDX (21333,X)']); });
+  t.throws(() => { assembler(['LDX (21333),Y']); });
 
   t.end();
 });
@@ -901,15 +901,21 @@ test('tryte assembler directive', (t) => {
 
 test('assemble load indirect indexed', (t) => {
   let lines = [
-    'LDAIIY (29282),Y',
+    'LDA_IIY (29282),Y',
+    'LDA (29282),Y',
   ];
 
   const machine_code = assembler(lines);
-  t.equal(machine_code.length, 3);
+  t.equal(machine_code.length, 6);
   console.log(machine_code);
-  t.equal(machine_code[0], 104);  // LDAIIY
+  t.equal(machine_code[0], 104);  // LDA_IIY
   t.equal(machine_code[1], -121);
   t.equal(machine_code[2], 121);
+
+  t.equal(machine_code[3], 104);  // LDA_IIY
+  t.equal(machine_code[4], -121);
+  t.equal(machine_code[5], 121);
+
 
   t.end();
 });

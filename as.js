@@ -1,6 +1,6 @@
 'use strict';
 
-const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP, XOP_REQUIRES_OPERAND} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP, XOP_REQUIRES_OPERAND, OP_ADDR_MODE_TO_XOP} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
@@ -169,18 +169,30 @@ class Assembler {
         throw new Error(`alu opcode ${opcode} requires operand, in line=${line}`);
       }
 
+      let tryte;
+
       ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
-      if ([ADDR_MODE.ABSOLUTE, ADDR_MODE.IMMEDIATE, ADDR_MODE.ACCUMULATOR].indexOf(addressing_mode) === -1) {
-        // the alu instruction encoding format only supports these three modes
-        throw new Error(`alu opcode ${opcode} operand unexpected addressing mode, requires absolute/immediate/accumulator, in line=${line}`);
-        // TODO: support other modes, change opcode to xop, special-case through XOP_REQUIRES_OPERAND
+      if ([ADDR_MODE.ABSOLUTE, ADDR_MODE.IMMEDIATE, ADDR_MODE.ACCUMULATOR].indexOf(addressing_mode) !== -1) {
+        // the alu instruction encoding format supports these three modes
+        let opcode_value = OP[opcode]; // aaab0 3-trits
+
+        tryte = opcode_value * Math.pow(3,2) +
+          addressing_mode * Math.pow(3,1) +
+          0;
+      } else {
+        // xops to support additional addressing modes
+
+        if (OP_ADDR_MODE_TO_XOP[opcode] === undefined) {
+          throw new Error(`alu opcode ${opcode} operand unexpected addressing mode, requires absolute/immediate/accumulator, in line=${line}`);
+        }
+
+        if (OP_ADDR_MODE_TO_XOP[opcode][addressing_mode] === undefined) {
+          throw new Error(`alu opcode ${opcode} operand unsupported addressing mode, in line=${line}`);
+        }
+
+        let opcode_value = OP_ADDR_MODE_TO_XOP[opcode][addressing_mode];
+        tryte = opcode_value * Math.pow(3,1) + (-1);
       }
-
-      let opcode_value = OP[opcode]; // aaab0 3-trits
-
-      let tryte = opcode_value * Math.pow(3,2) +
-        addressing_mode * Math.pow(3,1) +
-        0;
 
       this.emit(tryte);
       this.emit_operand(operand_value, addressing_mode);

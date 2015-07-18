@@ -62,8 +62,12 @@ class Assembler {
         break;
 
       case ADDR_MODE.ABSOLUTE:
+      case ADDR_MODE.ABSOLUTE_X:
+      case ADDR_MODE.ABSOLUTE_Y:
+      case ADDR_MODE.INDEXED_INDIRECT:
+      case ADDR_MODE.INDIRECT_INDEXED:
         if (!Number.isInteger(operand_value)) {
-          throw new Error(`opcode (absolute) requires operand: ${operand_value}, in line: ${this.current_line}`);
+          throw new Error(`opcode (2-tryte) requires operand: ${operand_value}, in line: ${this.current_line}`);
         }
 
         // TODO: endian?
@@ -166,6 +170,12 @@ class Assembler {
       }
 
       ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
+      if ([ADDR_MODE.ABSOLUTE, ADDR_MODE.IMMEDIATE, ADDR_MODE.ACCUMULATOR].indexOf(addressing_mode) === -1) {
+        // the alu instruction encoding format only supports these three modes
+        throw new Error(`alu opcode ${opcode} operand unexpected addressing mode, requires absolute/immediate/accumulator, in line=${line}`);
+        // TODO: support other modes, change opcode to xop, special-case through XOP_REQUIRES_OPERAND
+      }
+
       let opcode_value = OP[opcode]; // aaab0 3-trits
 
       let tryte = opcode_value * Math.pow(3,2) +

@@ -896,6 +896,20 @@ test('tryte assembler directive', (t) => {
   t.throws(() => { assembler(['.tryte 122']); });
   t.throws(() => { assembler(['.tryte -122']); });
 
+  t.end();
+});
+
+test('assemble load indirect indexed', (t) => {
+  let lines = [
+    'LDAIIY (29282),Y',
+  ];
+
+  const machine_code = assembler(lines);
+  t.equal(machine_code.length, 3);
+  console.log(machine_code);
+  t.equal(machine_code[0], 104);  // LDAIIY
+  t.equal(machine_code[1], -121);
+  t.equal(machine_code[2], 121);
 
   t.end();
 });

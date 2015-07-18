@@ -130,8 +130,9 @@ const XOP = {
   TSXY: 31,     // 1011 transfer stack pointer to index and yindex
   TXYS: 32,     // 11ii transfer index and yindex to stack pointer
   JSR: 33,      // 11i0 jump to subroutine
-
   JMP: 34,      // 11i1 jump
+
+  LDAIIY: 35,  // 110i load accumulator from (indirect),Y indexed
 
   HALTP: -38,   // iii1 halt positive
   HALTZ: -39,   // iii0 halt zero
@@ -142,6 +143,7 @@ const XOP = {
 const XOP_REQUIRES_OPERAND = {
   JMP: ADDR_MODE.ABSOLUTE,
   JSR: ADDR_MODE.ABSOLUTE,
+  LDAIIY: ADDR_MODE.INDIRECT_INDEXED,
 };
 
 module.exports = {

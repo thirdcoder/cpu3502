@@ -230,6 +230,9 @@ let lines = [
 
     'HALTZ',
 
+    'greeting_ptr:',
+    '.word greeting',
+
     'greeting:',
     '.data "Hello, world! ☺"',
     'DNOP A', // 0 TODO: .data 0

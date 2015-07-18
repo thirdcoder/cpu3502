@@ -40,6 +40,7 @@ class ALU {
       case OP.DNOP:
         console.log('debug nop');
         debugger; // break for debugging in JavaScript debugger
+        throw new Error(`hit debug nop: ${read_arg()}, at pc=${this.cpu.pc}`);
         break;
 
       case OP.STA:  // M = A

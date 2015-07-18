@@ -218,14 +218,14 @@ test('assembly labels', (t) => {
 
 
   machine_code = assembler([
-    'DNOP A',
-    'DNOP A',
+    'NOP',
+    'NOP',
     'foo1:',
     'BNE foo1'
     ]);
 
-  t.equal(machine_code[0], 0);  // 0: DNOP A
-  t.equal(machine_code[1], 0);  // 0: DNOP A
+  //t.equal(machine_code[0], 0);  // 0: NOP
+  //t.equal(machine_code[1], 0);  // 0: NOP
   t.equal(machine_code[2], 10); // 1: BNE
   t.equal(machine_code[3], -2); // 2: relative label
 
@@ -269,9 +269,9 @@ test('execute', (t) => {
       'LDA #$ijk',
       'LDA #%ii1i0',
       'LDA #&QF',
-      'DNOP A',
-      'DNOP #-121',
-      'DNOP 29524',
+      'NOP',
+      'NOP',
+      'NOP',
       'LDA #0',
       'BNE #-1',  // not taken
       'BEQ #+2',  // taken
@@ -354,10 +354,10 @@ test('clear overflow flag', (t) => {
 test('assemble low/high addresses', (t) => {
   let lines = [];
   for (let i = 0; i < 121; ++i)
-    lines.push('DNOP A');
+    lines.push('NOP');
 
   lines = lines.concat([
-    'DNOP A',
+    'NOP',
     'end:',
     'LDA #end.low',
     'LDA #end.high',
@@ -562,7 +562,7 @@ test('branch always, forward reference', (t) => {
     'end:',
     'HALTZ',
 
-    'DNOP A',  // nop sled
+    'NOP',  // nop sled
     'HALTP',  // if halts here (H=1), branched to wrong address
   ];
 
@@ -573,7 +573,7 @@ test('branch always, forward reference', (t) => {
   t.equal(machine_code[1], 1);   // +1 relative address (also tested 'forward unresolved branch labels')
   t.equal(machine_code[2], -121);// HALTN
   t.equal(machine_code[3], -118);// HALTZ
-  t.equal(machine_code[4], 0);   // DNOP A
+  //t.equal(machine_code[4], 0);   // NOP
   t.equal(machine_code[5], -115);// HALTP
 
   cpu.memory.writeArray(0, machine_code);
@@ -753,4 +753,23 @@ test('jump instruction', (t) => {
   t.equal(cpu.flags.H, 0);
 
   t.end();
+});
+
+test('no-operation and debug nop', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'NOP',
+    'LDA #33',
+    'DNOP A',   // hits debugger or throws JavaScript exception
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  t.throws(() => {
+    cpu.run();
+  });
+
+  t.end();
+
 });

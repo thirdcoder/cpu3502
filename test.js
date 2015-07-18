@@ -732,7 +732,7 @@ test('jump instruction', (t) => {
   const cpu = CPU();
   let lines = [
     //'JMP over', //TODO: fix endian
-    'JMP 3',
+    'JMP 4',
     'HALTN',
 
     'over:',
@@ -741,7 +741,7 @@ test('jump instruction', (t) => {
 
   const machine_code = assembler(lines);
   t.equal(machine_code[0], 101);  // JMP
-  t.equal(machine_code[1], 3);    // absolute address
+  t.equal(machine_code[1], 4);    // absolute address
   t.equal(machine_code[2], 0);    // absolute address
   t.equal(machine_code[3], -121); // HALTN
   t.equal(machine_code[4], -118); // HALTZ

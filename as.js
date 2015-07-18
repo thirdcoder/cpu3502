@@ -235,6 +235,14 @@ class Assembler {
     for (let line of lines)
       this.assemble_line(line);
 
+    this.resolve_unresolved_symbols();
+
+    console.log('assembled '+lines.length+' lines into '+this.output.length+' trytes');
+    //console.log(output);
+    return this.output;
+  }
+
+  resolve_unresolved_symbols() {
     // Resolve unresolved symbols, writing their values in the machine code
     for (let us of this.unresolved_symbols) {
       if (!this.symbols.has(us.symbol_name)) {
@@ -261,10 +269,6 @@ class Assembler {
         throw new Error(`unknown addressing mode ${us.addressing_mode} resolving ${us}`);
       }
     }
-
-    console.log('assembled '+lines.length+' lines into '+this.output.length+' trytes');
-    //console.log(output);
-    return this.output;
   }
 
   parse_operand(operand) {

@@ -963,6 +963,7 @@ test('execute load indirect indexed', (t) => {
 test('absolute indexed', (t) => {
   const cpu = CPU();
   let lines = [
+    'LDY #0',
     'LDA table,Y',
     'STA -1',
 
@@ -973,6 +974,10 @@ test('absolute indexed', (t) => {
     'INY',
     'LDA table,Y',
     'STA -3',
+
+    'LDX #2',
+    'LDA table,X',
+    'STA -4',
 
     'HALTZ',
 
@@ -991,7 +996,7 @@ test('absolute indexed', (t) => {
   t.equal(cpu.memory.read(-1), 33);
   t.equal(cpu.memory.read(-2), 66);
   t.equal(cpu.memory.read(-3), 99);
-
+  t.equal(cpu.memory.read(-4), 99);
 
   t.end();
 });

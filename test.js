@@ -1055,3 +1055,31 @@ test('indexed index', (t) => {
 
   t.end();
 });
+
+/* TODO
+test('jump indirect', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'JMP (over_ptr)',
+    'HALTN',
+
+    'over_ptr:',
+    '.tryte over',
+
+    'over:',
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+
+});
+*/

@@ -168,12 +168,10 @@ let lines = [
     'TXA',  // X->A, 5
 
     // setup stack, since default 0 overlaps with memory-mapped screen output
-    /* TODO
     '.equ -10000 stack',
     'LDY #stack.high',
     'LDX #stack.low',
     'TXYS',
-    */
 
     // loop 6..19
     'loop:',

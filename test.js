@@ -715,5 +715,15 @@ test('assembler addresing modes', (t) => {
   t.equal(a.parse_operand('(21333),Y').addressing_mode, ADDR_MODE.INDIRECT_INDEXED);
   t.equal(a.parse_operand('(21333),Y').operand_value, 21333);
 
+  t.doesNotThrow(() => { assembler(['LDA #13']); });
+  t.doesNotThrow(() => { assembler(['LDA 21333']); });
+
+  // unsupported for now
+  t.throws(() => { assembler(['LDA 21333,X']); });
+  t.throws(() => { assembler(['LDA 21333,Y']); });
+  t.throws(() => { assembler(['LDA (21333)']); });
+  t.throws(() => { assembler(['LDA (21333,X)']); });
+  t.throws(() => { assembler(['LDA (21333),Y']); });
+
   t.end();
 });

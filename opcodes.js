@@ -131,9 +131,17 @@ const XOP = {
   TXYS: 32,     // 11ii transfer index and yindex to stack pointer
   JSR: 33,      // 11i0 jump to subroutine
 
+  JMP: 34,      // 11i1 jump
+
   HALTP: -38,   // iii1 halt positive
   HALTZ: -39,   // iii0 halt zero
   HALTN: -40,   // iiii halt negative
+};
+
+// most XOPs do not have operands, but some do (vs alu OP, which always does), irregular
+const XOP_REQUIRES_OPERAND = {
+  // TODO: change to 2-byte 'immediate', not really 'absolute' since doesn't read? rethink
+  JMP: ADDR_MODE.IMMEDIATE,
 };
 
 module.exports = {
@@ -141,5 +149,6 @@ module.exports = {
   ADDR_MODE,
   FLAGS,
   INSTRUCTION_ALIASES,
-  XOP
+  XOP,
+  XOP_REQUIRES_OPERAND,
 };

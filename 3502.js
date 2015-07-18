@@ -146,10 +146,6 @@ class CPU {
     }
   }
 
-  execute_xop_instruction(operation) {
-    execute_xop_instruction(this, operation);
-  }
-
   // Read instruction operand from decoded instruction, return read/write accessors
   read_alu_operand(di) {
     let read_arg, write_arg;
@@ -208,7 +204,10 @@ class CPU {
 
       this.execute_branch_instruction(di.flag, di.compare, di.direction, rel_address);
     } else if (di.family === -1) {
-      this.execute_xop_instruction(di.operation);
+      let read_arg, write_arg;
+      [read_arg, write_arg] = this.read_alu_operand(di);
+
+      execute_xop_instruction(this, di.operation, read_arg, write_arg);
     }
 
     console.log('flags:','RHUVSDCIL');

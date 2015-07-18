@@ -727,3 +727,31 @@ test('assembler addresing modes', (t) => {
 
   t.end();
 });
+
+test('jump instruction', (t) => {
+  const cpu = CPU();
+  let lines = [
+    //'JMP over', //TODO: fix endian
+    'JMP 3',
+    'HALTN',
+
+    'over:',
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+  t.equal(machine_code[0], 101);  // JMP
+  t.equal(machine_code[1], 3);    // absolute address
+  t.equal(machine_code[2], 0);    // absolute address
+  t.equal(machine_code[3], -121); // HALTN
+  t.equal(machine_code[4], -118); // HALTZ
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});

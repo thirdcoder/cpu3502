@@ -5,7 +5,7 @@ const {add, inc, dec} = require('./arithmetic');
 const {TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
 const {low_tryte, high_tryte, trytes2word} = require('./word');
 
-function execute_xop_instruction(cpu, operation) {
+function execute_xop_instruction(cpu, operation, read_arg, write_arg) {
   console.log('misc', operation);
 
   switch(operation) {
@@ -165,6 +165,12 @@ function execute_xop_instruction(cpu, operation) {
 
     case XOP.PLP:   // pull processor flags
       cpu.flags.value = cpu.stack.pullWord();
+      break;
+
+    // jump
+    case XOP.JMP:
+      cpu.pc = read_arg();
+      console.log(`jumped to ${cpu.pc}`);
       break;
 
     default:

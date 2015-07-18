@@ -1,6 +1,6 @@
 'use strict';
 
-const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP, XOP_REQUIRES_OPERAND} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
@@ -45,6 +45,37 @@ class Assembler {
     console.log('emit',n2bts(tryte));
     this.output.push(tryte);
     ++this.code_offset;
+  }
+
+  emit_operand(operand_value, addressing_mode) {
+    switch(addressing_mode) {
+      case ADDR_MODE.ACCUMULATOR:
+        // nothing to emit
+        break;
+
+      case ADDR_MODE.IMMEDIATE:
+        if (!Number.isInteger(operand_value)) {
+          throw new Error(`opcode ${opcode} (immediate) requires operand: ${operand_value}, in line: ${line}`);
+        }
+
+        this.emit(operand_value);
+        break;
+
+      case ADDR_MODE.ABSOLUTE:
+        if (!Number.isInteger(operand_value)) {
+          throw new Error(`opcode ${opcode} (absolute) requires operand: ${operand_value}, in line: ${line}`);
+        }
+
+        // TODO: endian?
+        this.emit(low_tryte(operand_value));
+        this.emit(high_tryte(operand_value));
+        break;
+
+      default:
+        // TODO: more addressing modes
+        throw new Error(`opcode ${opcode} unsupported addressing mode ${addressing_mode} for operand ${operand_value}, in line: ${line}`);
+    }
+
   }
 
   assemble_line(line) {
@@ -129,43 +160,25 @@ class Assembler {
         0;
 
       this.emit(tryte);
-
-      switch(addressing_mode) {
-        case ADDR_MODE.ACCUMULATOR:
-          // nothing to emit
-          break;
-
-        case ADDR_MODE.IMMEDIATE:
-          if (!Number.isInteger(operand_value)) {
-            throw new Error(`opcode ${opcode} (immediate) requires operand: ${operand_value}, in line: ${line}`);
-          }
-
-          this.emit(operand_value);
-          break;
-
-        case ADDR_MODE.ABSOLUTE:
-          if (!Number.isInteger(operand_value)) {
-            throw new Error(`opcode ${opcode} (absolute) requires operand: ${operand_value}, in line: ${line}`);
-          }
-
-          // TODO: endian?
-          this.emit(low_tryte(operand_value));
-          this.emit(high_tryte(operand_value));
-          break;
-
-        default:
-          // TODO: more addressing modes
-          throw new Error(`opcode ${opcode} unsupported addressing mode ${addressing_mode} for operand ${operand_value}, in line: ${line}`);
-      }
+      this.emit_operand(operand_value, addressing_mode);
     } else if (XOP[opcode] !== undefined) {
-      if (rest !== undefined) {
-        throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
-      }
-
       let opcode_value = XOP[opcode]; // aaaai 4-trits
 
       let tryte = opcode_value * Math.pow(3,1) + (-1);
       this.emit(tryte);
+
+      if (XOP_REQUIRES_OPERAND[opcode]) {
+        if (rest === undefined) {
+          throw new Error(`xop opcode ${opcode} requires operand, in line=${ine}`);
+        }
+
+        ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
+        this.emit_operand(operand_value, addressing_mode);
+      } else {
+        if (rest !== undefined) {
+          throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
+        }
+      }
     } else if (opcode.charAt(0) === 'B') {
       ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
 

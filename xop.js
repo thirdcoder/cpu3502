@@ -135,21 +135,6 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
     case XOP.NOP:
       break;
 
-    // pointer loads
-    case XOP.LDAXY:{// A = [Y<<5 + X]
-      const address = cpu.yindex * T_TO_TRITS_PER_TRYTE + cpu.index;
-      cpu.accum = cpu.memory.read(address);
-      console.log(`LDAXY loaded pointer [${address}] = ${cpu.accum}`);
-      cpu.alu.update_flags_from(cpu.accum);
-      break;
-      }
-
-    case XOP.STAXY:{// [Y<<5 + X] = A
-      const address = cpu.yindex * T_TO_TRITS_PER_TRYTE + cpu.index;
-      cpu.accum = cpu.memory.write(address, cpu.accum);
-      break;
-    }
-
     // stack
     case XOP.PHA:   // push A
       cpu.stack.push(cpu.accum);

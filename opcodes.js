@@ -113,8 +113,8 @@ const XOP = {
 
   NOP: 19,      // 1i01 no operation
 
-  LDAXY: 20,    // 1i1i load into accumulator absolute from Y<<5 + X
-  STAXY: 21,    // 1i10 store accumulator absolut to Y<<5 + X
+  _uu20: 20,    // 1i1i unused
+  _uu21: 21,    // 1i10 unused
 
   CLD: 22,      // 1i11 clear data flag
   SEDP: 23,     // 10ii set data flag positive

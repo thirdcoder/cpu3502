@@ -138,6 +138,9 @@ const XOP = {
   LDA_IIY: -37, // ii0i load accumulator from (indirect),Y indexed
   LDA_ABX: -36, // ii00 load accumulator absolute,x
   LDA_ABY: -35, // ii01 load accumulator absolute,y
+  STA_IIY: -34, // ii1i store accumulator to (indirect),Y indexed
+  STA_ABX: -33, // ii10 store accumulator absolute,x
+  STA_ABY: -32, // ii11 store accumulator absolute,y
 };
 
 // most XOPs do not have operands, but some do (vs alu OP, which always does), irregular
@@ -147,6 +150,9 @@ const XOP_REQUIRES_OPERAND = {
   LDA_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
   LDA_ABX: ADDR_MODE.ABSOLUTE_X,
   LDA_ABY: ADDR_MODE.ABSOLUTE_Y,
+  STA_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
+  STA_ABX: ADDR_MODE.ABSOLUTE_X,
+  STA_ABY: ADDR_MODE.ABSOLUTE_Y,
 };
 
 const OP_ADDR_MODE_TO_XOP = {
@@ -154,6 +160,11 @@ const OP_ADDR_MODE_TO_XOP = {
     [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.LDA_IIY,
     [ADDR_MODE.ABSOLUTE_X]: XOP.LDA_ABX,
     [ADDR_MODE.ABSOLUTE_Y]: XOP.LDA_ABY,
+  },
+  STA: {
+    [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.STA_IIY,
+    [ADDR_MODE.ABSOLUTE_X]: XOP.STA_ABX,
+    [ADDR_MODE.ABSOLUTE_Y]: XOP.STA_ABY,
   }
 };
 
@@ -161,6 +172,9 @@ const XOP_TO_ADDR_MODE_OP = {
   [XOP.LDA_IIY]: [OP.LDA, ADDR_MODE.INDIRECT_INDEXED_Y],
   [XOP.LDA_ABX]: [OP.LDA, ADDR_MODE.ABSOLUTE_X],
   [XOP.LDA_ABY]: [OP.LDA, ADDR_MODE.ABSOLUTE_Y],
+  [XOP.STA_IIY]: [OP.STA, ADDR_MODE.INDIRECT_INDEXED_Y],
+  [XOP.STA_ABX]: [OP.STA, ADDR_MODE.ABSOLUTE_X],
+  [XOP.STA_ABY]: [OP.STA, ADDR_MODE.ABSOLUTE_Y],
 }
 
 module.exports = {

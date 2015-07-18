@@ -960,7 +960,7 @@ test('execute load indirect indexed', (t) => {
   t.end();
 });
 
-test('absolute indexed', (t) => {
+test('absolute indexed read', (t) => {
   const cpu = CPU();
   let lines = [
     'LDY #0',
@@ -997,6 +997,44 @@ test('absolute indexed', (t) => {
   t.equal(cpu.memory.read(-2), 66);
   t.equal(cpu.memory.read(-3), 99);
   t.equal(cpu.memory.read(-4), 99);
+
+  t.end();
+});
+
+
+test('absolute indexed write', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'JMP start',
+
+    'table:',     // 3
+    '.tryte 0',
+    '.tryte 0',
+    '.tryte 0',
+
+    'start:',
+    'LDA #33',
+    'LDX #0',
+    'STA table,X',
+
+    'LDA #66',
+    'INX',
+    'STA table,X',
+
+    'LDA #99',
+    'LDY #2',
+    'STA table,Y',
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.memory.read(3), 33);
+  t.equal(cpu.memory.read(4), 66);
+  t.equal(cpu.memory.read(5), 99);
 
   t.end();
 });

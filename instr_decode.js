@@ -95,6 +95,22 @@ function stringify_operand(decoded_operand) {
       operand = '(' + decoded_operand.value.toString() + '),Y';
       break;
 
+    case ADDR_MODE.INDEXED_X_INDIRECT:
+      operand = '(' + decoded_operand.value.toString() + ',X)';
+      break;
+
+    case ADDR_MODE.ABSOLUTE_X:
+      operand = decoded_operand.value.toString() + ',X';
+      break;
+
+    case ADDR_MODE.ABSOLUTE_Y:
+      operand = decoded_operand.value.toString() + ',X';
+      break;
+
+    case ADDR_MODE.INDIRECT:
+      operand = '(' + decoded_operand.value.toString() + ')';
+      break;
+
     default:
       operand = undefined;
   }

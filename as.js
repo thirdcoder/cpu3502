@@ -330,6 +330,28 @@ class Assembler {
     return operand_value;
   }
 
+  // Lookup a symbol from the symbol table and return value, or add as pending unresolved
+  get_symbol(operand, addressing_mode) {
+    let operand_value, operand_unresolved_at;
+
+    if (this.symbols.has(operand)) {
+      operand_value = this.symbols.get(operand);
+    } else {
+      this.unresolved_symbols.push({
+        code_address: this.code_offset + 1, // write right after opcode
+        symbol_name: operand,
+        addressing_mode: addressing_mode,
+        asm_line: this.current_line,
+      });
+      console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
+      operand_value = 0;//61; // overwritten in second phase
+      operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
+      //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);
+    }
+
+    return {operand_value, operand_unresolved_at};
+  }
+
   parse_operand(operand) {
     let addressing_mode;
     let operand_unresolved_at = undefined;
@@ -348,22 +370,7 @@ class Assembler {
       operand_value = this.parse_literal(operand);
 
       if (operand_value === undefined) {
-        // symbol
-        if (this.symbols.has(operand)) {
-          operand_value = this.symbols.get(operand);
-        } else {
-          this.unresolved_symbols.push({
-            code_address: this.code_offset + 1, // write right after opcode
-            symbol_name: operand,
-            addressing_mode: addressing_mode,
-            asm_line: this.current_line,
-          });
-          console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
-          operand_value = 0;//61; // overwritten in second phase
-          operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
-          //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);
-        }
-
+        ({operand_value, operand_unresolved_at} = this.get_symbol(operand, addressing_mode));
       }
 
       this.validate_operand_range(operand_value, addressing_mode);

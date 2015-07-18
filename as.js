@@ -55,7 +55,7 @@ class Assembler {
 
       case ADDR_MODE.IMMEDIATE:
         if (!Number.isInteger(operand_value)) {
-          throw new Error(`opcode ${opcode} (immediate) requires operand: ${operand_value}, in line: ${line}`);
+          throw new Error(`opcode (immediate) requires operand: ${operand_value}, in line: ${this.current_line}`);
         }
 
         this.emit(operand_value);
@@ -63,7 +63,7 @@ class Assembler {
 
       case ADDR_MODE.ABSOLUTE:
         if (!Number.isInteger(operand_value)) {
-          throw new Error(`opcode ${opcode} (absolute) requires operand: ${operand_value}, in line: ${line}`);
+          throw new Error(`opcode (absolute) requires operand: ${operand_value}, in line: ${this.current_line}`);
         }
 
         // TODO: endian?
@@ -73,9 +73,8 @@ class Assembler {
 
       default:
         // TODO: more addressing modes
-        throw new Error(`opcode ${opcode} unsupported addressing mode ${addressing_mode} for operand ${operand_value}, in line: ${line}`);
+        throw new Error(`opcode unsupported addressing mode ${addressing_mode} for operand ${operand_value}, in line: ${this.current_line}`);
     }
-
   }
 
   assemble_line(line) {
@@ -180,19 +179,23 @@ class Assembler {
 
       let tryte = opcode_value * Math.pow(3,1) + (-1);
 
-      if (XOP_REQUIRES_OPERAND[opcode]) {
+      let expected_addressing_mode = XOP_REQUIRES_OPERAND[opcode]; // only one addr mode per xop opcode TODO
+      if (expected_addressing_mode !== undefined) {
         if (rest === undefined) {
           throw new Error(`xop opcode ${opcode} requires operand, in line=${ine}`);
         }
 
         ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
+        if (addressing_mode !== expected_addressing_mode) {
+          throw new Error(`xop opcode unexpected addressing mode, want ${expected_addressing_mode} but given ${addressing_mode}, in line=${this.current_line}`);
+        }
       } else {
         if (rest !== undefined) {
           throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
         }
       }
       this.emit(tryte);
-      if (XOP_REQUIRES_OPERAND[opcode]) this.emit_operand(operand_value, addressing_mode);
+      if (XOP_REQUIRES_OPERAND[opcode] !== undefined) this.emit_operand(operand_value, addressing_mode);
     } else if (opcode.charAt(0) === 'B') {
       ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
 

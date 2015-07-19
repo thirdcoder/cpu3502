@@ -292,7 +292,7 @@ let lines = [
     'BEQ handle_backspace',
 
     'JSR save_char',
-    'JSR write_char',
+    'JSR print_char',
 
 
     'handled_input:',
@@ -316,17 +316,17 @@ let lines = [
 
 
     // write character in A to screen
-    'write_char:',
+    'print_char:',
     'STA chargen',
     'INC col',
 
     'LDX col',
     '.equ 45 row_count',
     'CPX #row_count',
-    'BNE write_char_done',
+    'BNE print_char_done',
     'JSR next_line',      // at last column, wrap cursor to next line
 
-    'write_char_done:',
+    'print_char_done:',
     'RTS',
 
 
@@ -339,7 +339,7 @@ let lines = [
     'LDA (_print_string_param),Y',
     'CMP #0',
     'BEQ _print_string_done',
-    'JSR write_char',
+    'JSR print_char',
     'INY',
     'BRA _print_string_loop',
     '_print_string_done:',

@@ -1083,3 +1083,38 @@ test('jump indirect', (t) => {
 
 });
 */
+
+test('stack push/pull index', (t) => {
+  const cpu = CPU();
+  let lines = [
+    '.equ 10000 stack',
+    'LDY #>stack',
+    'LDX #<stack',
+    'TXYS',
+
+    'LDA #33',
+    'PHA',
+    'LDX #34',
+    'PHX',
+    'LDY #35',
+    'PHY',
+
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+  t.equal(cpu.memory.read(10000), 33);
+  t.equal(cpu.memory.read(10001), 34);
+  t.equal(cpu.memory.read(10002), 35);
+
+  t.end();
+
+
+});

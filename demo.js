@@ -271,6 +271,8 @@ let lines = [
     'JMP handled_input',
 
     'handle_backspace:',
+    'JSR truncate_line_buffer',
+    'BCS handle_backspace_denied', // if couldn't delete
     'LDA #0',
     'STA chargen', // clear cursor
     'DEC col',
@@ -279,7 +281,9 @@ let lines = [
     'BEQ handle_prev_line',
     'LDA #0',     // null to erase TODO: space?
     'STA chargen',
-    'JSR truncate_line_buffer',
+    'JMP handled_input',
+
+    'handle_backspace_denied:', // TODO: beep? user tried to backspace but there was nothing to backspace; some negative feedback would be nice
     'JMP handled_input',
 
     'handle_enter:',
@@ -335,7 +339,7 @@ let lines = [
     'STA line_buffer',
     'RTS',
 
-    // delete last character of line buffer
+    // delete last character of line buffer, sets carry flag if cannot be deleted
     'truncate_line_buffer:',
     'LDY line_buffer_offset',
     'DEY',
@@ -344,7 +348,10 @@ let lines = [
     'LDA #0',
     'STA line_buffer,Y',
     'STY line_buffer_offset',
+    'CLC',
+    'RTS',
     '_truncate_line_buffer_skip:',
+    'SECN',
     'RTS',
 
     // print character in A to screen and advance cursor

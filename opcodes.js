@@ -86,6 +86,8 @@ const INSTRUCTION_ALIASES = {
   BVC: 'BRVEZ', // branch if overflow clear = branch if overflow equal to zero
   BVS: 'BRVNZ', // branch if overflow set = branch if overflow nonzero
   BRA: 'BRRNZ', // branch always = branch if running is not zero
+  BCC: 'BRCEZ', // branch if carry clear = branch if carry equal zero
+  BCS: 'BRCNZ', // branch if carry set = branch if carry not equal zero
 };
 
 const XOP = {

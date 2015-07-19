@@ -237,7 +237,7 @@ let lines = [
     '.word greeting',
 
     'greeting:',
-    '.data "Hello, world! ☺"',
+    '.data "Hello, world! ☺ 3502 CPU online: system readyWaiting for user input."',
     'DNOP A', // 0 TODO: .data 0
 
     'handle_pulse:',

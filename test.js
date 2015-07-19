@@ -1084,7 +1084,7 @@ test('jump indirect', (t) => {
 });
 */
 
-test('stack push/pull index', (t) => {
+test('stack push index and word', (t) => {
   const cpu = CPU();
   let lines = [
     '.equ 10000 stack',
@@ -1099,7 +1099,12 @@ test('stack push/pull index', (t) => {
     'LDY #35',
     'PHY',
 
+    'PHWD foo',
+
     'HALTZ',
+
+    'foo:',
+    '.word 29282',
   ];
 
   const machine_code = assembler(lines);
@@ -1113,6 +1118,8 @@ test('stack push/pull index', (t) => {
   t.equal(cpu.memory.read(10000), 33);
   t.equal(cpu.memory.read(10001), 34);
   t.equal(cpu.memory.read(10002), 35);
+  t.equal(cpu.memory.read(10003), -121);
+  t.equal(cpu.memory.read(10004), 121);
 
   t.end();
 

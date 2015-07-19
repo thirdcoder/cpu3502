@@ -2,7 +2,7 @@
 
 const ARRAY_TYPE = Int8Array; // Int8Array is 8-bit signed -129 to +128, fits 5-trit -121 to +121
 const TRITS_PER_TRYTE = 5;
-const {trytes2word} = require('./word');
+const {trytes2word, low_tryte, high_tryte} = require('./word');
 
 // Array of 5-trit tryte memory cells backed by an Int8Array
 class Memory {
@@ -79,6 +79,11 @@ class Memory {
     }
 
     return this.readNoTrap(address);
+  }
+
+  writeWord(address, value) {
+    this.write(address, low_tryte(value));
+    this.write(address + 1, high_tryte(value));
   }
 
   // Write an array of trytes

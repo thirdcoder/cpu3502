@@ -134,6 +134,8 @@ const XOP = {
   PLX: 35,      // 110i pull index
   PLY: 36,      // 1100 pull yindex
 
+  PHWD: 37,     // 1101 push word
+  PLWD: 38,     // 111i pull word
 
   HALTN: -40,   // iiii halt negative
   HALTZ: -39,   // iii0 halt zero
@@ -166,6 +168,8 @@ const XOP_REQUIRES_OPERAND = {
   LDY_ABX: ADDR_MODE.ABSOLUTE_X,
   STX_ABY: ADDR_MODE.ABSOLUTE_Y,
   STY_ABX: ADDR_MODE.ABSOLUTE_X,
+  PHWD: ADDR_MODE.ABSOLUTE,
+  PLWD: ADDR_MODE.ABSOLUTE,
 };
 
 const OP_ADDR_MODE_TO_XOP = {

@@ -168,6 +168,14 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       cpu.flags.value = cpu.stack.pullWord();
       break;
 
+    case XOP.PHWD:  // push word M
+      cpu.stack.pushWord(cpu.memory.readWord(address_of_arg()));
+      break;
+
+    case XOP.PLWD:  // pull word M
+      cpu.memory.writeWord(address_of_arg(), cpu.stack.pullWord());
+      break;
+
     // jump
     case XOP.JMP:   // pc = absolute
       cpu.pc = address_of_arg();

@@ -283,6 +283,7 @@ let lines = [
     'CMP #0',
     'BEQ backspace',
 
+    'JSR save_char',
     'JSR write_char',
 
     'LDX col',
@@ -294,16 +295,18 @@ let lines = [
     'RTI',
 
 
-    // write and save character in A
-    'write_char:',
-    // save to buffer
+    // append character in A to line_buffer
+    'save_char:',
     'LDY line_buffer_offset',
     'STA line_buffer,Y',
     'INC line_buffer_offset',
     'INY',
     'LDX #0',
     'STX line_buffer,Y',  // null terminate
-    // write to screen
+    'RTS',
+
+    // write character in A to screen
+    'write_char:',
     'STA chargen',
     'INC col',
     'RTS',
@@ -313,6 +316,16 @@ let lines = [
 
     'line_buffer:',
     '.tryte 0',
+
+
+    'print_string:',
+    'STA _print_string_param',
+    'STX _print_string_param+1',
+    'LDY #0',
+    //TODO: loop
+    'RTS',
+    '_print_string_param:',
+    '.word 0',
 ];
 
 cpu.memory.writeArray(CODE_START_ADDRESS, assembler(lines));

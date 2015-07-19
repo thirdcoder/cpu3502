@@ -4,6 +4,7 @@ const CPU = require('./3502');
 const {TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, T_TO_TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 const {get_trit, set_trit, slice_trits} = require('trit-getset');
 const Triterm = require('tritmapped-terminal');
+const raf = require('raf');
 
 // 4 trits in each dimension, xxxx and yyyy
 const VIDEO_TRYTE_COUNT = 4;
@@ -82,8 +83,12 @@ memory.map.chargen.write = (address, value) => {
   console.log('COLROW',col,row);
 
   term.setTTChar(value, col, row);
-  term.refresh();
 };
+
+raf(function tick() {
+  term.refresh();
+  raf(tick);
+});
 
 const cpu = CPU({
   memory: memory

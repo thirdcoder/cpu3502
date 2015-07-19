@@ -29,11 +29,12 @@
     "balanced-ternary": "*",
     "base27": "*",
     "invert-kv": "^1.0.0",
-    "nonary": "*",
-    "trit-getset": "*",
-    "trit-text": "*",
-    "trit-shift": "*",
     "lst": "*",
+    "nonary": "*",
+    "raf": "^3.1.0",
+    "trit-getset": "*",
+    "trit-shift": "*",
+    "trit-text": "*",
     "tritwise": "*"
   },
   "devDependencies": {

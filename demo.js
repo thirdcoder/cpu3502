@@ -337,10 +337,14 @@ let lines = [
 
     // delete last character of line buffer
     'truncate_line_buffer:',
-    'DEC line_buffer_offset', // TODO: check if underflow
     'LDY line_buffer_offset',
+    'DEY',
+    'CPY #0',
+    'BMI _truncate_line_buffer_skip',  // empty buffer, cannot truncate further
     'LDA #0',
     'STA line_buffer,Y',
+    'STY line_buffer_offset',
+    '_truncate_line_buffer_skip:',
     'RTS',
 
     // print character in A to screen and advance cursor

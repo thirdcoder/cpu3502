@@ -169,7 +169,7 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       break;
 
     case XOP.PHWD:  // push word M
-      cpu.stack.pushWord(cpu.memory.readWord(address_of_arg()));
+      cpu.stack.pushWord(address_of_arg());
       break;
 
     case XOP.PLWD:  // pull word M

@@ -1099,12 +1099,9 @@ test('stack push index and word', (t) => {
     'LDY #35',
     'PHY',
 
-    'PHWD foo',
+    'PHWD 29282',
 
     'HALTZ',
-
-    'foo:',
-    '.word 29282',
   ];
 
   const machine_code = assembler(lines);
@@ -1134,6 +1131,7 @@ test('stack push/pull', (t) => {
     'LDX #<stack',
     'TXYS',
 
+    '.equ %11111iiiii foo',
     'PHWD foo',
 
     'PLX',
@@ -1149,9 +1147,6 @@ test('stack push/pull', (t) => {
 
     'fail:',
     'HALTN',
-
-    'foo:',
-    '.word %11111iiiii',
   ];
 
   const machine_code = assembler(lines);

@@ -233,12 +233,13 @@ let lines = [
     'cursor_char:',
     ".tryte 0",
 
-    'greeting_ptr:',
-    '.word greeting',
-
     'greeting:',
     '.data "Hello, world! ☺ 3502 CPU online: system readyWaiting for user input."',
     'DNOP A', // 0 TODO: .data 0
+
+    'bad_command_string:',
+    '.data "Bad command or file name: "',
+    'DNOP A',
 
     'handle_pulse:',
     // blinking cursor
@@ -272,14 +273,21 @@ let lines = [
     'STA chargen',
     'JMP handled_input',
 
-    'handle_next_line:',
+    'handle_enter:',
+    'JSR next_line',
+    'LDA #<bad_command_string',
+    'LDX #>bad_command_string',
+    'JSR print_string',
+    'LDA #<line_buffer',
+    'LDX #>line_buffer',
+    'JSR print_string',
     'JSR next_line',
     'JMP handled_input',
 
     // interrupt handler:
     'handle_input:',
     "CMP #'\\n",
-    'BEQ handle_next_line',
+    'BEQ handle_enter',
     'CMP #0',
     'BEQ handle_backspace',
 

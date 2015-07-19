@@ -176,6 +176,10 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       cpu.memory.writeWord(address_of_arg(), cpu.stack.pullWord());
       break;
 
+    case XOP.STZ:   // store zero
+      write_arg(0);
+      break;
+
     // jump
     case XOP.JMP:   // pc = absolute
       cpu.pc = address_of_arg();

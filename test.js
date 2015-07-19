@@ -1290,3 +1290,27 @@ test('subroutine parameters control block', (t) => {
 
   t.end();
 });
+
+
+
+test('store zero instruction', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'STZ -99',
+
+    'HALTZ',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.memory.write(-99, 42);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+  t.equal(cpu.memory.read(-99), 0);
+
+  t.end();
+});

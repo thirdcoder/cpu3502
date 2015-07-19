@@ -139,6 +139,8 @@ const XOP = {
   PHWD: 37,     // 1101 push word
   PLWD: 38,     // 111i pull word
 
+  STZ:  39,     // 1110 store zero
+
   HALTN: -40,   // iiii halt negative
   HALTZ: -39,   // iii0 halt zero
   HALTP: -38,   // iii1 halt positive
@@ -160,6 +162,7 @@ const XOP = {
 const XOP_REQUIRES_OPERAND = {
   JMP: ADDR_MODE.ABSOLUTE,
   JSR: ADDR_MODE.ABSOLUTE,
+  STZ: ADDR_MODE.ABSOLUTE,
   LDA_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
   LDA_ABX: ADDR_MODE.ABSOLUTE_X,
   LDA_ABY: ADDR_MODE.ABSOLUTE_Y,

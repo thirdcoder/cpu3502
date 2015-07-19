@@ -279,6 +279,7 @@ let lines = [
     'BEQ handle_prev_line',
     'LDA #0',     // null to erase TODO: space?
     'STA chargen',
+    'JSR truncate_line_buffer',
     'JMP handled_input',
 
     'handle_enter:',
@@ -327,11 +328,19 @@ let lines = [
     'line_buffer_offset:',
     '.tryte 0',
 
-
+    // reset line buffer to empty string
     'reset_line_buffer:',
     'LDA #0',
     'STA line_buffer_offset',
     'STA line_buffer',
+    'RTS',
+
+    // delete last character of line buffer
+    'truncate_line_buffer:',
+    'DEC line_buffer_offset', // TODO: check if underflow
+    'LDY line_buffer_offset',
+    'LDA #0',
+    'STA line_buffer,Y',
     'RTS',
 
     // print character in A to screen and advance cursor

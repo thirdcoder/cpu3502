@@ -187,19 +187,11 @@ let lines = [
     'LDA #0',
     'STA col',
 
-    // show greeting
-    'LDX #0',
-    'greet:',
-    'LDA greeting,X',
-    'STA chargen',    // write character
-    'INX',            // move to next character address in string
-    'INC col',        // move cursor
-    'CMP #0',         // reached null terminator at end of string?
-    'BNE greet',      // if not, loop around
-
+    // print greeting
     'LDA #<greeting',
     'LDX #>greeting',
     'JSR print_string',
+
 
     'INC row',
     'LDA #0',
@@ -315,7 +307,7 @@ let lines = [
 
 
 
-    // write character in A to screen
+    // print character in A to screen and advance cursor
     'print_char:',
     'STA chargen',
     'INC col',

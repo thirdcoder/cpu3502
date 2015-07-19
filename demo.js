@@ -287,6 +287,8 @@ let lines = [
     'JMP handled_input',
 
     'handle_enter:',
+    'LDA #0',
+    'STA chargen',
     'JSR next_line',
     'LDA #<bad_command_string',
     'LDX #>bad_command_string',

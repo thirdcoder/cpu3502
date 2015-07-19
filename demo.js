@@ -306,6 +306,11 @@ let lines = [
     'STX line_buffer,Y',  // null terminate
     'RTS',
 
+    'line_buffer_offset:',
+    '.tryte 0',
+
+
+
     // write character in A to screen
     'write_char:',
     'STA chargen',
@@ -320,13 +325,6 @@ let lines = [
     'write_char_done:',
     'RTS',
 
-    'line_buffer_offset:',
-    '.tryte 0',
-
-    'line_buffer:',
-    '.tryte 0',
-
-
     'print_string:',
     'STA _print_string_param',
     'STX _print_string_param+1',
@@ -335,6 +333,10 @@ let lines = [
     'RTS',
     '_print_string_param:',
     '.word 0',
+
+
+    'line_buffer:',
+    '.tryte 0', // may extend further
 ];
 
 cpu.memory.writeArray(CODE_START_ADDRESS, assembler(lines));

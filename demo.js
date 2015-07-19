@@ -282,6 +282,7 @@ let lines = [
     'LDX #>line_buffer',
     'JSR print_string',
     'JSR next_line',
+    'JSR reset_line_buffer',
     'JMP handled_input',
 
     // interrupt handler:
@@ -291,7 +292,7 @@ let lines = [
     'CMP #0',
     'BEQ handle_backspace',
 
-    'JSR save_char',
+    'JSR save_line_buffer_char',
     'JSR print_char',
 
 
@@ -301,7 +302,7 @@ let lines = [
 
 
     // append character in A to line_buffer
-    'save_char:',
+    'save_line_buffer_char:',
     'LDY line_buffer_offset',
     'STA line_buffer,Y',
     'INC line_buffer_offset',
@@ -314,6 +315,11 @@ let lines = [
     '.tryte 0',
 
 
+    'reset_line_buffer:',
+    'LDA #0',
+    'STA line_buffer_offset',
+    'STA line_buffer',
+    'RTS',
 
     // print character in A to screen and advance cursor
     'print_char:',

@@ -184,8 +184,7 @@ let lines = [
 
     'LDA #1',
     'STA row',
-    'LDA #0',
-    'STA col',
+    'STZ col',
 
     // print greeting
     'LDA #<greeting',
@@ -193,8 +192,7 @@ let lines = [
     'JSR print_string',
 
     'INC row',
-    'LDA #0',
-    'STA col',
+    'STZ col',
 
     'LDA #<prompt_string',
     'LDX #>prompt_string',
@@ -259,8 +257,7 @@ let lines = [
     // subroutine to advance terminal to next line
     'next_line:',
     'INC row',
-    'LDA #0',
-    'STA col',
+    'STZ col',
     'RTS',
 
 
@@ -273,22 +270,19 @@ let lines = [
     'handle_backspace:',
     'JSR truncate_line_buffer',
     'BCS handle_backspace_denied', // if couldn't delete
-    'LDA #0',
-    'STA chargen', // clear cursor
+    'STZ chargen', // clear cursor
     'DEC col',
     'LDA col',
     'CMP #-1',
     'BEQ handle_prev_line',
-    'LDA #0',     // null to erase TODO: space?
-    'STA chargen',
+    'STZ chargen',
     'JMP handled_input',
 
     'handle_backspace_denied:', // TODO: beep? user tried to backspace but there was nothing to backspace; some negative feedback would be nice
     'JMP handled_input',
 
     'handle_enter:',
-    'LDA #0',
-    'STA chargen',
+    'STZ chargen',    // clear cursor
     'JSR next_line',
     'LDA #<bad_command_string',
     'LDX #>bad_command_string',
@@ -298,8 +292,7 @@ let lines = [
     'JSR print_string',
     'JSR reset_line_buffer',
     'INC row',
-    'LDA #0',
-    'STA col',
+    'STZ col',
     'LDA #<prompt_string',
     'LDX #>prompt_string',
     'JSR print_string',
@@ -336,8 +329,7 @@ let lines = [
 
     // reset line buffer to empty string
     'reset_line_buffer:',
-    'LDA #0',
-    'STA line_buffer_offset',
+    'STZ line_buffer_offset',
     'STA line_buffer',
     'RTS',
 

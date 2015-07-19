@@ -1160,3 +1160,135 @@ test('stack push/pull', (t) => {
 
   t.end();
 });
+
+/* TODO: support this using some kind of calling convention, like x86 cdecl or stdcall or fastcall
+test('subroutine parameters on stack', (t) => {
+  const cpu = CPU();
+  let lines = [
+    '.equ 10000 stack',
+    'LDY #>stack',
+    'LDX #<stack',
+    'TXYS',
+
+    'PHWD arg',
+    'JSR inc2',
+
+    'HALTZ',
+
+    'arg:',
+    '.tryte 1',
+
+
+    'inc2:',
+    'PLWD _inc2_ret',
+    'PLWD _inc2_arg',
+    'INC _inc2_arg',
+    'INC _inc2_arg',
+    'PLWD _inc2_ret',
+    'RTS',
+
+    '_inc2_ret:',
+    '.word 0',
+
+    '_inc2_arg:',
+    '.word 0',
+
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+
+ 
+  t.end();
+});
+*/
+
+
+// example using "control blocks" to pass parameters
+// http://forum.6502.org/viewtopic.php?t=1590 Passing Parameters: best practices? https://archive.is/nsJ92
+test('subroutine parameters control block', (t) => {
+  const cpu = CPU();
+  let lines = [
+    '.equ 10000 stack',
+    'LDY #>stack',
+    'LDX #<stack',
+    'TXYS',
+
+    // call write() three times, with arguments 10, 20, and 30 each
+    'LDA #10',
+    'STA write_params',
+    'LDA #<write_params',
+    'LDX #>write_params',
+    'JSR write',
+
+    'LDA #20',
+    'STA write_params',
+    'LDA #<write_params',
+    'LDX #>write_params',
+    'JSR write',
+
+    'LDA #30',
+    'STA write_params',
+    'LDA #<write_params',
+    'LDX #>write_params',
+    'JSR write',
+
+    'HALTZ',
+
+    'write_params:',
+    '.tryte 0',
+
+
+    // a simple function to write a tryte to the end of a buffer
+    'write:',
+    'STA _write_param',
+    'STX _write_param_p1',  // TODO: +1
+
+    'LDY #0',
+    'LDA (_write_param),Y',
+
+    'LDX _write_offset',
+    'STA _write_buffer,X',
+    'INC _write_offset',
+
+    'RTS',
+
+    'HALTN',
+
+
+    '_write_param:',
+    '.tryte 0',
+    '_write_param_p1:',
+    '.tryte 0',
+
+    '.equ -100 _write_buffer',
+
+    '_write_offset:',
+    '.tryte 0',
+
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+
+  console.log(cpu.memory.subarray(-100, -90));
+  t.equal(cpu.memory.read(-100), 10);
+  t.equal(cpu.memory.read(-99), 20);
+  t.equal(cpu.memory.read(-98), 30);
+
+  t.end();
+});

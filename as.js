@@ -37,8 +37,9 @@ class Assembler {
 
     this.symbols.set(name, value);
     // also add low and high trytes (5-trit), useful for immediate mode, registers
-    this.symbols.set(`${name}.low`, low_tryte(value));
-    this.symbols.set(`${name}.high`, high_tryte(value));
+    this.symbols.set('<' + name, low_tryte(value));
+    this.symbols.set('>' + name, high_tryte(value));
+    // TODO: also support arbitrary (but constant-foldable) expressions on symbols, e.g. name+1
   }
 
   emit(tryte) {

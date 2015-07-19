@@ -169,8 +169,8 @@ let lines = [
 
     // setup stack, since default 0 overlaps with memory-mapped screen output
     '.equ -10000 stack',
-    'LDY #stack.high',
-    'LDX #stack.low',
+    'LDY #>stack',
+    'LDX #<stack',
     'TXYS',
 
     // loop 6..19
@@ -205,9 +205,9 @@ let lines = [
     // set input interrupt handler
     '.equ -29524 int_inputL',
     '.equ -29523 int_inputH',
-    'LDA #handle_input.low',
+    'LDA #<handle_input',
     'STA int_inputL',
-    'LDA #handle_input.high',
+    'LDA #>handle_input',
     'STA int_inputH',
 
     'SEIP', // enable interrupt -1 (keyboard input) TODO: also handle int 1, then can unmask all with CLI
@@ -215,9 +215,9 @@ let lines = [
     // set pulse interrupt handler
     '.equ -29520 int_pulseL',
     '.equ -29519 int_pulseH',
-    'LDA #handle_pulse.low',
+    'LDA #<handle_pulse',
     'STA int_pulseL',
-    'LDA #handle_pulse.high',
+    'LDA #>handle_pulse',
     'STA int_pulseH',
 
     'CLI',  // enable all interrupts

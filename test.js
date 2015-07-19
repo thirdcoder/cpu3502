@@ -362,14 +362,14 @@ test('assemble low/high addresses', (t) => {
   lines = lines.concat([
     'NOP',
     'end:',
-    'LDA #end.low',
-    'LDA #end.high',
+    'LDA #<end',  // low
+    'LDA #>end',  // high
   ]);
 
   const machine_code = assembler(lines);
 
-  t.equal(machine_code[123], -121); // #end.low
-  t.equal(machine_code[125], 1);    // #end.high
+  t.equal(machine_code[123], -121); // #<end
+  t.equal(machine_code[125], 1);    // #>end
 
   t.end();
 });
@@ -384,9 +384,9 @@ test('interrupts', (t) => {
     // set interrupt handler for -1
     '.equ '+(cpu.memory.minAddress  )+' intN_L',
     '.equ '+(cpu.memory.minAddress+1)+' intN_H',
-    'LDA #handle_intN.low',
+    'LDA #<handle_intN',
     'STA intN_L',
-    'LDA #handle_intN.high',
+    'LDA #>handle_intN',
     'STA intN_H',
 
     // enable interrupts and execute int -1

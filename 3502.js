@@ -224,7 +224,7 @@ class CPU {
     return {read_arg, write_arg, address_of_arg};
   }
 
-  execute_next_instruction() {
+  step() {
     const opcode = this.memory.read(this.pc);
     console.log('\npc=',this.pc,' opcode=',opcode,'disasm=',disasm1(this.memory.subarray(this.pc)).asm);
 
@@ -261,10 +261,6 @@ class CPU {
 
     console.log('flags:','RHUVSDCIL');
     console.log('flags:',n2bts(this.flags.value), `A=${this.accum}(${ttToUnicode(this.accum)}), X=${this.index}, Y=${this.yindex}`);
-  }
-
-  step() {
-    this.execute_next_instruction();
     this.pc += this.flags.R;
   }
 

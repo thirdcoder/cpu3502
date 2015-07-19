@@ -222,7 +222,6 @@ let lines = [
 
     'CLI',  // enable all interrupts
 
-    '.equ -10000 cursor_char', // variable
     "LDA #'_",               // a suitable cursor character
     //"LDA #'▒",            // alternative block cursor TODO: use in 'insert' mode?
     'STA cursor_char',
@@ -234,6 +233,9 @@ let lines = [
     /* */
 
     'HALTZ',
+
+    'cursor_char:',
+    ".tryte 0",
 
     'greeting_ptr:',
     '.word greeting',
@@ -281,17 +283,8 @@ let lines = [
     'CMP #0',
     'BEQ backspace',
 
-    // append character to line buffer, and null terminate
-    'LDY line_buffer_offset',
-    'STA line_buffer,Y',
-    'INC line_buffer_offset',
-    'INY',
-    'LDX #0',
-    'STX line_buffer,Y',
+    'JSR write_char',
 
-    // write to screen
-    'STA chargen',
-    'INC col',
     'LDX col',
     '.equ 45 row_count',
     'CPX #row_count',
@@ -300,6 +293,20 @@ let lines = [
     'handled_input:',
     'RTI',
 
+
+    // write and save character in A
+    'write_char:',
+    // save to buffer
+    'LDY line_buffer_offset',
+    'STA line_buffer,Y',
+    'INC line_buffer_offset',
+    'INY',
+    'LDX #0',
+    'STX line_buffer,Y',  // null terminate
+    // write to screen
+    'STA chargen',
+    'INC col',
+    'RTS',
 
     'line_buffer_offset:',
     '.tryte 0',

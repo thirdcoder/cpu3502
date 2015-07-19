@@ -197,6 +197,10 @@ let lines = [
     'CMP #0',         // reached null terminator at end of string?
     'BNE greet',      // if not, loop around
 
+    'LDA #<greeting',
+    'LDX #>greeting',
+    'JSR print_string',
+
     'INC row',
     'LDA #0',
     'STA col',
@@ -325,11 +329,20 @@ let lines = [
     'write_char_done:',
     'RTS',
 
+
+    // print a null-terminated string pointed to by A,X
     'print_string:',
     'STA _print_string_param',
     'STX _print_string_param+1',
     'LDY #0',
-    //TODO: loop
+    '_print_string_loop:',
+    'LDA (_print_string_param),Y',
+    'CMP #0',
+    'BEQ _print_string_done',
+    'JSR write_char',
+    'INY',
+    'BRA _print_string_loop',
+    '_print_string_done:',
     'RTS',
     '_print_string_param:',
     '.word 0',

@@ -251,48 +251,49 @@ let lines = [
     'NEG cursor_char',  // toggle red/green '_'
     'RTI',              // return from interrupt
 
-
-    // advance terminal to next line
+    // subroutine to advance terminal to next line
     'next_line:',
     'INC row',
     'LDA #0',
     'STA col',
-    'JMP handled_input',
+    'RTS',
 
-    'prev_line:',
+
+    'handle_prev_line:',
     'DEC row',
     'LDA #44',    // TODO: .equ
     'STA col',
     'JMP handled_input',
 
-    'backspace:',
+    'handle_backspace:',
     'LDA #0',
     'STA chargen', // clear cursor
     'DEC col',
     'LDA col',
     'CMP #-1',
-    'BEQ prev_line',
+    'BEQ handle_prev_line',
     'LDA #0',     // null to erase TODO: space?
     'STA chargen',
+    'JMP handled_input',
+
+    'handle_next_line:',
+    'JSR next_line',
     'JMP handled_input',
 
     // interrupt handler:
     'handle_input:',
     "CMP #'\\n",
-    'BEQ next_line',
+    'BEQ handle_next_line',
     'CMP #0',
-    'BEQ backspace',
+    'BEQ handle_backspace',
 
     'JSR save_char',
     'JSR write_char',
 
-    'LDX col',
-    '.equ 45 row_count',
-    'CPX #row_count',
-    'BEQ next_line',  // TODO: support unresolved forward references in relative labels, offsets..
 
     'handled_input:',
     'RTI',
+
 
 
     // append character in A to line_buffer
@@ -309,6 +310,14 @@ let lines = [
     'write_char:',
     'STA chargen',
     'INC col',
+
+    'LDX col',
+    '.equ 45 row_count',
+    'CPX #row_count',
+    'BNE write_char_done',
+    'JSR next_line',      // at last column, wrap cursor to next line
+
+    'write_char_done:',
     'RTS',
 
     'line_buffer_offset:',

@@ -192,10 +192,13 @@ let lines = [
     'LDX #>greeting',
     'JSR print_string',
 
-
     'INC row',
     'LDA #0',
     'STA col',
+
+    'LDA #<prompt_string',
+    'LDX #>prompt_string',
+    'JSR print_string',
 
 
     // set input interrupt handler
@@ -235,11 +238,16 @@ let lines = [
 
     'greeting:',
     '.data "Hello, world! ☺ 3502 CPU online: system readyWaiting for user input."',
-    'DNOP A', // 0 TODO: .data 0
+    '.tryte 0',
+
+    'prompt_string:',
+    //TODO: support newlines in print_string '.tryte 12',  // trit-text newline TODO: support embedding in .data
+    '.data "$ "',
+    '.tryte 0',
 
     'bad_command_string:',
     '.data "Bad command or file name: "',
-    'DNOP A',
+    '.tryte 0',
 
     'handle_pulse:',
     // blinking cursor
@@ -281,8 +289,13 @@ let lines = [
     'LDA #<line_buffer',
     'LDX #>line_buffer',
     'JSR print_string',
-    'JSR next_line',
     'JSR reset_line_buffer',
+    'INC row',
+    'LDA #0',
+    'STA col',
+    'LDA #<prompt_string',
+    'LDX #>prompt_string',
+    'JSR print_string',
     'JMP handled_input',
 
     // interrupt handler:

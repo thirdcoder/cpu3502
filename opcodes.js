@@ -113,8 +113,8 @@ const XOP = {
 
   NOP: 19,      // 1i01 no operation
 
-  _uu20: 20,    // 1i1i unused
-  _uu21: 21,    // 1i10 unused
+  PHX: 20,      // 1i1i push index
+  PHY: 21,      // 1i10 push yindex
 
   CLD: 22,      // 1i11 clear data flag
   SEDP: 23,     // 10ii set data flag positive
@@ -130,6 +130,10 @@ const XOP = {
   TXYS: 32,     // 11ii transfer index and yindex to stack pointer
   JSR: 33,      // 11i0 jump to subroutine
   JMP: 34,      // 11i1 jump
+
+  PLX: 35,      // 110i pull index
+  PLY: 36,      // 1100 pull yindex
+
 
   HALTN: -40,   // iiii halt negative
   HALTZ: -39,   // iii0 halt zero

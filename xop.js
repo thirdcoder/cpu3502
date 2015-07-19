@@ -140,8 +140,24 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       cpu.stack.push(cpu.accum);
       break;
 
+    case XOP.PHX:   // push X
+      cpu.stack.push(cpu.index);
+      break;
+
+    case XOP.PHY:   // push Y
+      cpu.stack.push(cpu.yindex);
+      break;
+
     case XOP.PLA:   // pull A
       cpu.accum = cpu.stack.pull();
+      break;
+
+    case XOP.PLX:   // pull X
+      cpu.index = cpu.stack.pull();
+      break;
+
+    case XOP.PLY:   // pull Y
+      cpu.yindex = cpu.stack.pull();
       break;
 
     case XOP.PHP:   // push processor flags

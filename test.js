@@ -1249,7 +1249,7 @@ test('subroutine parameters control block', (t) => {
     // a simple function to write a tryte to the end of a buffer
     'write:',
     'STA _write_param',
-    'STX _write_param_p1',  // TODO: +1
+    'STX _write_param+1',
 
     'LDY #0',
     'LDA (_write_param),Y',
@@ -1264,9 +1264,7 @@ test('subroutine parameters control block', (t) => {
 
 
     '_write_param:',
-    '.tryte 0',
-    '_write_param_p1:',
-    '.tryte 0',
+    '.word 0',
 
     '.equ -100 _write_buffer',
 

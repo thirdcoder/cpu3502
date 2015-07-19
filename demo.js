@@ -82,7 +82,7 @@ memory.map.chargen.write = (address, value) => {
   console.log('COLROW',col,row);
 
   term.setTTChar(value, col, row);
-  // TODO: write to row,col from another memory address value (no trap needed). -3282, -3283? - for cursor
+  term.refresh();
 };
 
 const cpu = CPU({

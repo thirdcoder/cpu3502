@@ -1125,3 +1125,43 @@ test('stack push index and word', (t) => {
 
 
 });
+
+test('stack push/pull', (t) => {
+  const cpu = CPU();
+  let lines = [
+    '.equ 10000 stack',
+    'LDY #>stack',
+    'LDX #<stack',
+    'TXYS',
+
+    'PHWD foo',
+
+    'PLX',
+    'CPX #%11111',
+    'BNE fail',
+
+    'PLY',
+    'CPY #%iiiii',
+    'BNE fail',
+
+    'HALTZ',
+
+
+    'fail:',
+    'HALTN',
+
+    'foo:',
+    '.word %11111iiiii',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});

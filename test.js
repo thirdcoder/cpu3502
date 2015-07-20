@@ -866,7 +866,6 @@ test('tryte assembler directive', (t) => {
 
 test('assemble load indirect indexed', (t) => {
   let lines = [
-    //'LDA_IIY (29282),Y', // internal opcode no longer directly supported in assembly
     'LDA (29282),Y',
   ];
 
@@ -876,12 +875,6 @@ test('assemble load indirect indexed', (t) => {
   t.equal(machine_code[0], -112);  // LDA_IIY
   t.equal(machine_code[1], -121);
   t.equal(machine_code[2], 121);
-
-  /*
-  t.equal(machine_code[3], -112);  // LDA_IIY
-  t.equal(machine_code[4], -121);
-  t.equal(machine_code[5], 121);
-  */
 
   t.end();
 });

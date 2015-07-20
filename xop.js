@@ -168,6 +168,7 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       cpu.flags.value = cpu.stack.pullWord();
       break;
 
+    case XOP.STZ_ABX:
     case XOP.STZ_ABY:
     case XOP.STZ_ABS:   // store zero
     case XOP.STZ_IIY:

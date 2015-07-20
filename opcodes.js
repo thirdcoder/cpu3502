@@ -117,7 +117,7 @@ const XOP = {
   INTZ: 17,     // 1i0i interrupt zero
   INTP: 18,     // 1i00 interrupt positive
 
-  uu19: 19,     // 1i01
+  STZ_ABX: 19,  // 1i01 store zero absolute,X indexed
 
   PHX: 20,      // 1i1i push index
   PHY: 21,      // 1i10 push yindex
@@ -169,6 +169,7 @@ const XOP_TO_ADDR_MODE = {
   JMP_ABS: ADDR_MODE.ABSOLUTE,
   JMP_INDIR: ADDR_MODE.INDIRECT,
   JSR_ABS: ADDR_MODE.ABSOLUTE,
+  STZ_ABX: ADDR_MODE.ABSOLUTE_X,
   STZ_ABY: ADDR_MODE.ABSOLUTE_Y,
   STZ_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
   STZ_ABS: ADDR_MODE.ABSOLUTE,
@@ -196,6 +197,7 @@ const OP_ADDR_MODE_TO_XOP = {
     [ADDR_MODE.ABSOLUTE]: XOP.JSR_ABS,
   },
   STZ: {
+    [ADDR_MODE.ABSOLUTE_X]: XOP.STZ_ABX,
     [ADDR_MODE.ABSOLUTE_Y]: XOP.STZ_ABY,
     [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.STZ_IIY,
     [ADDR_MODE.ABSOLUTE]: XOP.STZ_ABS,

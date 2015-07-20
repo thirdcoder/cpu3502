@@ -153,6 +153,7 @@ test('assemble/disassemble roundtrip', (t) => {
       'JMP (6666)',
       'STZ 3333',
       'STZ 3333,Y',
+      'STZ 3333,X',
       'STZ (3333),Y',
       'HALTZ'];
 

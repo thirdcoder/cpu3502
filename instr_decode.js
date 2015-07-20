@@ -1,7 +1,7 @@
 'use strict';
 
 const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
-const {OP, ADDR_MODE, FLAGS, XOP, XOP_TO_ADDR_MODE, XOP_TO_ALU_OP, OP_ADDR_MODE_TO_XOP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, XOP, XOP_TO_ADDR_MODE, XOP_TO_ALU_OP, OP_ADDR_MODE_TO_XOP, BRANCH_INSTRUCTION_SHORTHANDS} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
 const invertKv = require('invert-kv');
 const {n2bts}  = require('balanced-ternary');
@@ -154,9 +154,13 @@ function disasm1(machine_code, offset=0) {
   } else if (di.family === 1) {
     opcode = 'BR';
     opcode += invertKv(FLAGS)[di.flag];
-    // TODO
     opcode += {'-1':'L', 0:'E', 1:'N'}[di.direction];
     opcode += {'-1':'N', 0:'Z', 1:'P'}[di.compare];
+
+    if (invertKv(BRANCH_INSTRUCTION_SHORTHANDS)[opcode]) {
+      // prefer the shorthand if there is one (BRSEZ -> BEQ)
+      opcode = invertKv(BRANCH_INSTRUCTION_SHORTHANDS)[opcode];
+    }
 
     let rel_address = machine_code[offset + 1];
     if (rel_address === undefined) {

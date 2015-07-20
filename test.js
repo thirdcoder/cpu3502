@@ -137,8 +137,9 @@ test('assemble/disassemble roundtrip', (t) => {
       'DNOP A',
       'DNOP #%iiiii', // -121',
       'DNOP 29524',
-      'BRSNZ #-1', //'BNE -1',
-      'BRSEZ #+2', //BEQ +2
+      'BNE #-1',
+      'BEQ #+2',
+      'BRDEZ #-3',
       'HALTN',
       'HALTP',
       'LDA #%1iii0', // #42

@@ -180,8 +180,27 @@ const XOP_REQUIRES_OPERAND = {
   PLWD: ADDR_MODE.ABSOLUTE,
 };
 
-// alu operation <-> xop with extended addressing modes
+// assembler opcode, addressing mode -> xop
 const OP_ADDR_MODE_TO_XOP = {
+  JMP: {
+    [ADDR_MODE.ABSOLUTE]: XOP.JMP,
+    [ADDR_MODE.INDIRECT]: XOP.JMP_INDIR,
+  },
+  JSR: {
+    [ADDR_MODE.ABSOLUTE]: XOP.JSR,
+  },
+  STZ: {
+    [ADDR_MODE.ABSOLUTE]: XOP.STZ,
+  },
+  PHWD: {
+    [ADDR_MODE.ABSOLUTE]: XOP.PHWD,
+  },
+  PLWD: {
+    [ADDR_MODE.ABSOLUTE]: XOP.PLWD,
+  },
+
+
+
   LDA: {
     [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.LDA_IIY,
     [ADDR_MODE.ABSOLUTE_X]: XOP.LDA_ABX,
@@ -206,6 +225,7 @@ const OP_ADDR_MODE_TO_XOP = {
   },
 };
 
+// xop -> alu operation with extended addressing mode
 const XOP_TO_ADDR_MODE_OP = {
   [XOP.LDA_IIY]: [OP.LDA, ADDR_MODE.INDIRECT_INDEXED_Y],
   [XOP.LDA_ABX]: [OP.LDA, ADDR_MODE.ABSOLUTE_X],

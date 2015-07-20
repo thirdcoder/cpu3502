@@ -866,20 +866,22 @@ test('tryte assembler directive', (t) => {
 
 test('assemble load indirect indexed', (t) => {
   let lines = [
-    'LDA_IIY (29282),Y',
+    //'LDA_IIY (29282),Y', // internal opcode no longer directly supported in assembly
     'LDA (29282),Y',
   ];
 
   const machine_code = assembler(lines);
-  t.equal(machine_code.length, 6);
+  t.equal(machine_code.length, 3);
   console.log(machine_code);
   t.equal(machine_code[0], -112);  // LDA_IIY
   t.equal(machine_code[1], -121);
   t.equal(machine_code[2], 121);
 
+  /*
   t.equal(machine_code[3], -112);  // LDA_IIY
   t.equal(machine_code[4], -121);
   t.equal(machine_code[5], 121);
+  */
 
   t.end();
 });
@@ -1059,7 +1061,7 @@ test('indexed index', (t) => {
 test('jump indirect', (t) => {
   const cpu = CPU();
   let lines = [
-    'JMP_INDIR (over_ptr)', // TODO: support JMP (over_ptr)
+    'JMP (over_ptr)',
     'HALTN',
 
     'over_ptr:',

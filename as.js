@@ -44,6 +44,7 @@ class Assembler {
   }
 
   emit(tryte) {
+    if (Number.isNaN(tryte) || n2bts(tryte) === undefined) throw new Error('internal assembler error: tried to emit undefined: '+tryte);
     console.log('emit',n2bts(tryte));
     this.output.push(tryte);
     ++this.code_offset;
@@ -204,23 +205,29 @@ class Assembler {
 
       let tryte = opcode_value * Math.pow(3,1) + (-1);
 
-      let expected_addressing_mode = XOP_REQUIRES_OPERAND[opcode]; // only one addr mode per xop opcode TODO
-      if (expected_addressing_mode !== undefined) {
+      let allowed_addressing_modes = OP_ADDR_MODE_TO_XOP[opcode];
+      if (allowed_addressing_modes !== undefined) {
         if (rest === undefined) {
           throw new Error(`xop opcode ${opcode} requires operand, in line=${ine}`);
         }
 
         ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
-        if (addressing_mode !== expected_addressing_mode) {
-          throw new Error(`xop opcode unexpected addressing mode, want ${expected_addressing_mode} but given ${addressing_mode}, in line=${this.current_line}`);
+
+        if (allowed_addressing_modes[addressing_mode] === undefined) {
+          console.log('allowed_addressing_modes=',allowed_addressing_modes);
+          throw new Error(`xop opcode unexpected addressing mode, want ${JSON.stringify(allowed_addressing_modes)} but given ${addressing_mode}, in line=${this.current_line}`);
         }
+
+        // replace opcode TODO: refactor with above
+        opcode_value = allowed_addressing_modes[addressing_mode];
+        tryte = opcode_value * Math.pow(3,1) + (-1);
       } else {
         if (rest !== undefined) {
           throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
         }
       }
       this.emit(tryte);
-      if (XOP_REQUIRES_OPERAND[opcode] !== undefined) this.emit_operand(operand_value, addressing_mode);
+      if (allowed_addressing_modes !== undefined) this.emit_operand(operand_value, addressing_mode);
     } else if (opcode.charAt(0) === 'B') {
       ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
 

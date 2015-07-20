@@ -148,6 +148,11 @@ test('assemble/disassemble roundtrip', (t) => {
       'LDA (29282),Y',
       'LDA 29282,X',
       'LDA 29282,Y',
+  /* TODO
+      'STZ 3333',
+      'STZ 3333,Y',
+      'STZ (3333),Y',
+      */
       'HALTZ'];
 
   const machine_code = assembler(lines); 

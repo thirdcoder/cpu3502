@@ -138,10 +138,9 @@ const XOP = {
   PLX: 35,      // 110i pull index
   PLY: 36,      // 1100 pull yindex
 
-  uu37: 37,     // 1101
-  uu38: 38,     // 111i
-
-  STZ:  39,     // 1110 store zero
+  STZ_ABY: 37,  // 1101 store zero absolute,Y indexed
+  STZ_IIY: 38,  // 111i store zero (indirect),Y indexed
+  STZ_ABS: 39,  // 1110 store zero, absolute
 
   JMP_INDIR: 40,// 1111 jump indirect
 
@@ -168,7 +167,9 @@ const XOP_TO_ADDR_MODE = {
   JMP_ABS: ADDR_MODE.ABSOLUTE,
   JMP_INDIR: ADDR_MODE.INDIRECT,
   JSR: ADDR_MODE.ABSOLUTE,
-  STZ: ADDR_MODE.ABSOLUTE,
+  STZ_ABY: ADDR_MODE.ABSOLUTE_Y,
+  STZ_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
+  STZ_ABS: ADDR_MODE.ABSOLUTE,
   LDA_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
   LDA_ABX: ADDR_MODE.ABSOLUTE_X,
   LDA_ABY: ADDR_MODE.ABSOLUTE_Y,
@@ -193,7 +194,9 @@ const OP_ADDR_MODE_TO_XOP = {
     [ADDR_MODE.ABSOLUTE]: XOP.JSR,
   },
   STZ: {
-    [ADDR_MODE.ABSOLUTE]: XOP.STZ,
+    [ADDR_MODE.ABSOLUTE_Y]: XOP.STZ_ABY,
+    [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.STZ_IIY,
+    [ADDR_MODE.ABSOLUTE]: XOP.STZ_ABS,
   },
 
 

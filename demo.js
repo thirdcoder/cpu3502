@@ -363,8 +363,7 @@ let lines = [
     'DEY',
     'CPY #0',
     'BMI _truncate_line_buffer_skip',  // empty buffer, cannot truncate further
-    'LDA #0',
-    'STA line_buffer,Y',
+    'STZ line_buffer,Y',
     'STY line_buffer_offset',
     'CLC',
     'RTS',

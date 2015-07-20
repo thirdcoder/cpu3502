@@ -71,7 +71,7 @@ const FLAGS = {
   R:  4, // +4 11 R running, 1 when executing forward, i backwards, 0 halted
 };
 
-const INSTRUCTION_ALIASES = {
+const BRANCH_INSTRUCTION_SHORTHANDS = {
   // generic branch instruction format is BR<flag><operation><compare-trit>
   //  flag: code from FLAGS
   //  operation: L=less than, E=equal, N=not equal
@@ -259,7 +259,7 @@ module.exports = {
   OP,
   ADDR_MODE,
   FLAGS,
-  INSTRUCTION_ALIASES,
+  BRANCH_INSTRUCTION_SHORTHANDS,
   XOP,
   XOP_TO_ADDR_MODE,
   OP_ADDR_MODE_TO_XOP,

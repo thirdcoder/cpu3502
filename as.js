@@ -1,6 +1,6 @@
 'use strict';
 
-const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP, OP_ADDR_MODE_TO_XOP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, BRANCH_INSTRUCTION_SHORTHANDS, XOP, OP_ADDR_MODE_TO_XOP} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');
@@ -106,9 +106,9 @@ class Assembler {
 
     // TODO: comments, ; to end-of-line
 
-    // Convenience aliases
+    // Branch instruction shorthands
     // ex: branch, beq (s=0), bne (s!=0) br s>0, s=0, s<0 brsen brgz brlp
-    if (INSTRUCTION_ALIASES[opcode]) opcode = INSTRUCTION_ALIASES[opcode];
+    if (BRANCH_INSTRUCTION_SHORTHANDS[opcode]) opcode = BRANCH_INSTRUCTION_SHORTHANDS[opcode];
 
     let addressing_mode, extra, operand_unresolved_at, operand_value;
 

@@ -1299,3 +1299,44 @@ test('store zero addressing modes', (t) => {
 
   t.end();
 });
+
+
+test('subroutine pass parameter immediately after', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'JSR getimm',
+    '.tryte 33',    // read by subroutine
+    'HALTZ',        // stack is modified to return here
+
+    'getimm:',
+    // pull return address, increment, modify, and push back
+    'PLA',
+    'STA _getimm_param+1',
+    'PLX',
+    'INX',  // after immediately-after parameter TODO: handle wraparound
+    'STX _getimm_param',
+    'PHX',
+    'PHA',
+
+    'LDY #0',
+    'LDA (_getimm_param),Y',
+    'CMP #33',
+    'BNE fail',
+    'RTS',
+
+    '_getimm_param:',
+    '.word 0',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});

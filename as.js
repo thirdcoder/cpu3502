@@ -1,6 +1,6 @@
 'use strict';
 
-const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP, XOP_REQUIRES_OPERAND, OP_ADDR_MODE_TO_XOP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, INSTRUCTION_ALIASES, XOP, OP_ADDR_MODE_TO_XOP} = require('./opcodes');
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {nonary2bts} = require('nonary');
 const {sv2bts} = require('base27');

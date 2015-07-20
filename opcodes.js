@@ -160,8 +160,9 @@ const XOP = {
   STY_ABX: -28, // i00i store yindex to absolute,X
 };
 
-// most XOPs do not have operands, but some do (vs alu OP, which always does), irregular
-const XOP_REQUIRES_OPERAND = {
+// raw xop to addressing mode, for cpu instruction decoder
+// note: not all listed here directly supported by assembler; see OP_ADDR_MODE_TO_XOP instead
+const XOP_TO_ADDR_MODE = {
   JMP: ADDR_MODE.ABSOLUTE,
   JMP_INDIR: ADDR_MODE.INDIRECT,
   JSR: ADDR_MODE.ABSOLUTE,
@@ -180,7 +181,9 @@ const XOP_REQUIRES_OPERAND = {
   PLWD: ADDR_MODE.ABSOLUTE,
 };
 
+// most XOPs do not have operands, but some do (vs alu OP, which always does), irregular, listed here
 // assembler opcode, addressing mode -> xop
+// must be listed here if xop is supported by assembler and has non-implied addressing mode
 const OP_ADDR_MODE_TO_XOP = {
   JMP: {
     [ADDR_MODE.ABSOLUTE]: XOP.JMP,
@@ -198,7 +201,6 @@ const OP_ADDR_MODE_TO_XOP = {
   PLWD: {
     [ADDR_MODE.ABSOLUTE]: XOP.PLWD,
   },
-
 
 
   LDA: {
@@ -226,6 +228,7 @@ const OP_ADDR_MODE_TO_XOP = {
 };
 
 // xop -> alu operation with extended addressing mode
+// if listed here, xop not implemented directly in xop.js but executed in alu.js
 const XOP_TO_ADDR_MODE_OP = {
   [XOP.LDA_IIY]: [OP.LDA, ADDR_MODE.INDIRECT_INDEXED_Y],
   [XOP.LDA_ABX]: [OP.LDA, ADDR_MODE.ABSOLUTE_X],
@@ -245,7 +248,7 @@ module.exports = {
   FLAGS,
   INSTRUCTION_ALIASES,
   XOP,
-  XOP_REQUIRES_OPERAND,
+  XOP_TO_ADDR_MODE,
   OP_ADDR_MODE_TO_XOP,
   XOP_TO_ADDR_MODE_OP,
 };

@@ -1,7 +1,7 @@
 'use strict';
 
 const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
-const {OP, ADDR_MODE, FLAGS, XOP, XOP_REQUIRES_OPERAND, XOP_TO_ADDR_MODE_OP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, XOP, XOP_TO_ADDR_MODE, XOP_TO_ADDR_MODE_OP} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
 const invertKv = require('invert-kv');
 const {n2bts}  = require('balanced-ternary');
@@ -30,7 +30,7 @@ function decode_instruction(opcode) {
   } else if (family === -1) {
     const operation = slice_trits(opcode, 1, 5);
 
-    const addressing_mode = XOP_REQUIRES_OPERAND[invertKv(XOP)[operation]];
+    const addressing_mode = XOP_TO_ADDR_MODE[invertKv(XOP)[operation]];
     if (addressing_mode !== undefined) {
       return {family, operation, addressing_mode};
     }

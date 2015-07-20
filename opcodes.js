@@ -161,6 +161,10 @@ const XOP = {
   LDY_ABX: -30, // i0i0 load yindex from absolute,X
   STX_ABY: -29, // i0i1 store index to absolute,Y
   STY_ABX: -28, // i00i store yindex to absolute,X
+
+  CMP_IIY: -27, // i000 compare accumulator with (indirect),Y indexed
+  CMP_ABX: -26, // i001 compare accumulator with absolute,X
+  CMP_ABY: -25, // i01i compare accumulator with absolute,Y
 };
 
 // raw xop key to addressing mode, for cpu instruction decoder
@@ -183,6 +187,9 @@ const XOP_TO_ADDR_MODE = {
   LDY_ABX: ADDR_MODE.ABSOLUTE_X,
   STX_ABY: ADDR_MODE.ABSOLUTE_Y,
   STY_ABX: ADDR_MODE.ABSOLUTE_X,
+  CMP_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
+  CMP_ABX: ADDR_MODE.ABSOLUTE_X,
+  CMP_ABY: ADDR_MODE.ABSOLUTE_Y,
 };
 
 // most XOPs do not have operands, but some do (vs alu OP, which always does), irregular, listed here
@@ -226,6 +233,11 @@ const OP_ADDR_MODE_TO_XOP = {
   STY: {
     [ADDR_MODE.ABSOLUTE_X]: XOP.STY_ABX,
   },
+  CMP: {
+    [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.CMP_IIY,
+    [ADDR_MODE.ABSOLUTE_X]: XOP.CMP_ABX,
+    [ADDR_MODE.ABSOLUTE_Y]: XOP.CMP_ABY,
+  }
 };
 
 // xop -> alu operation
@@ -241,6 +253,9 @@ const XOP_TO_ALU_OP = {
   [XOP.LDY_ABX]: OP.LDY,
   [XOP.STX_ABY]: OP.STX,
   [XOP.STY_ABX]: OP.STY,
+  [XOP.CMP_IIY]: OP.CMP,
+  [XOP.CMP_ABX]: OP.CMP,
+  [XOP.CMP_ABY]: OP.CMP,
 };
 
 module.exports = {

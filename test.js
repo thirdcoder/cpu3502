@@ -155,6 +155,9 @@ test('assemble/disassemble roundtrip', (t) => {
       'STZ 3333,Y',
       'STZ 3333,X',
       'STZ (3333),Y',
+      'CMP (3333),Y',
+      'CMP 3333,X',
+      'CMP 3333,Y',
       'HALTZ'];
 
   const machine_code = assembler(lines); 

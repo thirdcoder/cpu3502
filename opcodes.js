@@ -93,6 +93,8 @@ const INSTRUCTION_ALIASES = {
 // xop family of opcodes, note this also includes embedded addressing mode (_addrmode),
 // but in the assembler the opcode instructions are in OP_ADDR_MODE_TO_XOP, not here (but the CPU uses these)
 const XOP = {
+  NOP: 0,       // 0000 no operation
+
   TAX: 1,       // 0001 transfer accumulator to index
   TAY: 2,       // 001i transfer accumulator to yindex
   TXA: 3,       // 0010 transfer index to accumulator
@@ -115,7 +117,7 @@ const XOP = {
   INTZ: 17,     // 1i0i interrupt zero
   INTP: 18,     // 1i00 interrupt positive
 
-  NOP: 19,      // 1i01 no operation
+  uu19: 19,     // 1i01
 
   PHX: 20,      // 1i1i push index
   PHY: 21,      // 1i10 push yindex

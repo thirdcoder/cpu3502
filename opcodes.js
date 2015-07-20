@@ -227,20 +227,20 @@ const OP_ADDR_MODE_TO_XOP = {
   },
 };
 
-// xop -> alu operation with extended addressing mode
+// xop -> alu operation
 // if listed here, xop not implemented directly in xop.js but executed in alu.js
-const XOP_TO_ADDR_MODE_OP = {
-  [XOP.LDA_IIY]: [OP.LDA, ADDR_MODE.INDIRECT_INDEXED_Y],
-  [XOP.LDA_ABX]: [OP.LDA, ADDR_MODE.ABSOLUTE_X],
-  [XOP.LDA_ABY]: [OP.LDA, ADDR_MODE.ABSOLUTE_Y],
-  [XOP.STA_IIY]: [OP.STA, ADDR_MODE.INDIRECT_INDEXED_Y],
-  [XOP.STA_ABX]: [OP.STA, ADDR_MODE.ABSOLUTE_X],
-  [XOP.STA_ABY]: [OP.STA, ADDR_MODE.ABSOLUTE_Y],
-  [XOP.LDX_ABY]: [OP.LDX, ADDR_MODE.ABSOLUTE_Y],
-  [XOP.LDY_ABX]: [OP.LDY, ADDR_MODE.ABSOLUTE_X],
-  [XOP.STX_ABY]: [OP.STX, ADDR_MODE.ABSOLUTE_Y],
-  [XOP.STY_ABX]: [OP.STY, ADDR_MODE.ABSOLUTE_X],
-}
+const XOP_TO_ALU_OP = {
+  [XOP.LDA_IIY]: OP.LDA,
+  [XOP.LDA_ABX]: OP.LDA,
+  [XOP.LDA_ABY]: OP.LDA,
+  [XOP.STA_IIY]: OP.STA,
+  [XOP.STA_ABX]: OP.STA,
+  [XOP.STA_ABY]: OP.STA,
+  [XOP.LDX_ABY]: OP.LDX,
+  [XOP.LDY_ABX]: OP.LDY,
+  [XOP.STX_ABY]: OP.STX,
+  [XOP.STY_ABX]: OP.STY,
+};
 
 module.exports = {
   OP,
@@ -250,5 +250,5 @@ module.exports = {
   XOP,
   XOP_TO_ADDR_MODE,
   OP_ADDR_MODE_TO_XOP,
-  XOP_TO_ADDR_MODE_OP,
+  XOP_TO_ALU_OP,
 };

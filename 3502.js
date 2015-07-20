@@ -6,7 +6,7 @@ const ttToUnicode = require('trit-text').toUnicode;
 
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 
-const {OP, ADDR_MODE, XOP, XOP_TO_ADDR_MODE_OP} = require('./opcodes');
+const {OP, ADDR_MODE, XOP, XOP_TO_ALU_OP} = require('./opcodes');
 
 const {decode_instruction, decode_operand, disasm1} = require('./instr_decode');
 const ALU = require('./alu');
@@ -260,9 +260,9 @@ class CPU {
     } else if (di.family === -1) {
       let {read_arg, write_arg, address_of_arg} = this.read_alu_operand(di);
 
-      if (XOP_TO_ADDR_MODE_OP[di.operation] !== undefined) {
+      if (XOP_TO_ALU_OP[di.operation] !== undefined) {
         // alu operation, extended addressing mode in xop namespace
-        const alu_op = XOP_TO_ADDR_MODE_OP[di.operation][0];
+        const alu_op = XOP_TO_ALU_OP[di.operation];
         this.alu.execute_alu_instruction(alu_op, read_arg, write_arg);
       } else {
         execute_xop_instruction(this, di.operation, read_arg, write_arg, address_of_arg);

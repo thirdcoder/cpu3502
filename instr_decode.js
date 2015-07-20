@@ -1,7 +1,7 @@
 'use strict';
 
 const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
-const {OP, ADDR_MODE, FLAGS, XOP, XOP_TO_ADDR_MODE, XOP_TO_ADDR_MODE_OP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, XOP, XOP_TO_ADDR_MODE, XOP_TO_ALU_OP} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
 const invertKv = require('invert-kv');
 const {n2bts}  = require('balanced-ternary');
@@ -162,9 +162,9 @@ function disasm1(machine_code, offset=0) {
     operand = stringify_operand(decoded_operand);
     consumed += decoded_operand.consumed;
 
-    if (XOP_TO_ADDR_MODE_OP[di.operation] !== undefined) {
+    if (XOP_TO_ALU_OP[di.operation] !== undefined) {
       // some extended opcodes can disassemble to alu special addressing modes
-      opcode = invertKv(OP)[XOP_TO_ADDR_MODE_OP[di.operation][0]];
+      opcode = invertKv(OP)[XOP_TO_ALU_OP[di.operation]];
     }
   }
 

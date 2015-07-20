@@ -200,34 +200,33 @@ class Assembler {
 
       this.emit(tryte);
       this.emit_operand(operand_value, addressing_mode);
-    } else if (XOP[opcode] !== undefined) {
+    } else if (OP_ADDR_MODE_TO_XOP[opcode] !== undefined) { // xop with operand addressing mode
+      let allowed_addressing_modes = OP_ADDR_MODE_TO_XOP[opcode];
+      if (rest === undefined) {
+        throw new Error(`xop opcode ${opcode} requires operand, in line=${ine}`);
+      }
+
+      ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
+
+      if (allowed_addressing_modes[addressing_mode] === undefined) {
+        console.log('allowed_addressing_modes=',allowed_addressing_modes);
+        throw new Error(`xop opcode unexpected addressing mode, want ${JSON.stringify(allowed_addressing_modes)} but given ${addressing_mode}, in line=${this.current_line}`);
+      }
+
+      let opcode_value = allowed_addressing_modes[addressing_mode];
+      let tryte = opcode_value * Math.pow(3,1) + (-1);
+
+      this.emit(tryte);
+      this.emit_operand(operand_value, addressing_mode);
+    } else if (XOP[opcode] !== undefined) { // xop with no operand
       let opcode_value = XOP[opcode]; // aaaai 4-trits
 
       let tryte = opcode_value * Math.pow(3,1) + (-1);
 
-      let allowed_addressing_modes = OP_ADDR_MODE_TO_XOP[opcode];
-      if (allowed_addressing_modes !== undefined) {
-        if (rest === undefined) {
-          throw new Error(`xop opcode ${opcode} requires operand, in line=${ine}`);
-        }
-
-        ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
-
-        if (allowed_addressing_modes[addressing_mode] === undefined) {
-          console.log('allowed_addressing_modes=',allowed_addressing_modes);
-          throw new Error(`xop opcode unexpected addressing mode, want ${JSON.stringify(allowed_addressing_modes)} but given ${addressing_mode}, in line=${this.current_line}`);
-        }
-
-        // replace opcode TODO: refactor with above
-        opcode_value = allowed_addressing_modes[addressing_mode];
-        tryte = opcode_value * Math.pow(3,1) + (-1);
-      } else {
-        if (rest !== undefined) {
-          throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
-        }
+      if (rest !== undefined) {
+        throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
       }
       this.emit(tryte);
-      if (allowed_addressing_modes !== undefined) this.emit_operand(operand_value, addressing_mode);
     } else if (opcode.charAt(0) === 'B') {
       ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
 

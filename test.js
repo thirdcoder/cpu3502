@@ -1263,3 +1263,39 @@ test('store zero instruction', (t) => {
 
   t.end();
 });
+
+test('store zero addressing modes', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'STZ -90',
+    'LDX #-40',
+    'STZ -40,X',  // -80
+    'LDY #-35',
+    'STZ -35,Y',  // -70
+    'LDY #-30',
+    'STZ (ptr),Y',  // -60
+    'HALTZ',
+
+    'ptr:',
+    '.word -30',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+
+  cpu.memory.writeArray(0, machine_code);
+  cpu.memory.write(-90, 42);
+  cpu.memory.write(-80, 42);
+  cpu.memory.write(-70, 42);
+  cpu.memory.write(-60, 42);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+  t.equal(cpu.memory.read(-90), 0);
+  t.equal(cpu.memory.read(-80), 0);
+  t.equal(cpu.memory.read(-70), 0);
+  t.equal(cpu.memory.read(-60), 0);
+
+  t.end();
+});

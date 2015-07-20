@@ -36,7 +36,7 @@ const OP = {
 
   // unary ternary functions (a.3.5) https://www.scribd.com/doc/78370674/Ternary-Computing-Testbed-3-Trit-Computer-Architecture
   NTI: 8, // 10i negative ternary inverter (tritwise i01 -> 1ii)
-  STI: 9, // 100 simple ternary inverter   (tritwise i01 -> 10i)
+  STI: 9, // 100 simple ternary inverter   (tritwise i01 -> 10i) TODO: rename to NOT or NEG? confusing overloaded 'ST'..store
   PTI:10, // 101 positive ternary inverter (tritwise i01 -> 11i)
   FD: 11, // 11i forward diode             (tritwise i01 -> 001)
   RD: 12, // 110 reverse diode             (tritwise i01 -> i00)
@@ -72,9 +72,6 @@ const FLAGS = {
 };
 
 const INSTRUCTION_ALIASES = {
-  NEG: 'STI', // negate = simple ternary inverter
-  NOT: 'STI', // not = simple ternary inverter
-
   // generic branch instruction format is BR<flag><operation><compare-trit>
   //  flag: code from FLAGS
   //  operation: L=less than, E=equal, N=not equal

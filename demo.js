@@ -179,7 +179,7 @@ let lines = [
     'STA chargen',
 
     'ADC #2',
-    'NOT A',
+    'STI A',  // simple ternary inverter
     'STA chargen',  // trit-text red 'Z'
 
     'LDX #4',
@@ -274,7 +274,7 @@ let lines = [
     // blinking cursor
     'LDA cursor_char',
     'STA chargen',
-    'NEG cursor_char',  // toggle red/green '_'
+    'STI cursor_char',  // simple ternary inverter, toggle red/green '_'
     'RTI',              // return from interrupt
 
     // subroutine to advance terminal to next line

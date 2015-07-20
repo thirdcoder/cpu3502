@@ -1,7 +1,7 @@
 'use strict';
 
 const {MAX_TRYTE, MIN_TRYTE, TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE} = require('./arch');
-const {OP, ADDR_MODE, FLAGS, XOP, XOP_TO_ADDR_MODE, XOP_TO_ALU_OP} = require('./opcodes');
+const {OP, ADDR_MODE, FLAGS, XOP, XOP_TO_ADDR_MODE, XOP_TO_ALU_OP, OP_ADDR_MODE_TO_XOP} = require('./opcodes');
 const {get_trit, slice_trits} = require('trit-getset');
 const invertKv = require('invert-kv');
 const {n2bts}  = require('balanced-ternary');
@@ -119,6 +119,23 @@ function stringify_operand(decoded_operand) {
   return operand;
 }
 
+// convert raw xop with encoded addressing mode to assembly instruction name, ex: STZ_ABY -> STZ
+// will return non-undefined if xop_operation is in XOP_TO_ADDR_MODE
+// TODO: better data structure to avoid searching, essentially an inverted OP_ADDR_MODE_TO_XOP
+function xop_operation_to_assembly_opcode_string(opcode) {
+  for (let instr of Object.keys(OP_ADDR_MODE_TO_XOP)) {
+    let allowed_addressing_modes = OP_ADDR_MODE_TO_XOP[instr];
+    for (let addressing_mode of Object.keys(allowed_addressing_modes)) {
+      let this_xop_operation = allowed_addressing_modes[addressing_mode];
+
+      if (XOP[opcode] === this_xop_operation) {
+        return instr;
+      }
+    }
+  }
+  return undefined;
+}
+
 // Disassemble one instruction in machine_code
 function disasm1(machine_code, offset=0) {
   let di = decode_instruction(machine_code[offset]);
@@ -162,9 +179,10 @@ function disasm1(machine_code, offset=0) {
     operand = stringify_operand(decoded_operand);
     consumed += decoded_operand.consumed;
 
-    if (XOP_TO_ALU_OP[di.operation] !== undefined) {
+    console.log('XOP di.operation',di.operation,XOP_TO_ADDR_MODE[di.operation]);
+    if (XOP_TO_ADDR_MODE[opcode] !== undefined) {
       // some extended opcodes can disassemble to alu special addressing modes
-      opcode = invertKv(OP)[XOP_TO_ALU_OP[di.operation]];
+      opcode = xop_operation_to_assembly_opcode_string(opcode);
     }
   }
 

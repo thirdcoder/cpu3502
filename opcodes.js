@@ -161,7 +161,7 @@ const XOP = {
   STY_ABX: -28, // i00i store yindex to absolute,X
 };
 
-// raw xop to addressing mode, for cpu instruction decoder
+// raw xop key to addressing mode, for cpu instruction decoder
 // note: not all listed here directly supported by assembler; see OP_ADDR_MODE_TO_XOP instead
 const XOP_TO_ADDR_MODE = {
   JMP_ABS: ADDR_MODE.ABSOLUTE,

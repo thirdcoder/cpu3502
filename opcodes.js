@@ -90,6 +90,8 @@ const INSTRUCTION_ALIASES = {
   BCS: 'BRCNZ', // branch if carry set = branch if carry not equal zero
 };
 
+// xop family of opcodes, note this also includes embedded addressing mode (_addrmode),
+// but in the assembler the opcode instructions are in OP_ADDR_MODE_TO_XOP, not here (but the CPU uses these)
 const XOP = {
   TAX: 1,       // 0001 transfer accumulator to index
   TAY: 2,       // 001i transfer accumulator to yindex
@@ -131,7 +133,7 @@ const XOP = {
   TSXY: 31,     // 1011 transfer stack pointer to index and yindex
   TXYS: 32,     // 11ii transfer index and yindex to stack pointer
   JSR: 33,      // 11i0 jump to subroutine
-  JMP: 34,      // 11i1 jump
+  JMP_ABS: 34,  // 11i1 jump absolute
 
   PLX: 35,      // 110i pull index
   PLY: 36,      // 1100 pull yindex
@@ -163,7 +165,7 @@ const XOP = {
 // raw xop to addressing mode, for cpu instruction decoder
 // note: not all listed here directly supported by assembler; see OP_ADDR_MODE_TO_XOP instead
 const XOP_TO_ADDR_MODE = {
-  JMP: ADDR_MODE.ABSOLUTE,
+  JMP_ABS: ADDR_MODE.ABSOLUTE,
   JMP_INDIR: ADDR_MODE.INDIRECT,
   JSR: ADDR_MODE.ABSOLUTE,
   STZ: ADDR_MODE.ABSOLUTE,
@@ -186,7 +188,7 @@ const XOP_TO_ADDR_MODE = {
 // must be listed here if xop is supported by assembler and has non-implied addressing mode
 const OP_ADDR_MODE_TO_XOP = {
   JMP: {
-    [ADDR_MODE.ABSOLUTE]: XOP.JMP,
+    [ADDR_MODE.ABSOLUTE]: XOP.JMP_ABS,
     [ADDR_MODE.INDIRECT]: XOP.JMP_INDIR,
   },
   JSR: {

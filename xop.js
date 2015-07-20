@@ -181,7 +181,7 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       break;
 
     // jump
-    case XOP.JMP:   // pc = absolute
+    case XOP.JMP_ABS:   // pc = absolute
       cpu.pc = address_of_arg();
       --cpu.pc; // undo next-instruction increment
       console.log(`jumped to ${cpu.pc}`);

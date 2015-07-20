@@ -1064,6 +1064,7 @@ test('jump indirect', (t) => {
 
     'over_ptr:',
     '.word over',
+    'HALTN',
 
     'over:',
     'HALTZ',

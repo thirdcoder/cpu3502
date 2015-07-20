@@ -187,6 +187,12 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       console.log(`jumped to ${cpu.pc}`);
       break;
 
+    case XOP.JMP_INDIR:   // pc = (indirect)
+      cpu.pc = address_of_arg();
+      --cpu.pc;
+      console.log(`jumped indirectly to ${cpu.pc}`);
+      break;
+
     case XOP.JSR: { // push pc; pc = absolute
       const callsite = cpu.pc;
       cpu.stack.pushWord(callsite);

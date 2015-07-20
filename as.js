@@ -68,6 +68,7 @@ class Assembler {
       case ADDR_MODE.ABSOLUTE_Y:
       case ADDR_MODE.INDEXED_X_INDIRECT:
       case ADDR_MODE.INDIRECT_INDEXED_Y:
+      case ADDR_MODE.INDIRECT:
         if (!Number.isInteger(operand_value)) {
           throw new Error(`opcode (2-tryte) requires operand: ${operand_value}, in line: ${this.current_line}`);
         }
@@ -325,9 +326,11 @@ class Assembler {
           throw new Error(`branch instruction to too-far absolute address: resolved_value=${resolved_value}, code_address=${us.code_address}, rel_address=${rel_address}, in line=${us.asm_line}`);
         }
         this.output[us.code_address] = rel_address;
-      } else if ([ADDR_MODE.ABSOLUTE, ADDR_MODE.ABSOLUTE_X, ADDR_MODE.ABSOLUTE_Y, ADDR_MODE.INDIRECT_INDEXED_Y].indexOf(us.addressing_mode) !== -1) {
+      } else if ([ADDR_MODE.ABSOLUTE, ADDR_MODE.ABSOLUTE_X, ADDR_MODE.ABSOLUTE_Y, ADDR_MODE.INDIRECT_INDEXED_Y, ADDR_MODE.INDIRECT].indexOf(us.addressing_mode) !== -1) {
         this.output[us.code_address] = low_tryte(resolved_value);
         this.output[us.code_address + 1] = high_tryte(resolved_value);
+        console.log(`\tpatched low  ${us.code_address} = ${this.output[us.code_address]}`);
+        console.log(`\tpatched high ${us.code_address + 1} = ${this.output[us.code_address + 1]}`);
       } else {
         throw new Error(`unknown addressing mode ${us.addressing_mode} resolving ${us}`);
       }
@@ -405,7 +408,7 @@ class Assembler {
         addressing_mode: addressing_mode,
         asm_line: this.current_line,
       });
-      console.log(`saving unresolved symbol ${operand} at ${this.code_offset}`);
+      console.log(`saving unresolved symbol ${operand} at ${this.code_offset} (addressing_mode ${addressing_mode}, opcode_size ${opcode_size}, asm_line ${this.current_line})`);
       operand_value = 0;//61; // overwritten in second phase TODO: placebo?
       operand_unresolved_at = this.unresolved_symbols.length - 1; // index in unresolved_symbols
       //throw new Error('unresolved symbol reference: '+operand+', in line: '+this.current_line);

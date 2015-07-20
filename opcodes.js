@@ -141,6 +141,8 @@ const XOP = {
 
   STZ:  39,     // 1110 store zero
 
+  JMP_INDIR: 40,// 1111 jump indirect
+
   HALTN: -40,   // iiii halt negative
   HALTZ: -39,   // iii0 halt zero
   HALTP: -38,   // iii1 halt positive
@@ -161,6 +163,7 @@ const XOP = {
 // most XOPs do not have operands, but some do (vs alu OP, which always does), irregular
 const XOP_REQUIRES_OPERAND = {
   JMP: ADDR_MODE.ABSOLUTE,
+  JMP_INDIR: ADDR_MODE.INDIRECT,
   JSR: ADDR_MODE.ABSOLUTE,
   STZ: ADDR_MODE.ABSOLUTE,
   LDA_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
@@ -177,6 +180,7 @@ const XOP_REQUIRES_OPERAND = {
   PLWD: ADDR_MODE.ABSOLUTE,
 };
 
+// alu operation <-> xop with extended addressing modes
 const OP_ADDR_MODE_TO_XOP = {
   LDA: {
     [ADDR_MODE.INDIRECT_INDEXED_Y]: XOP.LDA_IIY,

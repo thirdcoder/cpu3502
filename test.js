@@ -1056,15 +1056,14 @@ test('indexed index', (t) => {
   t.end();
 });
 
-/* TODO
 test('jump indirect', (t) => {
   const cpu = CPU();
   let lines = [
-    'JMP (over_ptr)',
+    'JMP_INDIR (over_ptr)', // TODO: support JMP (over_ptr)
     'HALTN',
 
     'over_ptr:',
-    '.tryte over',
+    '.word over',
 
     'over:',
     'HALTZ',
@@ -1082,7 +1081,6 @@ test('jump indirect', (t) => {
   t.end();
 
 });
-*/
 
 test('stack push index and word', (t) => {
   const cpu = CPU();

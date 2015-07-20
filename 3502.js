@@ -216,6 +216,16 @@ class CPU {
 
         break;
 
+      case ADDR_MODE.INDIRECT:
+        console.log('indirect',decoded_operand.value);
+
+        // (indirect)
+        address_of_arg = () => { return this.memory.readWord(decoded_operand.value); };
+        read_arg = () => { return this.memory.read(address_of_arg()); };
+        write_arg = (value) => { return this.memory.write(address_of_arg(), value); }
+
+        break;
+
       default:
         read_arg = write_arg = address_of_arg = () => { throw new Error(`unimplemented addressing mode ${decoded_operand.addressing_mode}, in decoded=operand${JSON.stringify(di)}`); }
 

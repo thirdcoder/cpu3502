@@ -54,6 +54,7 @@ function decode_operand(di, machine_code, offset=0) {
     case ADDR_MODE.ABSOLUTE:
     case ADDR_MODE.ABSOLUTE_X:
     case ADDR_MODE.ABSOLUTE_Y:
+    case ADDR_MODE.INDIRECT:
       value = machine_code[offset + 1];
       value += T_TO_TRITS_PER_TRYTE * machine_code[offset + 2];
       consumed = 2;

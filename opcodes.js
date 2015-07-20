@@ -132,7 +132,7 @@ const XOP = {
   RTS: 30,      // 1010 return from subroutine
   TSXY: 31,     // 1011 transfer stack pointer to index and yindex
   TXYS: 32,     // 11ii transfer index and yindex to stack pointer
-  JSR: 33,      // 11i0 jump to subroutine
+  JSR_ABS: 33,  // 11i0 jump to subroutine
   JMP_ABS: 34,  // 11i1 jump absolute
 
   PLX: 35,      // 110i pull index
@@ -166,7 +166,7 @@ const XOP = {
 const XOP_TO_ADDR_MODE = {
   JMP_ABS: ADDR_MODE.ABSOLUTE,
   JMP_INDIR: ADDR_MODE.INDIRECT,
-  JSR: ADDR_MODE.ABSOLUTE,
+  JSR_ABS: ADDR_MODE.ABSOLUTE,
   STZ_ABY: ADDR_MODE.ABSOLUTE_Y,
   STZ_IIY: ADDR_MODE.INDIRECT_INDEXED_Y,
   STZ_ABS: ADDR_MODE.ABSOLUTE,
@@ -191,7 +191,7 @@ const OP_ADDR_MODE_TO_XOP = {
     [ADDR_MODE.INDIRECT]: XOP.JMP_INDIR,
   },
   JSR: {
-    [ADDR_MODE.ABSOLUTE]: XOP.JSR,
+    [ADDR_MODE.ABSOLUTE]: XOP.JSR_ABS,
   },
   STZ: {
     [ADDR_MODE.ABSOLUTE_Y]: XOP.STZ_ABY,

@@ -187,7 +187,7 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       console.log(`jumped indirectly to ${cpu.pc}`);
       break;
 
-    case XOP.JSR: { // push pc; pc = absolute
+    case XOP.JSR_ABS: { // push pc; pc = absolute
       const callsite = cpu.pc;
       cpu.stack.pushWord(callsite);
 

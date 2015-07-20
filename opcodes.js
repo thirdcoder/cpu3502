@@ -138,8 +138,8 @@ const XOP = {
   PLX: 35,      // 110i pull index
   PLY: 36,      // 1100 pull yindex
 
-  PHWD: 37,     // 1101 push word
-  PLWD: 38,     // 111i pull word
+  uu37: 37,     // 1101
+  uu38: 38,     // 111i
 
   STZ:  39,     // 1110 store zero
 
@@ -179,8 +179,6 @@ const XOP_TO_ADDR_MODE = {
   LDY_ABX: ADDR_MODE.ABSOLUTE_X,
   STX_ABY: ADDR_MODE.ABSOLUTE_Y,
   STY_ABX: ADDR_MODE.ABSOLUTE_X,
-  PHWD: ADDR_MODE.ABSOLUTE,
-  PLWD: ADDR_MODE.ABSOLUTE,
 };
 
 // most XOPs do not have operands, but some do (vs alu OP, which always does), irregular, listed here
@@ -196,12 +194,6 @@ const OP_ADDR_MODE_TO_XOP = {
   },
   STZ: {
     [ADDR_MODE.ABSOLUTE]: XOP.STZ,
-  },
-  PHWD: {
-    [ADDR_MODE.ABSOLUTE]: XOP.PHWD,
-  },
-  PLWD: {
-    [ADDR_MODE.ABSOLUTE]: XOP.PLWD,
   },
 
 

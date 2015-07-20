@@ -1093,8 +1093,6 @@ test('stack push index and word', (t) => {
     'LDY #35',
     'PHY',
 
-    'PHWD 29282',
-
     'HALTZ',
   ];
 
@@ -1109,8 +1107,6 @@ test('stack push index and word', (t) => {
   t.equal(cpu.memory.read(10000), 33);
   t.equal(cpu.memory.read(10001), 34);
   t.equal(cpu.memory.read(10002), 35);
-  t.equal(cpu.memory.read(10003), -121);
-  t.equal(cpu.memory.read(10004), 121);
 
   t.end();
 
@@ -1125,8 +1121,10 @@ test('stack push/pull', (t) => {
     'LDX #<stack',
     'TXYS',
 
-    '.equ %11111iiiii foo',
-    'PHWD foo',
+    'LDA #%iiiii',
+    'PHA',
+    'LDA #%11111',
+    'PHA',
 
     'PLX',
     'CPX #%11111',
@@ -1154,56 +1152,6 @@ test('stack push/pull', (t) => {
 
   t.end();
 });
-
-/* TODO: support this using some kind of calling convention, like x86 cdecl or stdcall or fastcall
-test('subroutine parameters on stack', (t) => {
-  const cpu = CPU();
-  let lines = [
-    '.equ 10000 stack',
-    'LDY #>stack',
-    'LDX #<stack',
-    'TXYS',
-
-    'PHWD arg',
-    'JSR inc2',
-
-    'HALTZ',
-
-    'arg:',
-    '.tryte 1',
-
-
-    'inc2:',
-    'PLWD _inc2_ret',
-    'PLWD _inc2_arg',
-    'INC _inc2_arg',
-    'INC _inc2_arg',
-    'PLWD _inc2_ret',
-    'RTS',
-
-    '_inc2_ret:',
-    '.word 0',
-
-    '_inc2_arg:',
-    '.word 0',
-
-    'HALTN',
-  ];
-
-  const machine_code = assembler(lines);
-
-  console.log(machine_code);
-
-  cpu.memory.writeArray(0, machine_code);
-  cpu.run();
-
-  t.equal(cpu.flags.H, 0);
-
- 
-  t.end();
-});
-*/
-
 
 // example using "control blocks" to pass parameters
 // http://forum.6502.org/viewtopic.php?t=1590 Passing Parameters: best practices? https://archive.is/nsJ92

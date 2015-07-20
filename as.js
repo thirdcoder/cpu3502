@@ -227,70 +227,68 @@ class Assembler {
         throw new Error(`xop opcode unexpected operand ${rest}, in line=${line}`);
       }
       this.emit(tryte);
-    } else if (opcode.charAt(0) === 'B') {
+    } else if (opcode.startsWith('BR') && opcode.length === 5) { // BR branch instruction opcodes
       ({addressing_mode, operand_value, operand_unresolved_at} = this.parse_operand(rest));
 
-      if (opcode.charAt(1) === 'R' && opcode.length === 5) { // BR opcodes
-        let flag = opcode.charAt(2);
-        let direction = opcode.charAt(3);
-        let compare = opcode.charAt(4);
+      let flag = opcode.charAt(2);
+      let direction = opcode.charAt(3);
+      let compare = opcode.charAt(4);
 
-        let flag_value = FLAGS[flag];
-        if (flag_value === undefined) {
-          throw new Error('invalid flag '+flag+' in branch instruction '+opcode);
-        }
-        let direction_value = {
-          L:-1, '<':-1,
-          E:0, '=':0,
-          N:1, '!':1
-        }[direction];
-        if (direction_value === undefined) {
-          throw new Error('invalid direction '+direction+' in branch instruction '+opcode);
-        }
-        let compare_value = {N:-1, Z:0, P:1}[compare];
-        if (compare_value === undefined) {
-          throw new Error('invalid comparison trit '+compare_value+' in branch instruction '+opcode);
-        }
-        console.log(`branch opcode=${opcode}, flag=${flag_value}/${flag}, direction=${direction_value}/${direction} compare=${compare_value}/${compare}`);;
-
-        // aabc1 a=flag, b=direction, c=trit for comparison
-        let tryte = flag_value * Math.pow(3,3) +
-          direction_value * Math.pow(3,2) +
-          compare_value * Math.pow(3,1) +
-          1;
-
-        let rel_address;
-        switch(addressing_mode) {
-          case ADDR_MODE.IMMEDIATE:
-            // 'immediate mode' branch instructions, BEQ #+2, means encode relative offset directly
-            rel_address = operand_value;
-            break;
-
-          case ADDR_MODE.ABSOLUTE:
-            if (operand_unresolved_at !== undefined) {
-              // use current code placeholder to satisfy range check (rel=0
-              operand_value = this.code_offset + this.origin + 2;
-              // patch relative address from resolved absolute address
-              this.unresolved_symbols[operand_unresolved_at].addressing_mode = ADDR_MODE.BRANCH_RELATIVE;
-            }
-
-            // given absolute address, need to compute relative to current location for instruction encoding
-            // -2 to account for size of the branch instruction (opcode+operand) itself
-            rel_address = operand_value - (this.code_offset + this.origin) - 2;
-
-            if (rel_address < -121 || rel_address > 121) {
-              throw new Error(`branch instruction to too-far absolute address: operand_value=${operand_value} (unresolved? ${operand_unresolved_at}), code_offset=${this.code_offset}, rel_address=${rel_address}, in line=${line}`);
-            }
-
-            break;
-
-          default:
-            throw new Error('invalid addressing mode for branch instruction: '+addressing_mode+', in line='+line);
-        }
-
-        this.emit(tryte);
-        this.emit(rel_address);
+      let flag_value = FLAGS[flag];
+      if (flag_value === undefined) {
+        throw new Error('invalid flag '+flag+' in branch instruction '+opcode);
       }
+      let direction_value = {
+        L:-1, '<':-1,
+        E:0, '=':0,
+        N:1, '!':1
+      }[direction];
+      if (direction_value === undefined) {
+        throw new Error('invalid direction '+direction+' in branch instruction '+opcode);
+      }
+      let compare_value = {N:-1, Z:0, P:1}[compare];
+      if (compare_value === undefined) {
+        throw new Error('invalid comparison trit '+compare_value+' in branch instruction '+opcode);
+      }
+      console.log(`branch opcode=${opcode}, flag=${flag_value}/${flag}, direction=${direction_value}/${direction} compare=${compare_value}/${compare}`);;
+
+      // aabc1 a=flag, b=direction, c=trit for comparison
+      let tryte = flag_value * Math.pow(3,3) +
+        direction_value * Math.pow(3,2) +
+        compare_value * Math.pow(3,1) +
+        1;
+
+      let rel_address;
+      switch(addressing_mode) {
+        case ADDR_MODE.IMMEDIATE:
+          // 'immediate mode' branch instructions, BEQ #+2, means encode relative offset directly
+          rel_address = operand_value;
+          break;
+
+        case ADDR_MODE.ABSOLUTE:
+          if (operand_unresolved_at !== undefined) {
+            // use current code placeholder to satisfy range check (rel=0
+            operand_value = this.code_offset + this.origin + 2;
+            // patch relative address from resolved absolute address
+            this.unresolved_symbols[operand_unresolved_at].addressing_mode = ADDR_MODE.BRANCH_RELATIVE;
+          }
+
+          // given absolute address, need to compute relative to current location for instruction encoding
+          // -2 to account for size of the branch instruction (opcode+operand) itself
+          rel_address = operand_value - (this.code_offset + this.origin) - 2;
+
+          if (rel_address < -121 || rel_address > 121) {
+            throw new Error(`branch instruction to too-far absolute address: operand_value=${operand_value} (unresolved? ${operand_unresolved_at}), code_offset=${this.code_offset}, rel_address=${rel_address}, in line=${line}`);
+          }
+
+          break;
+
+        default:
+          throw new Error('invalid addressing mode for branch instruction: '+addressing_mode+', in line='+line);
+      }
+
+      this.emit(tryte);
+      this.emit(rel_address);
     } else {
       throw new Error(`unrecognized opcode: ${opcode}, in line=${line}`);
     }

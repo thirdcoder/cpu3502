@@ -6,27 +6,15 @@ const {get_trit, set_trit, slice_trits} = require('trit-getset');
 
 const installVideoHardware = require('./video.js');
 const installAudioHardware = require('./audio.js');
+const installTimerHardware = require('./timer.js');
 
 const Memory = require('./memory');
 
-const TIMER_FREQUENCY_ADDRESS = -3285;
-
 const INT_VECTOR_Z_ADDRESS = -29522; const INT_START = 0;
-const INT_VECTOR_P_ADDRESS = -29520; const INT_PULSE = 1;
 
 const CODE_START_ADDRESS = -29518;
 
-const memory = Memory({
-  tryteCount: MEMORY_SIZE,
-  map: {
-    timer: {
-      start: TIMER_FREQUENCY_ADDRESS,
-      end: TIMER_FREQUENCY_ADDRESS,
-    },
-  }
-});
-
-console.log('memory.map',memory.map);
+const memory = Memory({ tryteCount: MEMORY_SIZE });
 
 const cpu = CPU({
   memory: memory
@@ -34,22 +22,9 @@ const cpu = CPU({
 
 installVideoHardware(cpu);
 installAudioHardware(cpu);
+installTimerHardware(cpu);
 
-let _timer;
-memory.map.timer.write = (address, value) => {
-  function fire() {
-    let ms = memory.read(TIMER_FREQUENCY_ADDRESS) * 100;
-    if (ms < 100) ms = 100;
-
-    console.log(`TIMER FIRE, next=${ms} ms`);
-    cpu.interrupt(INT_PULSE); // TODO: pass dt, time since previous fire?
-
-    _timer = window.setTimeout(fire, ms);
-  };
-
-  if (_timer === undefined) fire();
-};
-
+console.log('memory.map',memory.map);
 
 global.cpu = cpu;
 

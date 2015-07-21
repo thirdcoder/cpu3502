@@ -1,30 +1,23 @@
 'use strict';
 
 const CPU = require('./3502');
-const {TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, T_TO_TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
 const {get_trit, set_trit, slice_trits} = require('trit-getset');
 
 const installVideoHardware = require('./video.js');
 const installAudioHardware = require('./audio.js');
 const installTimerHardware = require('./timer.js');
 
-const Memory = require('./memory');
-
 const INT_VECTOR_Z_ADDRESS = -29522; const INT_START = 0;
 
 const CODE_START_ADDRESS = -29518;
 
-const memory = Memory({ tryteCount: MEMORY_SIZE });
-
-const cpu = CPU({
-  memory: memory
-});
+const cpu = CPU();
 
 installVideoHardware(cpu);
 installAudioHardware(cpu);
 installTimerHardware(cpu);
 
-console.log('memory.map',memory.map);
+console.log('cpu.memory.map',cpu.memory.map);
 
 global.cpu = cpu;
 

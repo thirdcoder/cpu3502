@@ -63,36 +63,36 @@ let lines = [
     'STA chargen',
 
     'ADC #2',
-    'STI A',  // simple ternary inverter
-    'STA chargen',  // trit-text red 'Z'
+    'STI A        ; simple ternary inverter',
+    "STA chargen  ; trit-text red 'Z'",
 
     'LDX #4',
     'INX',
     'STX col',
-    'DEC chargen',  // trit-text 'Y'
+    "DEC chargen  ; trit-text 'Y'",
 
-    'TXA',  // X->A, 5
+    'TXA     ; X->A, 5',
 
-    // setup stack, since default 0 overlaps with memory-mapped screen output
+    '; setup stack, since default 0 overlaps with memory-mapped screen output',
     '.equ -10000 stack',
     'LDY #>stack',
     'LDX #<stack',
     'TXYS',
 
-    // loop 6..19
+    '; loop 6..19',
     'loop:',
     'INC A',
     'STA col',
     'STA chargen',
     'CMP #20',
-    //'BNE #-11',
+    ';BNE #-11',
     'BNE loop',
 
     'LDA #1',
     'STA row',
     'STZ col',
 
-    // print greeting
+    '; print greeting',
     'LDA #<greeting',
     'LDX #>greeting',
     'JSR print_string',
@@ -104,9 +104,9 @@ let lines = [
     'LDX #>prompt_string',
     'JSR print_string',
 
-    //'STZ beep',
+    ';STZ beep',
 
-    // set input interrupt handler
+    '; set input interrupt handler',
     '.equ -29524 int_inputL',
     '.equ -29523 int_inputH',
     'LDA #<handle_input',
@@ -114,9 +114,9 @@ let lines = [
     'LDA #>handle_input',
     'STA int_inputH',
 
-    'SEIP', // enable interrupt -1 (keyboard input) TODO: also handle int 1, then can unmask all with CLI
+    'SEIP     ; enable interrupt -1 (keyboard input) TODO: also handle int 1, then can unmask all with CLI',
 
-    // set pulse interrupt handler
+    '; set pulse interrupt handler',
     '.equ -29520 int_pulseL',
     '.equ -29519 int_pulseH',
     'LDA #<handle_pulse',
@@ -124,17 +124,17 @@ let lines = [
     'LDA #>handle_pulse',
     'STA int_pulseH',
 
-    'CLI',  // enable all interrupts
+    'CLI      ;  enable all interrupts',
 
-    "LDA #'_",               // a suitable cursor character
-    //"LDA #'▒",            // alternative block cursor TODO: use in 'insert' mode?
+    "LDA #'_               ; a suitable cursor character",
+    ";LDA #'▒            ; alternative block cursor TODO: use in 'insert' mode?",
     'STA cursor_char',
 
     '.equ -3285 timer_freq',
-    'LDA #1', // 100 ms
-    /* cursor blink - disable when want quiescence (noisy) */
-    'STA timer_freq', // triggers interrupt immediately.. TODO: probably should delay! or never returns?
-    /* */
+    'LDA #1     ; 100 ms',
+    '; cursor blink - disable when want quiescence (noisy)',
+    'STA timer_freq   ; triggers interrupt immediately.. TODO: probably should delay! or never returns?',
+    ';',
 
     'HALTZ',
 
@@ -146,7 +146,7 @@ let lines = [
     '.tryte 0',
 
     'prompt_string:',
-    //TODO: support newlines in print_string '.tryte 12',  // trit-text newline TODO: support embedding in .data
+    ";TODO: support newlines in print_string '.tryte 12',  // trit-text newline TODO: support embedding in .data",
     '.data "$ "',
     '.tryte 0',
 
@@ -155,13 +155,13 @@ let lines = [
     '.tryte 0',
 
     'handle_pulse:',
-    // blinking cursor
+    '; blinking cursor',
     'LDA cursor_char',
     'STA chargen',
-    'STI cursor_char',  // simple ternary inverter, toggle red/green '_'
-    'RTI',              // return from interrupt
+    "STI cursor_char    ; simple ternary inverter, toggle red/green '_'",
+    'RTI                ; return from interrupt',
 
-    // subroutine to advance terminal to next line
+    '; subroutine to advance terminal to next line',
     'next_line:',
     'INC row',
     'STZ col',
@@ -170,14 +170,14 @@ let lines = [
 
     'handle_prev_line:',
     'DEC row',
-    'LDA #44',    // TODO: .equ
+    'LDA #44        ; TODO: .equ',
     'STA col',
     'JMP handled_input',
 
     'handle_backspace:',
     'JSR truncate_line_buffer',
-    'BCS handle_backspace_denied', // if couldn't delete
-    'STZ chargen', // clear cursor
+    "BCS handle_backspace_denied    ; if couldn't delete",
+    'STZ chargen                    ; clear cursor',
     'DEC col',
     'LDA col',
     'CMP #-1',
@@ -186,11 +186,11 @@ let lines = [
     'JMP handled_input',
 
     'handle_backspace_denied:',
-    'STZ beep',                 // user feedback that their backspacing was denied
+    'STZ beep                       ;  user feedback that their backspacing was denied',
     'JMP handled_input',
 
     'handle_enter:',
-    'STZ chargen',    // clear cursor
+    'STZ chargen                    ; clear cursor',
     'JSR next_line',
     'LDA #<bad_command_string',
     'LDX #>bad_command_string',
@@ -206,7 +206,7 @@ let lines = [
     'JSR print_string',
     'JMP handled_input',
 
-    // interrupt handler:
+    '; interrupt handler:',
     'handle_input:',
     "CMP #'\\n",
     'BEQ handle_enter',
@@ -222,31 +222,31 @@ let lines = [
 
 
 
-    // append character in A to line_buffer
+    '; append character in A to line_buffer',
     'save_line_buffer_char:',
     'LDY line_buffer_offset',
     'STA line_buffer,Y',
     'INC line_buffer_offset',
     'INY',
     'LDX #0',
-    'STX line_buffer,Y',  // null terminate
+    'STX line_buffer,Y      ; null terminate',
     'RTS',
 
     'line_buffer_offset:',
     '.tryte 0',
 
-    // reset line buffer to empty string
+    '; reset line buffer to empty string',
     'reset_line_buffer:',
     'STZ line_buffer_offset',
     'STA line_buffer',
     'RTS',
 
-    // delete last character of line buffer, sets carry flag if cannot be deleted
+    '; delete last character of line buffer, sets carry flag if cannot be deleted',
     'truncate_line_buffer:',
     'LDY line_buffer_offset',
     'DEY',
     'CPY #0',
-    'BMI _truncate_line_buffer_skip',  // empty buffer, cannot truncate further
+    'BMI _truncate_line_buffer_skip     ; empty buffer, cannot truncate further',
     'STZ line_buffer,Y',
     'STY line_buffer_offset',
     'CLC',
@@ -255,7 +255,7 @@ let lines = [
     'SECN',
     'RTS',
 
-    // print character in A to screen and advance cursor
+    '; print character in A to screen and advance cursor',
     'print_char:',
     'STA chargen',
     'INC col',
@@ -264,13 +264,13 @@ let lines = [
     '.equ 45 row_count',
     'CPX #row_count',
     'BNE print_char_done',
-    'JSR next_line',      // at last column, wrap cursor to next line
+    'JSR next_line          ; at last column, wrap cursor to next line',
 
     'print_char_done:',
     'RTS',
 
 
-    // print a null-terminated string pointed to by A,X
+    '; print a null-terminated string pointed to by A,X',
     'print_string:',
     'STA _print_string_param',
     'STX _print_string_param+1',
@@ -289,7 +289,7 @@ let lines = [
 
 
     'line_buffer:',
-    '.tryte 0', // may extend further
+    '.tryte 0     ; may extend further',
 ];
 
 cpu.assemble_bootcode(lines);

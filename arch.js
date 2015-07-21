@@ -12,6 +12,9 @@ const MIN_TRYTE = -(T_TO_TRITS_PER_TRYTE-1)/2;
 const T_TO_TRITS_PER_WORD = Math.pow(3, TRITS_PER_WORD);
 const MEMORY_SIZE = T_TO_TRITS_PER_WORD;
 
+const MAX_ADDRESS = (T_TO_TRITS_PER_WORD - 1) / 2;
+const MIN_ADDRESS = -MAX_ADDRESS;
+
 module.exports = {
   TRITS_PER_TRYTE,
   T_TO_TRITS_PER_TRYTE,
@@ -20,5 +23,7 @@ module.exports = {
   T_TO_TRITS_PER_WORD,
   MAX_TRYTE,
   MIN_TRYTE,
+  MAX_ADDRESS,
+  MIN_ADDRESS,
   MEMORY_SIZE
 };

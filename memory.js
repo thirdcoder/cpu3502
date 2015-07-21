@@ -22,6 +22,13 @@ class Memory {
     this.map = opts.map || {};
   }
 
+  addMemoryMap(name, info) {
+    if (this.map[name] !== undefined) throw new Error(`addMemoryMap(${name}) redefinining existing memory map name`);
+
+    this.map[name] = info;
+    // TODO: check overlapping ranges?
+  }
+
   getTraps(address) {
     for (let name of Object.keys(this.map)) { // TODO: switch map to ES6 Map
       let info = this.map[name];

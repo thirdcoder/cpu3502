@@ -7,7 +7,7 @@ const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, M
 const {NTI, STI, PTI, FD, RD, TOR, TAND, BUT} = require('tritwise');
 const {add, inc, dec} = require('./arithmetic');
 const {shl, shr} = require('trit-shift');
-const lst = require('lst');
+const lst = require('least-significant-trit');
 
 class ALU {
   constructor(cpu) {

@@ -16,6 +16,10 @@ const Flags = require('./flags');
 const execute_xop_instruction = require('./xop');
 const Stack = require('./stack');
 
+const Assembler = require('./as').Assembler;
+
+const INT_START = 0;
+
 class CPU {
   constructor(opts={}) {
     this.memory = opts.memory || Memory({
@@ -34,6 +38,24 @@ class CPU {
     this.flags.I = -1; // by default only allow int 0, non-maskable NMI/start
 
     console.log('initial flags=',n2bts(this.flags));
+  }
+
+  // Assemble assembly for booting, write and setup boot interrupt vector
+  assemble_bootcode(lines) {
+    const CODE_START_ADDRESS = this.code_start_address();
+
+    const a = new Assembler();
+    a.origin = CODE_START_ADDRESS;
+
+    const machine_code = a.assemble(lines);
+    this.memory.writeArray(CODE_START_ADDRESS, machine_code);
+    this.write_int_vector(INT_START, CODE_START_ADDRESS);
+
+    return machine_code;
+  }
+
+  boot() {
+    this.interrupt(INT_START);
   }
 
   state_snapshot() {
@@ -70,7 +92,13 @@ class CPU {
   // iiiii iii00 -29520 int +1
   // iiiii iii01 -29519
   vector_address(intnum) {
-    return this.memory.minAddress + ((intnum + 1) * 2);
+    return this.memory.minAddress + ((intnum + 1) * TRYTES_PER_WORD);
+  }
+
+  // Bootcode starts in low memory right after the three interrupt vectors
+  code_start_address() {
+    const ints = 3; // -1,0,1
+    return this.memory.minAddress + ints * TRYTES_PER_WORD;
   }
 
   read_int_vector(intnum) {

@@ -298,7 +298,6 @@ class Assembler {
     this.output = []; // TODO: allow appending?
 
     this.code_offset = 0;
-    this.origin = 0;
 
     for (let line of lines)
       this.assemble_line(line);

@@ -12,14 +12,9 @@ installVideoHardware(cpu);
 installAudioHardware(cpu);
 installTimerHardware(cpu);
 
-console.log('cpu.memory.map',cpu.memory.map);
 global.cpu = cpu;
 
-const assembler = require('./as');
-
-const CODE_START_ADDRESS = -29518;
 let lines = [
-    '.org '+CODE_START_ADDRESS,
     'LDA #$ijk',
     'LDA #%ii1i0',
     'LDA #&QF',
@@ -297,12 +292,5 @@ let lines = [
     '.tryte 0', // may extend further
 ];
 
-cpu.memory.writeArray(CODE_START_ADDRESS, assembler(lines));
-
-const INT_START = 0;
-cpu.write_int_vector(INT_START, CODE_START_ADDRESS);
-
-//cpu.pc = cpu.read_int_vector(0);
-//cpu.run();
-
-cpu.interrupt(INT_START);
+cpu.assemble_bootcode(lines);
+cpu.boot();

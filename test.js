@@ -1394,3 +1394,11 @@ test('subroutine pass string parameter immediately after', (t) => {
 
   t.end();
 });
+
+test('assembler comments', (t) => {
+  t.doesNotThrow(() => {
+    assembler(['; start-of-line assembler comment ignored']);
+  });
+
+  t.end();
+});

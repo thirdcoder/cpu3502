@@ -88,6 +88,11 @@ class Assembler {
   assemble_line(line) {
     this.current_line = line;
 
+    if (line.startsWith(';')) {
+      // comment
+      return;
+    }
+
     if (line.endsWith(':')) {
       // labels TODO: support other instructions on line
       const label = line.substring(0, line.length - 1);

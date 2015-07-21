@@ -2,6 +2,7 @@
 
 const {bts2n, n2bts, N_TO_BT_DIGIT, BT_DIGIT_TO_N} = require('balanced-ternary');
 const {get_trit, set_trit, slice_trits} = require('trit-getset');
+const {high_tryte, low_tryte} = require('./word.js');
 const ttToUnicode = require('trit-text').toUnicode;
 
 const {TRITS_PER_TRYTE, TRYTES_PER_WORD, TRITS_PER_WORD, MAX_TRYTE, MIN_TRYTE, MEMORY_SIZE} = require('./arch');
@@ -55,8 +56,25 @@ class CPU {
     this.flags = state.flags;
   }
 
+  write_int_vector(intnum, value) {
+    cpu.memory.writeWord(this.vector_address(intnum), value);
+  }
+
+  // Get interrupt vector table address at negative-most memory, word addresses pointers (with 10-trit memory):
+  // iiiii iiiii -29524 int -1
+  // iiiii iiii0 -29523
+  //
+  // iiiii iiii1 -29522 int 0
+  // iiiii iii0i -29521
+  //
+  // iiiii iii00 -29520 int +1
+  // iiiii iii01 -29519
+  vector_address(intnum) {
+    return this.memory.minAddress + ((intnum + 1) * 2);
+  }
+
   read_int_vector(intnum) {
-    return this.memory.readWord(this.memory.minAddress + ((intnum + 1) * 2));
+    return this.memory.readWord(this.vector_address(intnum));
   }
 
   is_interrupt_allowed(intnum) {
@@ -84,15 +102,6 @@ class CPU {
 
     const before = this.state_snapshot();
 
-    // Read interrupt vector table at negative-most memory, word addresses pointers:
-    // iiiii iiiii -29524 int -1
-    // iiiii iiii0 -29523
-    //
-    // iiiii iiii1 -29522 int 0
-    // iiiii iii0i -29521
-    //
-    // iiiii iii00 -29520 int +1
-    // iiiii iii01 -29519
     const address = this.read_int_vector(intnum);
     console.log('interrupt vector address',address);
 

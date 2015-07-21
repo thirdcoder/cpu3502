@@ -18,7 +18,7 @@ const CHARGEN_ADDRESS = -3282; // 0i111 11110
 const CURSOR_ROW_ADDRESS = -3283;
 const CURSOR_COL_ADDRESS = -3284;
 
-const INT_VECTOR_N_ADDRESS = -29524; const INT_INPUT = -1;
+const INT_INPUT = -1;
 
 function installVideoHardware(cpu) {
   const term = Triterm({

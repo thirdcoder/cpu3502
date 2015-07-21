@@ -1,15 +1,10 @@
 'use strict';
 
 const CPU = require('./3502');
-const {get_trit, set_trit, slice_trits} = require('trit-getset');
 
 const installVideoHardware = require('./video.js');
 const installAudioHardware = require('./audio.js');
 const installTimerHardware = require('./timer.js');
-
-const INT_VECTOR_Z_ADDRESS = -29522; const INT_START = 0;
-
-const CODE_START_ADDRESS = -29518;
 
 const cpu = CPU();
 
@@ -18,11 +13,11 @@ installAudioHardware(cpu);
 installTimerHardware(cpu);
 
 console.log('cpu.memory.map',cpu.memory.map);
-
 global.cpu = cpu;
 
 const assembler = require('./as');
 
+const CODE_START_ADDRESS = -29518;
 let lines = [
     '.org '+CODE_START_ADDRESS,
     'LDA #$ijk',
@@ -303,11 +298,11 @@ let lines = [
 ];
 
 cpu.memory.writeArray(CODE_START_ADDRESS, assembler(lines));
-cpu.memory.write(INT_VECTOR_Z_ADDRESS, slice_trits(CODE_START_ADDRESS, 0, 5));
-cpu.memory.write(INT_VECTOR_Z_ADDRESS + 1, slice_trits(CODE_START_ADDRESS, 5, 10));
+
+const INT_START = 0;
+cpu.write_int_vector(INT_START, CODE_START_ADDRESS);
 
 //cpu.pc = cpu.read_int_vector(0);
 //cpu.run();
 
 cpu.interrupt(INT_START);
-

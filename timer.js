@@ -2,7 +2,7 @@
 
 const TIMER_FREQUENCY_ADDRESS = -3285;
 
-const INT_VECTOR_P_ADDRESS = -29520; const INT_PULSE = 1;
+const INT_PULSE = 1;
 
 function installTimerHardware(cpu) {
   let _timer;

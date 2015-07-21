@@ -93,6 +93,13 @@ class Assembler {
       return;
     }
 
+    const comment_match = line.match(/^(.*?)\s+;.*$/);
+    if (comment_match) {
+      // strip whitespace up to comment line, and comment itself
+      // TODO: .data "literals" versus comments, better parsing here
+      line = comment_match[1];
+    }
+
     if (line.endsWith(':')) {
       // labels TODO: support other instructions on line
       const label = line.substring(0, line.length - 1);

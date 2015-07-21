@@ -1396,9 +1396,10 @@ test('subroutine pass string parameter immediately after', (t) => {
 });
 
 test('assembler comments', (t) => {
-  t.doesNotThrow(() => {
-    assembler(['; start-of-line assembler comment ignored']);
-  });
+  t.doesNotThrow(() => { assembler(['; start-of-line assembler comment ignored']); });
+  t.doesNotThrow(() => { assembler(['LDA #0 ; inline comment']) });
+  t.doesNotThrow(() => { assembler(['LDA #0            ; inline comment with whitespace']) });
+  t.throws(() => { assembler(['LDA #0;not supported no leading whitespace']) });
 
   t.end();
 });

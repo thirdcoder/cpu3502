@@ -15,7 +15,5 @@ installTimerHardware(cpu);
 global.cpu = cpu;
 
 const fs = require('fs');
-let lines = fs.readFileSync('os.asm', 'utf8').split('\n');
-
-cpu.assemble_bootcode(lines);
+cpu.assemble_bootcode(fs.readFileSync('os.asm', 'utf8'));
 cpu.boot();

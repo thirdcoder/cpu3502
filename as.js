@@ -310,7 +310,15 @@ class Assembler {
     }
   }
 
-  assemble(lines) {
+  assemble(asm_text) {
+    if (Array.isArray(asm_text)) {
+      return this.assemble_lines(asm_text);
+    } else {
+      return this.assemble_lines(asm_text.split('\n'));
+    }
+  }
+
+  assemble_lines(lines) {
     this.output = []; // TODO: allow appending?
 
     this.code_offset = 0;

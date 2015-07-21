@@ -2,9 +2,9 @@
 
 const CPU = require('./3502');
 
-const installVideoHardware = require('./video.js');
-const installAudioHardware = require('./audio.js');
-const installTimerHardware = require('./timer.js');
+const installVideoHardware = require('./peripherals/video.js');
+const installAudioHardware = require('./peripherals/audio.js');
+const installTimerHardware = require('./peripherals/timer.js');
 
 const cpu = CPU();
 

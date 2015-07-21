@@ -1,6 +1,6 @@
 'use strict';
 
-const {TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE, TRYTES_PER_WORD, MAX_ADDRESS, MIN_ADDRESS} = require('./arch');
+const {TRITS_PER_TRYTE, T_TO_TRITS_PER_TRYTE, TRYTES_PER_WORD, MAX_ADDRESS, MIN_ADDRESS} = require('../arch');
 const Triterm = require('tritmapped-terminal');
 const raf = require('raf');
 

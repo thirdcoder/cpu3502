@@ -21,19 +21,9 @@ const CURSOR_COL_ADDRESS = -3284;
 const INT_VECTOR_N_ADDRESS = -29524; const INT_INPUT = -1;
 
 function installVideoHardware(cpu) {
-  cpu.memory.addMemoryMap('video', {
-    start: VIDEO_ADDRESS_OFFSET,                      // -3281      0i111 11111
-    end: VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET,   // 29524, end 11111 11111
-  });
-
-  cpu.memory.addMemoryMap('chargen', {
-      start: CHARGEN_ADDRESS,
-      end: CHARGEN_ADDRESS,
-  });
-
   const term = Triterm({
     addressTryteSize: VIDEO_TRYTE_COUNT,
-    tritmap: cpu.memory.subarray(cpu.memory.map.video.start, cpu.memory.map.video.end),
+    tritmap: cpu.memory.subarray(VIDEO_ADDRESS_OFFSET, VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET),
     handleInput: (tt, ev) => {
       if (Number.isInteger(tt)) {
         cpu.interrupt(INT_INPUT, tt);
@@ -41,27 +31,35 @@ function installVideoHardware(cpu) {
     },
   });
 
-  cpu.memory.map.video.write = (address, value) => {
-    // When writing to video, refresh the terminal canvas
-    // TODO: optimize to throttle refresh? refresh rate 60 Hz?/requestAnimationFrame? dirty, only if changes?
-    //console.log('video write:',address,value);
-    term.tc.refresh();
-  };
+  cpu.memory.addMemoryMap('video', {
+    start: VIDEO_ADDRESS_OFFSET,                      // -3281      0i111 11111
+    end: VIDEO_ADDRESS_SIZE + VIDEO_ADDRESS_OFFSET,   // 29524, end 11111 11111
+    write: (address, value) => {
+      // When writing to video, refresh the terminal canvas
+      // TODO: optimize to throttle refresh? refresh rate 60 Hz?/requestAnimationFrame? dirty, only if changes?
+      //console.log('video write:',address,value);
+      term.tc.refresh();
+    },
+  });
 
-  cpu.memory.map.chargen.write = (address, value) => {
-    console.log('chargen',value);
+  cpu.memory.addMemoryMap('chargen', {
+    start: CHARGEN_ADDRESS,
+    end: CHARGEN_ADDRESS,
+    write: (address, value) => {
+      console.log('chargen',value);
 
-    let row = cpu.memory.read(CURSOR_ROW_ADDRESS);
-    let col = cpu.memory.read(CURSOR_COL_ADDRESS);
+      let row = cpu.memory.read(CURSOR_ROW_ADDRESS);
+      let col = cpu.memory.read(CURSOR_COL_ADDRESS);
 
-    // wrap-around if row/col out of terminal range
-    row %= term.rowCount; if (row < 0) row += term.rowCount;
-    col %= term.colCount; if (col < 0) col += term.colCount;
+      // wrap-around if row/col out of terminal range
+      row %= term.rowCount; if (row < 0) row += term.rowCount;
+      col %= term.colCount; if (col < 0) col += term.colCount;
 
-    console.log('COLROW',col,row);
+      console.log('COLROW',col,row);
 
-    term.setTTChar(value, col, row);
-  };
+      term.setTTChar(value, col, row);
+    },
+  });
 
   raf(function tick() {
     term.refresh();

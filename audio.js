@@ -11,13 +11,12 @@ function installAudioHardware(cpu) {
   cpu.memory.addMemoryMap('beeper', {
     start: BEEPER_ADDRESS,
     end: BEEPER_ADDRESS,
+    write: (address, value) => {
+      console.log('beep',address,value);
+      beep.play();
+      // TODO: more sophisticated sound effects, synthesizer?
+    },
   });
-
-  cpu.memory.map.beeper.write = (address, value) => {
-    console.log('beep',address,value);
-    beep.play();
-    // TODO: more sophisticated sound effects, synthesizer?
-  };
 };
 
 module.exports = installAudioHardware;

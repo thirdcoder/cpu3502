@@ -88,6 +88,10 @@ class Assembler {
   assemble_line(line) {
     this.current_line = line;
 
+    if (line.length === 0) {
+      return;
+    }
+
     if (line.startsWith(';')) {
       // comment
       return;

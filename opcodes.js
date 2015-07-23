@@ -3,8 +3,8 @@
 const OP = {
   // shifts
   SHL: -13, // iii shift left (like ASL, arithmetic shift left) = multiply by three + D
-  ROL: -12, // ii0 rotate left
-  ROR: -11, // ii1 rotate right
+  uuA: -12, // ii0
+  uuB: -11, // ii1
   SHR: -10, // i0i shift right = division by by power of three
 
   // indexing

@@ -118,6 +118,17 @@ function execute_xop_instruction(cpu, operation, read_arg, write_arg, address_of
       cpu.flags.D = 1;
       break;
 
+    case XOP.SES:   // S = 0;
+      cpu.flags.S = 0;
+      break;
+
+    case XOP.SESN:  // S = i
+      cpu.flags.S = -1;
+      break;
+
+    case XOP.SESP:  // S = 1
+      cpu.flags.S = 1;
+      break;
 
     // interrupts
     case XOP.INTN:  // int i

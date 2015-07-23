@@ -1404,3 +1404,131 @@ test('assembler comments', (t) => {
 
   t.end();
 });
+
+test('dyadic ternary or/max(pref-10i)', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA #%i010i',
+    'ORA #%iiiii',  // mask out nothing
+    'CMP #%i010i',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'ORA #%iii11',  // set least two trits to 1
+    'CMP #%i0111',
+    'BNE fail',
+
+    'LDA #%10i10',
+    'ORA #%iii11',  // set least two trits to 1
+    'CMP #%10i11',
+    'BNE fail',
+
+    'LDA #%10i10',
+    'ORA #%11iii',  // first two trits 1
+    'CMP #%11i10',
+    'BNE fail',
+
+    'LDA #%10i10',
+    'ORA #%11111',  // set all to 1
+    'CMP #%11111',
+    'BNE fail',
+
+    'LDA #%10i10',
+    'ORA #%00000',  // semi-mask out i's, let 1 and 0 through
+    'CMP #%10010',
+    'BNE fail',
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});
+
+
+test('dyadic ternary and/min(pref-i01)', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA #%i010i',
+    'AND #%iiiii',    // set all to i
+    'CMP #%iiiii',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'AND #%111ii',  // set last two trits to i
+    'CMP #%i01ii',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'AND #%11111',  // let all through
+    'CMP #%i010i',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'AND #%00000',  // semi-mask out 1, let through i and 0
+    'CMP #%i000i',
+    'BNE fail',
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});
+
+test('dyadic ternary but(pref-0i1)', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA #%i010i',
+    'BUT #%00000',    // set all to 0
+    'CMP #%00000',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'BUT #%00111',  // set first two trits to 0, let rest through
+    'CMP #%0010i',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'BUT #%11100', // set last to trits to 0, let rest through
+    'CMP #%i0100',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'BUT #%iiiii',  // semi-mask out 1, let through i and 0
+    'CMP #%i0i0i',
+    'BNE fail',
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});

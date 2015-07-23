@@ -72,13 +72,19 @@ class ALU {
         this.update_flags_from(this.cpu.yindex);
         break;
 
-      // unary functions TODO: how should these set flags?
+      // unary tritwise functions TODO: how should these set flags?
       case OP.NTI: write_arg(NTI(read_arg())); break;
       case OP.STI: write_arg(STI(read_arg())); break;
       case OP.PTI: write_arg(PTI(read_arg())); break;
       case OP.FD:  write_arg( FD(read_arg())); break;
       case OP.RD:  write_arg( RD(read_arg())); break;
 
+      // dyadic tritwise functions
+      case OP.AND: this.cpu.accum = TAND(this.cpu.accum, read_arg()); break;
+      case OP.ORA: this.cpu.accum = TOR(this.cpu.accum, read_arg()); break;
+      case OP.BUT: this.cpu.accum = BUT(this.cpu.accum, read_arg()); break;
+
+      // arithmetic
       case OP.ADC: {  // A = A+M+C
         const result = add(this.cpu.accum, read_arg(), this.cpu.flags.C);
 

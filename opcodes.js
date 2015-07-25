@@ -165,10 +165,6 @@ const XOP = {
 
   LDX_IIY: -24, // i010 load index from (indirect),Y indexed
   STX_IIY: -23, // i011 store index to (indirect),Y indexed
-
-  CLS: -22,     // i1ii clear sign flag
-  SESN: -21,    // i1i0 set sign flag negative
-  SESP: -20,    // i1i1 set sign flag postiive
 };
 
 // raw xop key to addressing mode, for cpu instruction decoder

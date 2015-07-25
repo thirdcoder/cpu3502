@@ -321,6 +321,42 @@ test('execute', (t) => {
   t.end();
 });
 
+test('adc carry in', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA #2',
+    'CLC',
+    'ADC #3',   // A+M+C
+    'CMP #5',   // 2+3+0 = 5
+    'BNE fail',
+
+    'LDA #2',
+    'SECP',
+    'ADC #3',
+    'CMP #6',   // 2+3+1 = 6
+    'BNE fail',
+
+    'LDA #2',
+    'SECN',
+    'ADC #3',
+    'CMP #4',   // 2+3+(-1) = 4
+    'BNE fail',
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+
+});
+
 test('adc overflow flag', (t) => {
   const cpu = CPU();
   let lines = [

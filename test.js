@@ -1686,40 +1686,50 @@ test('unary ternary instructions', (t) => {
 test('string comparison', (t) => {
   const cpu = CPU();
   let lines = [
+    'LDA #<str1',
+    'LDX #>str1',
     'JSR strcmp',
-    '.data "foobar"',  // string, length 6
-    '.tryte 0',        // null terminator
-    'CPY #6',
+    '.data "foo"',
+    '.tryte 0',
+    'CPY #3',
     'BNE fail',
     'HALTZ',        // stack is modified to return here
 
-    // strcmp - get length of null-terminated string immediately callsite, return length in Y register
+    'str1:',
+    '.data "foo"',
+    '.tryte 0',
 
     'strcmp:',
+    // store registered-passed string
+    'STA _strcmp_sr',
+    'STX _strcmp_sr+1',
     // pull return address, increment, modify, and push back
     'PLA',
-    'STA _strcmp_param+1',
+    'STA _strcmp_si+1',
     'PLA',
     'ADC #1',
-    'STA _strcmp_param',
-    'LDA _strcmp_param+1',    // add carry
+    'STA _strcmp_si',
+    'LDA _strcmp_si+1',    // add carry
     'ADC #0',
-    'STA _strcmp_param+1',
+    'STA _strcmp_si+1',
 
     'LDY #0',
     '_strcmp_next_char:',
     'INX',    // increment low tryte of pointer
     'INY',    // increment index counter
-    'LDA (_strcmp_param),Y',
+    'LDA (_strcmp_si),Y',
     'BNE _strcmp_next_char',  // not null char?
 
     'PHX',
-    'LDA _strcmp_param+1',
+    'LDA _strcmp_si+1',
     'PHA',
 
     'RTS',
 
-    '_strcmp_param:',
+    '_strcmp_si:',
+    '.word 0',
+
+    '_strcmp_sr:',
     '.word 0',
 
 

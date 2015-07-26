@@ -1682,3 +1682,55 @@ test('unary ternary instructions', (t) => {
 
   t.end();
 });
+
+test('string comparison', (t) => {
+  const cpu = CPU();
+  let lines = [
+//TODO: replace with strcmp
+    'JSR strlen',
+    '.data "foobar"',  // string, length 6
+    '.tryte 0',        // null terminator
+    'CPY #6',
+    'BNE fail',
+    'HALTZ',        // stack is modified to return here
+
+    // strlen - get length of null-terminated string immediately callsite, return length in Y register
+
+    'strlen:',
+    // pull return address, increment, modify, and push back
+    'PLA',
+    'STA _strlen_param+1',
+    'PLX',
+    'INX',  // after immediately-after parameter TODO: handle wraparound
+    'STX _strlen_param',
+
+    'LDY #0',
+    '_strlen_next_char:',
+    'INX',    // increment low tryte of pointer
+    'INY',    // increment index counter
+    'LDA (_strlen_param),Y',
+    'BNE _strlen_next_char',  // not null char?
+
+    'PHX',
+    'LDA _strlen_param+1',
+    'PHA',
+
+    'RTS',
+
+    '_strlen_param:',
+    '.word 0',
+
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});

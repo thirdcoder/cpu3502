@@ -377,6 +377,7 @@ test('adc overflow flag', (t) => {
   // Vaccum
   t.equal(cpu.accum, -2);
   t.equal(cpu.flags.V, 1);
+  t.equal(cpu.flags.C, 1);
 
   t.end();
 });

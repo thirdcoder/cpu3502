@@ -97,9 +97,9 @@ test('memory maps', (t) => {
 });
 
 test('arithmetic', (t) => {
-  t.deepEqual(add(1, 2), {result:3, overflow:0});
-  t.deepEqual(add(1, -2), {result:-1, overflow:0});
-  t.deepEqual(add(1, -1), {result:0, overflow:0});
+  t.deepEqual(add(1, 2), {result:3, carryOut:0, fullResult:3, overflow:0});
+  t.deepEqual(add(1, -2), {result:-1, carryOut:0, fullResult:-1, overflow:0});
+  t.deepEqual(add(1, -1), {result:0, carryOut:0, fullResult:0, overflow:0});
 
   //   11111
   // +     1
@@ -107,23 +107,23 @@ test('arithmetic', (t) => {
   //  1iiiii
   // / ^^^^^
   //v   result
-  t.deepEqual(add(121, 1), {result:-121, overflow:1}); // overflow wraps around
+  t.deepEqual(add(121, 1), {result:-121, carryOut:1, fullResult:122, overflow:1}); // carryOut wraps around
 
-  t.deepEqual(add(121, 2), {result:-120, overflow:1});
-  t.deepEqual(add(121, 121), {result:-1, overflow:1});
+  t.deepEqual(add(121, 2), {result:-120, carryOut:1, fullResult:123, overflow:1});
+  t.deepEqual(add(121, 121), {result:-1, carryOut:1, fullResult:242, overflow:1});
 
 
-  t.deepEqual(add(0, 0), {result:0, overflow:0});
-  t.deepEqual(add(0, -1), {result:-1, overflow:0});
-  t.deepEqual(add(-1, -2), {result:-3, overflow:0});
+  t.deepEqual(add(0, 0), {result:0, carryOut:0, fullResult:0, overflow:0});
+  t.deepEqual(add(0, -1), {result:-1, carryOut:0, fullResult:-1, overflow:0});
+  t.deepEqual(add(-1, -2), {result:-3, carryOut:0, fullResult:-3, overflow:0});
 
-  t.deepEqual(add(-121, -1), {result:121, overflow:-1}); // underflow
-  t.deepEqual(add(-121, -121), {result:1, overflow:-1});
+  t.deepEqual(add(-121, -1), {result:121, carryOut:-1, fullResult:-122, overflow:-1}); // underflow
+  t.deepEqual(add(-121, -121), {result:1, carryOut:-1, fullResult:-242, overflow:-1});
 
-  t.deepEqual(add(-121, -121, 0), {result:1, overflow:-1});
-  t.deepEqual(add(-121, -121, 1), {result:2, overflow:-1});
-  t.deepEqual(add(-121, -121, -1), {result:0, overflow:-1});
-  t.deepEqual(add(-121, 0, -1), {result:121, overflow:-1});
+  t.deepEqual(add(-121, -121, 0), {result:1, carryOut:-1, fullResult:-242, overflow:-1});
+  t.deepEqual(add(-121, -121, 1), {result:2, carryOut:-1, fullResult:-241, overflow:-1});
+  t.deepEqual(add(-121, -121, -1), {result:0, carryOut:-1, fullResult:-243, overflow:-1});
+  t.deepEqual(add(-121, 0, -1), {result:121, carryOut:-1, fullResult:-122, overflow:-1});
 
   t.end();
 });

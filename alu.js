@@ -90,6 +90,7 @@ class ALU {
 
         this.cpu.accum = result.result;
         this.update_flags_from(this.cpu.accum);
+        this.cpu.flags.C = result.carryOut;
         this.cpu.flags.V = result.overflow;
         break;
       }

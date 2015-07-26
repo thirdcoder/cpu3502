@@ -1686,40 +1686,40 @@ test('unary ternary instructions', (t) => {
 test('string comparison', (t) => {
   const cpu = CPU();
   let lines = [
-    'JSR strlen',
+    'JSR strcmp',
     '.data "foobar"',  // string, length 6
     '.tryte 0',        // null terminator
     'CPY #6',
     'BNE fail',
     'HALTZ',        // stack is modified to return here
 
-    // strlen - get length of null-terminated string immediately callsite, return length in Y register
+    // strcmp - get length of null-terminated string immediately callsite, return length in Y register
 
-    'strlen:',
+    'strcmp:',
     // pull return address, increment, modify, and push back
     'PLA',
-    'STA _strlen_param+1',
+    'STA _strcmp_param+1',
     'PLA',
     'ADC #1',
-    'STA _strlen_param',
-    'LDA _strlen_param+1',    // add carry
+    'STA _strcmp_param',
+    'LDA _strcmp_param+1',    // add carry
     'ADC #0',
-    'STA _strlen_param+1',
+    'STA _strcmp_param+1',
 
     'LDY #0',
-    '_strlen_next_char:',
+    '_strcmp_next_char:',
     'INX',    // increment low tryte of pointer
     'INY',    // increment index counter
-    'LDA (_strlen_param),Y',
-    'BNE _strlen_next_char',  // not null char?
+    'LDA (_strcmp_param),Y',
+    'BNE _strcmp_next_char',  // not null char?
 
     'PHX',
-    'LDA _strlen_param+1',
+    'LDA _strcmp_param+1',
     'PHA',
 
     'RTS',
 
-    '_strlen_param:',
+    '_strcmp_param:',
     '.word 0',
 
 

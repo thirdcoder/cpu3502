@@ -1744,11 +1744,6 @@ test('string comparison', (t) => {
     'LDA _strcmp_si+1',    // add carry
     'ADC #0',
     'STA _strcmp_si+1',
-    // restore stack
-    'LDA _strcmp_si',
-    'PHA',
-    'LDA _strcmp_si+1',
-    'PHA',
 
     'LDY #0',
     '_strcmp_next_char:',
@@ -1787,16 +1782,27 @@ test('string comparison', (t) => {
 
     'BRA _strcmp_next_char',
 
+    '_strcmp_result:',
+    '.tryte 0',
 
     '_strcmp_is_equal:',
     'LDA #0',
+    'STA _strcmp_result',
     'BRA _strcmp_done',
 
     '_strcmp_not_equal:',
     'LDA #-1',
+    'STA _strcmp_result',
     'BRA _strcmp_done',
 
     '_strcmp_done:',
+    // restore stack
+    'LDA _strcmp_si',
+    'PHA',
+    'LDA _strcmp_si+1',
+    'PHA',
+    // return
+    'LDA _strcmp_result',
     'RTS',
 
     '_strcmp_si:',

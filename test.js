@@ -1686,16 +1686,49 @@ test('unary ternary instructions', (t) => {
 test('string comparison', (t) => {
   const cpu = CPU();
   let lines = [
-    'LDA #<str1',
-    'LDX #>str1',
+    'LDA #<str_foo',
+    'LDX #>str_foo',
     'JSR strcmp',
     '.data "foo"',
     '.tryte 0',
-    'BNE fail',
-    'HALTZ',        // stack is modified to return here
+    'BNE fail',     // expect "foo" == "foo"
+                    // stack is modified to return here
 
-    'str1:',
+    'LDA #<str_foo',
+    'LDA #>str_foo',
+    'JSR strcmp',
+    '.data "foX"',
+    '.tryte 0',
+    'BEQ fail',   // expect "foo" != "foX"
+
+    'LDA #<str_foobar',
+    'LDA #>str_foobar',
+    'JSR strcmp',
     '.data "foo"',
+    '.tryte 0',
+    'BEQ fail',   // expect "foobar" != "foo"
+
+    /* TODO: fix test
+    'LDA #<str_foobar',
+    'LDA #>str_foobar',
+    'JSR strcmp',
+    '.data "foobar"',
+    '.tryte 0',
+    'BNE fail',   // expect "foobar" == "foobar"
+*/
+
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+
+    'str_foo:',
+    '.data "foo"',
+    '.tryte 0',
+
+    'str_foobar:',
+    '.data "foobar"',
     '.tryte 0',
 
     'strcmp:',
@@ -1774,10 +1807,6 @@ test('string comparison', (t) => {
 
     '_strcmp_cr:',
     '.tryte 0',
-
-
-    'fail:',
-    'HALTN',
   ];
 
   const machine_code = assembler(lines);

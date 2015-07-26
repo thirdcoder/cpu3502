@@ -402,6 +402,75 @@ test('clear overflow flag', (t) => {
   t.end();
 });
 
+test('adc carry out overflow branch', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA #121',
+    'CLC',
+    'ADC #121',   // expect V=C=1
+    'BRVNP fail', // fail if V≠1
+    'BRCNP fail', // fail if C≠1
+    'BVC fail',   // fail if V=0
+    'BCC fail',   // fail if C=0
+    'CMP #-1',    // 0000i
+    'BNE fail',
+
+    'LDA #-121',
+    'CLC',
+    'ADC #-121',
+    'BRVNN fail', // fail if V≠i
+    'BRCNN fail', // fail if C≠i
+    'BVC fail',   // fail if V=0
+    'BCC fail',   // fail if C=0
+    'CMP #1',     // 00001
+    'BNE fail',
+
+    'LDA #0',
+    'CLC',
+    'ADC #0',
+    'BRVNZ fail', // fail if V≠0
+    'BRCNZ fail', // fail if C≠0
+    'BVS fail',   // fail if V≠0
+    'BCS fail',   // fail if C≠0
+    'CMP #0',     // 00000
+    'BNE fail',
+
+    'LDA #121',
+    'SECP',
+    'ADC #121',   // expect V=C=1
+    'BRVNP fail', // fail if V≠1
+    'BRCNP fail', // fail if C≠1
+    'BVC fail',   // fail if V=0
+    'BCC fail',   // fail if C=0
+    'CMP #0',     // 00000
+    'BNE fail',
+
+    'LDA #121',
+    'SECN',
+    'ADC #121',   // expect V=C=1
+    'BRVNP fail', // fail if V≠1
+    'BRCNP fail', // fail if C≠1
+    'BVC fail',   // fail if V=0
+    'BCC fail',   // fail if C=0
+    'CMP #-2',    // 000i1
+    'BNE fail',
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+
+});
+
 test('assemble low/high addresses', (t) => {
   let lines = [];
   for (let i = 0; i < 121; ++i)

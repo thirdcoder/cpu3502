@@ -1638,3 +1638,47 @@ test('dyadic ternary but(pref-0i1)', (t) => {
 
   t.end();
 });
+
+test('unary ternary instructions', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA #%i010i',
+    'STI A',
+    'CMP #%10i01',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'PTI A',
+    'CMP #%11i11',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'NTI A',
+    'CMP #%1iii1',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'FD A',
+    'CMP #%00100',
+    'BNE fail',
+
+    'LDA #%i010i',
+    'RD A',
+    'CMP #%i000i',
+    'BNE fail',
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});

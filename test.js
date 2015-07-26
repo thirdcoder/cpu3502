@@ -1790,10 +1790,13 @@ test('string comparison', (t) => {
 
     '_strcmp_is_equal:',
     'LDA #0',
-    'RTS',
+    'BRA _strcmp_done',
 
     '_strcmp_not_equal:',
     'LDA #-1',
+    'BRA _strcmp_done',
+
+    '_strcmp_done:',
     'RTS',
 
     '_strcmp_si:',

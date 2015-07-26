@@ -1686,7 +1686,6 @@ test('unary ternary instructions', (t) => {
 test('string comparison', (t) => {
   const cpu = CPU();
   let lines = [
-//TODO: replace with strcmp
     'JSR strlen',
     '.data "foobar"',  // string, length 6
     '.tryte 0',        // null terminator
@@ -1700,9 +1699,12 @@ test('string comparison', (t) => {
     // pull return address, increment, modify, and push back
     'PLA',
     'STA _strlen_param+1',
-    'PLX',
-    'INX',  // after immediately-after parameter TODO: handle wraparound
-    'STX _strlen_param',
+    'PLA',
+    'ADC #1',
+    'STA _strlen_param',
+    'LDA _strlen_param+1',    // add carry
+    'ADC #0',
+    'STA _strlen_param+1',
 
     'LDY #0',
     '_strlen_next_char:',

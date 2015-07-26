@@ -1691,7 +1691,6 @@ test('string comparison', (t) => {
     'JSR strcmp',
     '.data "foo"',
     '.tryte 0',
-    'CPY #3',
     'BNE fail',
     'HALTZ',        // stack is modified to return here
 
@@ -1712,18 +1711,56 @@ test('string comparison', (t) => {
     'LDA _strcmp_si+1',    // add carry
     'ADC #0',
     'STA _strcmp_si+1',
-
-    'LDY #0',
-    '_strcmp_next_char:',
-    'INX',    // increment low tryte of pointer
-    'INY',    // increment index counter
-    'LDA (_strcmp_si),Y',
-    'BNE _strcmp_next_char',  // not null char?
-
-    'PHX',
+    // restore stack
+    'LDA _strcmp_si',
+    'PHA',
     'LDA _strcmp_si+1',
     'PHA',
 
+    'LDY #0',
+    '_strcmp_next_char:',
+
+    // load characters
+    'LDA (_strcmp_si),Y',
+    'STA _strcmp_ci',
+
+    'LDX (_strcmp_sr),Y',
+    'STX _strcmp_cr',
+
+    // characters differ?
+    'CPX A',
+    'BNE _strcmp_not_equal',
+
+    // characters are the same (in A and X)
+    // are the both the null string terminator?
+    'CPX #0',
+    'BEQ _strcmp_is_equal',
+    // if not, continue comparison
+
+    // increment string pointers
+    'LDA _strcmp_si',
+    'ADC #1',
+    'STA _strcmp_si',
+    'LDA _strcmp_si+1',
+    'ADC #0',
+    'STA _strcmp_si+1',
+
+    'LDA _strcmp_sr',
+    'ADC #1',
+    'STA _strcmp_sr',
+    'LDA _strcmp_sr+1',
+    'ADC #0',
+    'STA _strcmp_sr+1',
+
+    'BRA _strcmp_next_char',
+
+
+    '_strcmp_is_equal:',
+    'LDA #0',
+    'RTS',
+
+    '_strcmp_not_equal:',
+    'LDA #-1',
     'RTS',
 
     '_strcmp_si:',
@@ -1731,6 +1768,12 @@ test('string comparison', (t) => {
 
     '_strcmp_sr:',
     '.word 0',
+
+    '_strcmp_ci:',
+    '.tryte 0',
+
+    '_strcmp_cr:',
+    '.tryte 0',
 
 
     'fail:',

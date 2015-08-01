@@ -1682,3 +1682,148 @@ test('unary ternary instructions', (t) => {
 
   t.end();
 });
+
+test('string comparison', (t) => {
+  const cpu = CPU();
+  let lines = [
+    'LDA #<str_foo',
+    'LDX #>str_foo',
+    'JSR strcmp',
+    '.data "foo"',
+    '.tryte 0',
+    'BNE fail',     // expect "foo" == "foo"
+                    // stack is modified to return here
+
+    'LDA #<str_foo',
+    'LDA #>str_foo',
+    'JSR strcmp',
+    '.data "foX"',
+    '.tryte 0',
+    'BEQ fail',   // expect "foo" != "foX"
+
+    'LDA #<str_foobar',
+    'LDA #>str_foobar',
+    'JSR strcmp',
+    '.data "foo"',
+    '.tryte 0',
+    'BEQ fail',   // expect "foobar" != "foo"
+
+    /* TODO: fix test
+    'LDA #<str_foobar',
+    'LDA #>str_foobar',
+    'JSR strcmp',
+    '.data "foobar"',
+    '.tryte 0',
+    'BNE fail',   // expect "foobar" == "foobar"
+*/
+
+
+    'HALTZ',
+
+    'fail:',
+    'HALTN',
+
+    'str_foo:',
+    '.data "foo"',
+    '.tryte 0',
+
+    'str_foobar:',
+    '.data "foobar"',
+    '.tryte 0',
+
+    'strcmp:',
+    // store registered-passed string
+    'STA _strcmp_sr',
+    'STX _strcmp_sr+1',
+    // pull return address, increment, modify, and push back
+    'PLA',
+    'STA _strcmp_si+1',
+    'PLA',
+    'ADC #1',
+    'STA _strcmp_si',
+    'LDA _strcmp_si+1',    // add carry
+    'ADC #0',
+    'STA _strcmp_si+1',
+
+    'LDY #0',
+    '_strcmp_next_char:',
+
+    // load characters
+    'LDA (_strcmp_si),Y',
+    'STA _strcmp_ci',
+
+    'LDX (_strcmp_sr),Y',
+    'STX _strcmp_cr',
+
+    // characters differ?
+    'CPX A',
+    'BNE _strcmp_not_equal',
+
+    // characters are the same (in A and X)
+    // are the both the null string terminator?
+    'CPX #0',
+    'BEQ _strcmp_is_equal',
+    // if not, continue comparison
+
+    // increment string pointers
+    'LDA _strcmp_si',
+    'ADC #1',
+    'STA _strcmp_si',
+    'LDA _strcmp_si+1',
+    'ADC #0',
+    'STA _strcmp_si+1',
+
+    'LDA _strcmp_sr',
+    'ADC #1',
+    'STA _strcmp_sr',
+    'LDA _strcmp_sr+1',
+    'ADC #0',
+    'STA _strcmp_sr+1',
+
+    'BRA _strcmp_next_char',
+
+    '_strcmp_result:',
+    '.tryte 0',
+
+    '_strcmp_is_equal:',
+    'LDA #0',
+    'STA _strcmp_result',
+    'BRA _strcmp_done',
+
+    '_strcmp_not_equal:',
+    'LDA #-1',
+    'STA _strcmp_result',
+    'BRA _strcmp_done',
+
+    '_strcmp_done:',
+    // restore stack
+    'LDA _strcmp_si',
+    'PHA',
+    'LDA _strcmp_si+1',
+    'PHA',
+    // return
+    'LDA _strcmp_result',
+    'RTS',
+
+    '_strcmp_si:',
+    '.word 0',
+
+    '_strcmp_sr:',
+    '.word 0',
+
+    '_strcmp_ci:',
+    '.tryte 0',
+
+    '_strcmp_cr:',
+    '.tryte 0',
+  ];
+
+  const machine_code = assembler(lines);
+
+  console.log(machine_code);
+  cpu.memory.writeArray(0, machine_code);
+  cpu.run();
+  t.equal(cpu.flags.H, 0);
+
+  t.end();
+});

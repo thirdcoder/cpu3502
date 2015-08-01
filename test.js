@@ -1827,3 +1827,11 @@ test('string comparison', (t) => {
 
   t.end();
 });
+
+test('assembler leading whitespace', (t) => {
+  t.deepEqual(assembler(['LDA #0']), assembler([' LDA #0']));
+  t.deepEqual(assembler(['LDA #0']), assembler(['   LDA #0']));
+  t.deepEqual(assembler([' LDA #0']), assembler(['   LDA #0']));
+
+  t.end();
+});

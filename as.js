@@ -97,6 +97,10 @@ class Assembler {
       return;
     }
 
+    if (line.startsWith(' ')) {
+      line = line.trimLeft();
+    }
+
     const comment_match = line.match(/^(.*?)\s+;.*$/);
     if (comment_match) {
       // strip whitespace up to comment line, and comment itself

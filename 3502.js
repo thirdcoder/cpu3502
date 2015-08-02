@@ -79,7 +79,7 @@ class CPU {
   }
 
   write_int_vector(intnum, value) {
-    cpu.memory.writeWord(this.vector_address(intnum), value);
+    this.memory.writeWord(this.vector_address(intnum), value);
   }
 
   // Get interrupt vector table address at negative-most memory, word addresses pointers (with 10-trit memory):
